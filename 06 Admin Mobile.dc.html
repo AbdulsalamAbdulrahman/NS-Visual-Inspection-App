@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme=light]{--bg:#F4F6F2;--sf:#FFFFFF;--sf2:#ECF0E9;--ink:#0D1B13;--mut:#4A5A50;--line:#D3DBD1;--brand:#09502E;--pri:#09502E;--on-pri:#FFFFFF;--acc:#7BB43B;--mid:#188815;--soft:#E2EEDD;--ok:#16723A;--ok-bg:#DFF1E2;--imp:#7A5800;--imp-bg:#FBEFCB;--urg:#A84300;--urg-bg:#FCE4D3;--bad:#B3261E;--bad-bg:#FBE2DF;--info:#0B5C8A;--info-bg:#DDEEF8;--scrim:rgba(8,20,13,.45)}
+[data-theme=dark]{--bg:#09110D;--sf:#111C16;--sf2:#18261E;--ink:#EEF4EF;--mut:#A2B3A8;--line:#283A31;--brand:#9FD763;--pri:#8CC84B;--on-pri:#062012;--acc:#7BB43B;--mid:#3FB83A;--soft:#1A2F21;--ok:#74D38F;--ok-bg:#133120;--imp:#EBC65C;--imp-bg:#332A0E;--urg:#F7A066;--urg-bg:#3B2313;--bad:#F58B81;--bad-bg:#3C1815;--info:#7CC4F0;--info-bg:#0F2A3B;--scrim:rgba(0,0,0,.6)}
+body{margin:0;background:#E4E8E2;font-family:'Public Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+i{font-family:'Material Symbols Rounded';font-style:normal;font-weight:400;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';user-select:none;vertical-align:middle}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="padding:72px;display:flex;flex-direction:column;gap:96px;background:#E4E8E2;min-height:100vh;color:#0D1B13">
+
+<header style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;flex:none"></div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div style="font:600 13px 'IBM Plex Mono';color:#09502E;letter-spacing:.06em">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</div>
+    <div style="font:800 34px 'Public Sans';letter-spacing:-.02em">06 Admin · mobile</div>
+  </div>
+  <nav style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;font:500 13px 'IBM Plex Mono'">
+    <a href="01%20Foundations%20and%20Sign-in.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">01</a>
+    <a href="02%20Contractor%20Mobile%20-%20Form.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">02</a>
+    <a href="03%20Contractor%20Mobile%20-%20Review%20Pay%20Ticket.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">03</a>
+    <a href="04%20Contractor%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">04</a>
+    <a href="05%20Admin%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">05</a>
+    <a href="06%20Admin%20Mobile.dc.html" style="padding:8px 12px;border-radius:8px;background:#09502E;color:#fff">06 Admin mobile</a>
+    <a href="07%20Service%20Rep.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">07</a>
+    <a href="08%20Print%20Report.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">08</a>
+  </nav>
+</header>
+
+<section style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">AM</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">Admin on the phone</h2><span style="font-size:15px;color:#4A5A50">Bottom tabs · tables become cards · filters, forms and actions become sheets.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- AM-01 Overview -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-01 · Overview</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:11px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;box-shadow:0 0 0 1px var(--line)"></div><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:20px">Overview</b><span style="font-size:13px;color:var(--mut)">October 2026 · all areas</span></div><span style="width:44px;height:44px;border-radius:50%;background:var(--soft);color:var(--brand);font-weight:800;display:flex;align-items:center;justify-content:center">HM</span></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut);font-weight:600">Inspections</span><span style="font:600 28px 'IBM Plex Mono'">87</span><span style="font-size:12px;color:var(--ok);font-weight:600">+12 vs Sep</span></div>
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut);font-weight:600">Revenue</span><span style="font:600 28px 'IBM Plex Mono'">₦1.31M</span><span style="font-size:12px;color:var(--mut)">this month</span></div>
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut);font-weight:600">Active contractors</span><span style="font:600 28px 'IBM Plex Mono'">58</span><span style="font-size:12px;color:var(--mut)">of 64</span></div>
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:var(--mut);font-weight:600">Drafts</span><span style="font:600 28px 'IBM Plex Mono'">23</span><span style="font-size:12px;color:var(--mut)">in progress</span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between"><b style="font-size:15px">By service area</b><span style="font-size:13px;color:var(--mut)">October</span></div>
+            <sc-for list="{{ areas }}" as="ar" hint-placeholder-count="9">
+              <div style="display:grid;grid-template-columns:92px 1fr 26px;gap:8px;align-items:center;font-size:13px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ar.n }}</span><div style="height:12px;border-radius:6px;background:var(--sf2)"><div style="height:100%;border-radius:6px;background:var(--mid);width:{{ ar.w }}"></div></div><span style="font-family:'IBM Plex Mono';text-align:right">{{ ar.v }}</span></div>
+            </sc-for>
+            <a href="#" style="font-weight:700;font-size:14px;padding-top:4px">All 13 areas</a>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);height:62px;font-size:12px;font-weight:600;color:var(--mut)">
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--brand);font-weight:800"><span style="width:56px;height:30px;border-radius:15px;background:var(--soft);display:flex;align-items:center;justify-content:center"><i>space_dashboard</i></span>Overview</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>assignment</i></span>Inspections</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>engineering</i></span>Contractors</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>menu</i></span>More</span>
+          </div>
+          <div style="height:22px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-02 Inspections cards -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-02 · Inspections — cards, filter count</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px"><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:20px">Inspections</b><span style="font-size:13px;color:var(--mut)">64 results</span></div><span style="width:44px;height:44px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;justify-content:center"><i>download</i></span></div>
+            <div style="display:flex;gap:8px"><div style="flex:1;height:48px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--mut);font-size:15px"><i>search</i>Ticket, owner, Form 74</div><span style="height:48px;padding:0 12px;border-radius:12px;background:var(--soft);border:1.5px solid var(--pri);color:var(--brand);font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px"><i style="font-size:20px">tune</i>Filters<span style="min-width:22px;height:22px;border-radius:11px;background:var(--pri);color:var(--on-pri);font:600 12px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center">2</span></span></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ insp }}" as="r" hint-placeholder-count="5">
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:12px 8px 12px 14px;display:flex;align-items:center;gap:8px">
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px"><span style="font:500 14px 'IBM Plex Mono';color:var(--brand)">{{ r.t }}</span></div><b style="font-size:16px">{{ r.o }}</b><span style="font-size:13px;color:var(--mut)">{{ r.a }} · {{ r.c }}</span><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">{{ r.d }} · ₦15,000</span></div>
+              <i style="color:var(--mut)">chevron_right</i>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);height:62px;font-size:12px;font-weight:600;color:var(--mut)">
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>space_dashboard</i></span>Overview</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--brand);font-weight:800"><span style="width:56px;height:30px;border-radius:15px;background:var(--soft);display:flex;align-items:center;justify-content:center"><i>assignment</i></span>Inspections</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>engineering</i></span>Contractors</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>menu</i></span>More</span>
+          </div>
+          <div style="height:22px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-03 Filter sheet -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-03 · Filters bottom sheet</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans';background:var(--sf)"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="height:96px;border-radius:16px;background:var(--sf)"></div><div style="height:96px;border-radius:16px;background:var(--sf)"></div></div>
+        <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;top:150px;background:var(--sf);border-radius:24px 24px 0 0;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:center;padding:10px 0 4px"><div style="width:40px;height:5px;border-radius:3px;background:var(--line)"></div></div>
+          <div style="display:flex;align-items:center;padding:4px 20px 8px"><b style="font-size:20px;flex:1">Filters</b><span style="font-weight:700;font-size:15px;color:var(--brand);padding:10px 0">Reset</span></div>
+          <div style="flex:1;overflow:hidden;padding:4px 20px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:8px"><b style="font-size:14px">Service area</b><div style="display:flex;flex-wrap:wrap;gap:6px;font-size:14px;font-weight:600">
+              <span style="height:40px;padding:0 12px;border-radius:10px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:700;display:flex;align-items:center;gap:4px"><i style="font-size:17px">check</i>Barnawa</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center">Kawo</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center">Doka</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center">Rigasa</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:700;display:flex;align-items:center;gap:4px"><i style="font-size:17px">check</i>Kakuri</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center">Sabon Tasha</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center">Zaria</span>
+              <span style="height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center;color:var(--brand);font-weight:700">+6 more</span>
+            </div></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><b style="font-size:14px">Purpose of property</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:14px;font-weight:600"><span style="height:44px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Residential</span><span style="height:44px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Commercial</span><span style="height:44px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Industrial</span><span style="height:44px;border-radius:10px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Government</span></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><b style="font-size:14px">Connection type</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--sf2);font-size:14px"><span style="height:40px;border-radius:9px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Any</span><span style="height:40px;border-radius:9px;font-weight:600;display:flex;align-items:center;justify-content:center">Single</span><span style="height:40px;border-radius:9px;font-weight:600;display:flex;align-items:center;justify-content:center">Three</span></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><b style="font-size:14px">Date range</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font:500 15px 'IBM Plex Mono'"><span style="height:48px;border-radius:10px;border:2px solid var(--pri);display:flex;align-items:center;padding:0 12px">01 Sep 2026</span><span style="height:48px;border-radius:10px;border:2px solid var(--pri);display:flex;align-items:center;padding:0 12px">01 Oct 2026</span></div></div>
+          </div>
+          <div style="padding:12px 16px 4px;border-top:1px solid var(--line)"><span style="height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Show 64 results</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-04 Detail -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-04 · Inspection detail — collapsible, swipe gallery, action bar</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 8px 12px;display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'IBM Plex Mono';color:var(--brand)">KE-NSD-2026-000123</span><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim · Kawo</span></div></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:14px 0;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:8px;padding:0 16px;overflow:hidden;flex:none">
+            <div style="flex:none;width:300px;height:170px;border-radius:14px;background:repeating-linear-gradient(135deg,var(--sf2) 0 10px,var(--line) 10px 11px);display:flex;align-items:flex-end;padding:10px;box-sizing:border-box;font:500 11px 'IBM Plex Mono';color:var(--mut)">DB front · GPS photo</div>
+            <div style="flex:none;width:300px;height:170px;border-radius:14px;background:repeating-linear-gradient(135deg,var(--sf2) 0 10px,var(--line) 10px 11px)"></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:6px;flex:none"><span style="width:18px;height:6px;border-radius:3px;background:var(--mid)"></span><span style="width:6px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:6px;height:6px;border-radius:3px;background:var(--line)"></span><span style="width:6px;height:6px;border-radius:3px;background:var(--line)"></span></div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px">
+            <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+              <div style="height:52px;padding:0 12px 0 16px;display:flex;align-items:center"><b style="flex:1;font-size:15px">A · Customer information</b><i>expand_less</i></div>
+              <div style="padding:0 16px 14px;display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:14px"><span style="color:var(--mut)">Form 74</span><span style="font-family:'IBM Plex Mono'">F74/KD/2026/08841</span><span style="color:var(--mut)">Address</span><span>14 Ahmadu Bello Way, Kaduna North</span><span style="color:var(--mut)">Use · supply</span><span>Residential · 3φ <span style="font-family:'IBM Plex Mono'">415 V</span></span><span style="color:var(--mut)">GPS</span><span style="font-family:'IBM Plex Mono'">10.52217, 7.43831 ±6 m</span><span style="color:var(--mut)">Contractor</span><span>Engr. Yusuf Bello</span></div>
+            </div>
+            <div style="height:52px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:8px"><b style="flex:1;font-size:15px">Payment</b><span style="font:500 13px 'IBM Plex Mono';color:var(--ok)">₦15,000 ✓</span><i>expand_more</i></div>
+            <div style="height:52px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:8px"><b style="flex:1;font-size:15px">B · Building inspection</b><span style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bad-bg);color:var(--bad)">2 issues</span><i>expand_more</i></div>
+            <div style="height:52px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center"><b style="flex:1;font-size:15px">C · System details</b><i>expand_more</i></div>
+            <div style="height:52px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center"><b style="flex:1;font-size:15px">D · Attestation</b><i>expand_more</i></div>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><span style="height:56px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i>map</i>Google Maps</span><span style="height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i>print</i>Print</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-05 Contractors + action sheet -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-05 · Contractors — action sheet · dark</div>
+      <div data-theme="dark" style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:12px"><b style="font-size:20px;flex:1">Contractors</b><span style="width:44px;height:44px;border-radius:12px;background:var(--pri);color:var(--on-pri);display:flex;align-items:center;justify-content:center"><i>person_add</i></span></div><div style="height:48px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--mut);font-size:15px"><i>search</i>Name, EBEI or phone</div></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ contractors }}" as="c" hint-placeholder-count="5">
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:12px 4px 12px 14px;display:flex;align-items:center;gap:8px">
+              <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0"><b style="font-size:16px">{{ c.n }}</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">{{ c.sub }}</span><span style="display:flex;gap:8px;align-items:center;font-size:13px"><span style="padding:3px 9px;border-radius:999px;font-weight:700;font-size:12px;background:{{ c.sbg }};color:{{ c.sfg }}">{{ c.st }}</span><span style="color:var(--mut)">{{ c.k }} inspections</span></span></div>
+              <span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--mut)"><i>more_vert</i></span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:var(--sf);border-radius:24px 24px 0 0;display:flex;flex-direction:column;padding-bottom:26px">
+          <div style="display:flex;justify-content:center;padding:10px 0 4px"><div style="width:40px;height:5px;border-radius:3px;background:var(--line)"></div></div>
+          <div style="padding:8px 20px 12px;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--line)"><b style="font-size:17px">Aisha Lawal</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">Cat B · EBEI/B/2024/0377</span></div>
+          <div style="padding:8px;display:flex;flex-direction:column;font-size:16px;font-weight:600">
+            <span style="height:54px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:14px"><i>edit</i>Edit details</span>
+            <span style="height:54px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:14px"><i>forward_to_inbox</i>Resend login details</span>
+            <span style="height:54px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:14px"><i>lock_reset</i>Reset password</span>
+            <span style="height:54px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:14px"><i>block</i>Suspend</span>
+            <span style="height:54px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:14px;color:var(--bad)"><i>delete</i>Delete contractor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-06 Delete confirm -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-06 · Delete — in-sheet confirmation step</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans';background:var(--sf)"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="height:96px;border-radius:16px;background:var(--sf)"></div><div style="height:96px;border-radius:16px;background:var(--sf)"></div><div style="height:96px;border-radius:16px;background:var(--sf)"></div></div>
+        <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:var(--sf);border-radius:24px 24px 0 0;display:flex;flex-direction:column;padding:0 20px 26px;gap:16px">
+          <div style="display:flex;justify-content:center;padding-top:10px"><div style="width:40px;height:5px;border-radius:3px;background:var(--line)"></div></div>
+          <span style="width:56px;height:56px;border-radius:16px;background:var(--bad-bg);color:var(--bad);display:flex;align-items:center;justify-content:center"><i style="font-size:30px">delete_forever</i></span>
+          <div style="display:flex;flex-direction:column;gap:8px"><b style="font-size:21px">Delete Emmanuel Gajere?</b><span style="font-size:15px;line-height:1.5;color:var(--mut)">Their login is removed. The 9 inspections they submitted stay on record. This can't be undone.</span></div>
+          <div style="padding:12px 14px;border-radius:12px;background:var(--sf2);font-size:14px;line-height:1.45">Want to keep the account? <b style="color:var(--brand)">Suspend instead</b></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="height:56px;border-radius:14px;background:var(--bad);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Delete contractor</span><span style="height:52px;border-radius:14px;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Cancel</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AM-07 Create sheet -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-07 · Add contractor — full-screen sheet</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--sf);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="height:56px;display:flex;align-items:center;padding:0 8px;border-bottom:1px solid var(--line)"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span><b style="font-size:18px;flex:1">Add contractor</b></div>
+        <div style="flex:1;overflow:hidden;padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Full name</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 14px;font-size:16px">Fatima Abdullahi</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Email</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 14px;font-size:16px">f.abdullahi@gmail.com</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Phone</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 14px;font:500 16px 'IBM Plex Mono'">0816 430 7781</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><label style="font-weight:600;font-size:15px">EBEI category</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:15px;font-weight:600"><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Cat A</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Cat B</span><span style="height:48px;border-radius:12px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:700;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">check</i>Cat C</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center">Corporate</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">EBEI registration no.</label><div style="height:52px;border-radius:12px;border:2px solid var(--pri);display:flex;align-items:center;padding:0 14px;font:500 16px 'IBM Plex Mono'">EBEI/C/2025/1033</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">COREN no. <span style="font-weight:400;color:var(--mut)">optional</span></label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 14px;font-size:16px;color:var(--mut)">—</div></div>
+        </div>
+        <div style="padding:12px 16px 4px;border-top:1px solid var(--line)"><span style="height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px"><i>send</i>Create &amp; send login details</span></div>
+        <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+      </div>
+    </div>
+
+    <!-- AM-08 More -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">AM-08 · More tab + created confirmation</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;align-items:center;gap:12px"><b style="font-size:20px;flex:1">More</b></div>
+        </div>
+        <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:14px">
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)"><i style="color:var(--brand)">badge</i><b style="flex:1;font-size:16px">Service reps</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">18</span><i style="color:var(--mut)">chevron_right</i></div>
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)"><i style="color:var(--brand)">map</i><b style="flex:1;font-size:16px">Service areas</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">13</span><i style="color:var(--mut)">chevron_right</i></div>
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)"><i style="color:var(--brand)">payments</i><b style="flex:1;font-size:16px">Payments</b><i style="color:var(--mut)">chevron_right</i></div>
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px"><i style="color:var(--brand)">tune</i><b style="flex:1;font-size:16px">Fee settings</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">₦15,000</span><i style="color:var(--mut)">chevron_right</i></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)"><i style="color:var(--mut)">person</i><b style="flex:1;font-size:16px">Profile &amp; password</b><i style="color:var(--mut)">chevron_right</i></div>
+            <div style="height:60px;padding:0 12px 0 16px;display:flex;align-items:center;gap:14px;color:var(--bad)"><i>logout</i><b style="flex:1;font-size:16px">Sign out</b></div>
+          </div>
+        </div>
+        <div style="position:absolute;left:16px;right:16px;bottom:104px;min-height:56px;padding:10px 8px 10px 16px;box-sizing:border-box;border-radius:14px;background:var(--ink);color:var(--bg);display:flex;align-items:center;gap:12px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.3)"><i style="color:var(--ok-bg)">mark_email_read</i><span style="flex:1;line-height:1.35">Login details sent to <b>f.abdullahi@gmail.com</b></span><span style="height:40px;padding:0 10px;font-weight:700;display:flex;align-items:center">OK</span></div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);height:62px;font-size:12px;font-weight:600;color:var(--mut)">
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>space_dashboard</i></span>Overview</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>assignment</i></span>Inspections</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px"><span style="height:30px;display:flex;align-items:center"><i>engineering</i></span>Contractors</span>
+            <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--brand);font-weight:800"><span style="width:56px;height:30px;border-radius:15px;background:var(--soft);display:flex;align-items:center;justify-content:center"><i>menu</i></span>More</span>
+          </div>
+          <div style="height:22px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const A = [['Barnawa', 12], ['Kawo', 11], ['Kakuri', 10], ['Rigasa', 9], ['Sabon Tasha', 8], ['Zaria', 7], ['Doka', 6], ['Sokoto', 6], ['Tudun Wada', 5]];
+    return {
+      theme: this.props.theme ?? 'light',
+      areas: A.map(([n, v]) => ({ n, v, w: Math.round(v / 12 * 100) + '%' })),
+      insp: [
+        ['KE-NSD-2026-000123', 'Alhaji Musa Ibrahim', 'Kawo', 'Engr. Yusuf Bello', '01 Oct 2026'],
+        ['KE-NSD-2026-000122', 'Kaduna Agro Mills Ltd', 'Kakuri', 'Danladi Electrical', '01 Oct 2026'],
+        ['KE-NSD-2026-000120', 'First Baptist Church', 'Sabon Tasha', 'Chinedu Okafor', '30 Sep 2026'],
+        ['KE-NSD-2026-000117', 'St. Joseph Clinic', 'Barnawa', 'Engr. Yusuf Bello', '29 Sep 2026'],
+        ['KE-NSD-2026-000114', 'Grace Okon', 'Kakuri', 'Aisha Lawal', '27 Sep 2026']
+      ].map(([t, o, a, c, d]) => ({ t, o, a, c, d })),
+      contractors: [
+        ['Engr. Yusuf Bello', 'Cat A · EBEI/A/2023/0142', '38', 'Active', 'ok'],
+        ['Aisha Lawal', 'Cat B · EBEI/B/2024/0377', '27', 'Active', 'ok'],
+        ['Chinedu Okafor', 'Cat C · EBEI/C/2025/0918', '14', 'Active', 'ok'],
+        ['Danladi Electrical Services', 'Corporate · EBEI/CP/2022/0051', '61', 'Active', 'ok'],
+        ['Emmanuel Gajere', 'Cat B · EBEI/B/2021/0204', '9', 'Suspended', 'bad']
+      ].map(([n, sub, k, st, s]) => ({ n, sub, k, st, sfg: 'var(--' + s + ')', sbg: 'var(--' + s + '-bg)' }))
+    };
+  }
+}
+</script>
+</body>
+</html>
