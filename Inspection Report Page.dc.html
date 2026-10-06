@@ -53,9 +53,10 @@
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="font:700 11px 'Public Sans';letter-spacing:.08em;color:#09502E">C · SYSTEM DETAILS</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #C9D2C7;border-radius:6px;overflow:hidden">
-          <sc-for list="{{ secC }}" as="r" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:150px 1fr;font-size:11.5px;border-bottom:1px solid #E1E6DF;border-right:1px solid #E1E6DF"><span style="padding:6px 8px;background:#F4F6F2;color:#4A5A50">{{ r.k }}</span><span style="padding:6px 8px">{{ r.v }}</span></div></sc-for>
+        <div style="font:700 11px 'Public Sans';letter-spacing:.08em;color:#09502E">B4 · DESCRIPTION OF WIRING</div>
+        <div style="border:1px solid #C9D2C7;border-radius:6px;overflow:hidden;font-size:11.5px">
+          <div style="display:grid;grid-template-columns:34px 1.3fr 58px 70px 150px 1fr;background:#F4F6F2;color:#4A5A50;font-weight:700;font-size:10px;letter-spacing:.05em"><span style="padding:6px 8px">#</span><span style="padding:6px 8px">CIRCUIT</span><span style="padding:6px 8px">RATING</span><span style="padding:6px 8px">CONDUCTOR</span><span style="padding:6px 8px">CONDITION</span><span style="padding:6px 8px">OBSERVATION</span></div>
+          <sc-for list="{{ circuits }}" as="c" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:34px 1.3fr 58px 70px 150px 1fr;border-top:1px solid #E1E6DF;align-items:center"><span style="padding:6px 8px;font-family:'IBM Plex Mono';color:#4A5A50">{{ c.n }}</span><span style="padding:6px 8px;font-weight:600">{{ c.desc }}</span><span style="padding:6px 8px;font-family:'IBM Plex Mono'">{{ c.a }} A</span><span style="padding:6px 8px;font-family:'IBM Plex Mono'">{{ c.mm }} mm²</span><span style="padding:4px 8px"><span style="display:inline-block;padding:2px 7px;border-radius:999px;font-weight:700;font-size:10.5px;background:{{ c.bg }};color:{{ c.fg }}">{{ c.cond }}</span></span><span style="padding:6px 8px;color:#4A5A50">{{ c.obs }}</span></div></sc-for>
         </div>
       </div>
     </div>
@@ -64,10 +65,9 @@
   <sc-if value="{{ p2 }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:16px">
       <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="font:700 11px 'Public Sans';letter-spacing:.08em;color:#09502E">B4 · DESCRIPTION OF WIRING</div>
-        <div style="border:1px solid #C9D2C7;border-radius:6px;overflow:hidden;font-size:11.5px">
-          <div style="display:grid;grid-template-columns:34px 1.3fr 58px 70px 150px 1fr;background:#F4F6F2;color:#4A5A50;font-weight:700;font-size:10px;letter-spacing:.05em"><span style="padding:6px 8px">#</span><span style="padding:6px 8px">CIRCUIT</span><span style="padding:6px 8px">RATING</span><span style="padding:6px 8px">CONDUCTOR</span><span style="padding:6px 8px">CONDITION</span><span style="padding:6px 8px">OBSERVATION</span></div>
-          <sc-for list="{{ circuits }}" as="c" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:34px 1.3fr 58px 70px 150px 1fr;border-top:1px solid #E1E6DF;align-items:center"><span style="padding:6px 8px;font-family:'IBM Plex Mono';color:#4A5A50">{{ c.n }}</span><span style="padding:6px 8px;font-weight:600">{{ c.desc }}</span><span style="padding:6px 8px;font-family:'IBM Plex Mono'">{{ c.a }} A</span><span style="padding:6px 8px;font-family:'IBM Plex Mono'">{{ c.mm }} mm²</span><span style="padding:4px 8px"><span style="display:inline-block;padding:2px 7px;border-radius:999px;font-weight:700;font-size:10.5px;background:{{ c.bg }};color:{{ c.fg }}">{{ c.cond }}</span></span><span style="padding:6px 8px;color:#4A5A50">{{ c.obs }}</span></div></sc-for>
+        <div style="font:700 11px 'Public Sans';letter-spacing:.08em;color:#09502E">C · SYSTEM DETAILS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #C9D2C7;border-radius:6px;overflow:hidden">
+          <sc-for list="{{ secC }}" as="r" hint-placeholder-count="8"><div style="display:grid;grid-template-columns:150px 1fr;font-size:11.5px;border-bottom:1px solid #E1E6DF;border-right:1px solid #E1E6DF"><span style="padding:6px 8px;background:#F4F6F2;color:#4A5A50">{{ r.k }}</span><span style="padding:6px 8px">{{ r.v }}</span></div></sc-for>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
