@@ -13,9 +13,17 @@ use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
+use App\Http\Controllers\MonnifyWebhookController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+// Monnify payment notifications (CSRF-exempt, see bootstrap/app.php).
+Route::post('webhooks/monnify', MonnifyWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('webhooks.monnify');
 
 Route::middleware('auth')->group(function () {
     // AU-03 first sign-in: replace the emailed temporary password.
@@ -33,6 +41,12 @@ Route::middleware('auth')->group(function () {
         Route::post('inspections', [InspectionController::class, 'store'])->name('inspections.store');
         Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
+
+        Route::get('inspections/{inspection}/pay', [PaymentController::class, 'create'])->name('inspections.pay');
+        Route::post('inspections/{inspection}/pay', [PaymentController::class, 'store'])->middleware('throttle:10,1')->name('inspections.pay.store');
+        Route::get('inspections/{inspection}/ticket', TicketController::class)->name('inspections.ticket');
+        Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+        Route::post('payments/{payment}/verify', [PaymentController::class, 'verify'])->middleware('throttle:40,1')->name('payments.verify');
 
         Route::post('inspections/{inspection}/attachments', [AttachmentController::class, 'store'])->name('inspections.attachments.store');
         Route::delete('inspections/{inspection}/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('inspections.attachments.destroy');

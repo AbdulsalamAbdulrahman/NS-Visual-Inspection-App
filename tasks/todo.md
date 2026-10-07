@@ -52,3 +52,17 @@
 - [x] Steps A (GPS states), B1 (warnings), B2 (stepper), B3, B4 (cards + sheet / table + inline editor), C, Attachments (EXIF + compression + progress), D (signature), Review (fix list, edit links)
 - [x] Authorised attachment + signature routes
 - [x] Pest: drafts, upsert, circuits, signature storage, ownership, submitted lock, attachments (MIME, size, private disk, rep/area access), checklist
+
+## Phase 4 · Payment and ticket 
+- [x] payments + ticket_counters tables, PaymentStatus enum, Payment / TicketCounter models, PaymentFactory
+- [x] MonnifyClient (login token cache, init-transaction, v2 query by paymentReference) — endpoints checked Oct 2026
+- [x] Actions: InitPayment, VerifyPayment, FinalizePaidInspection (lockForUpdate, idempotent, snapshot), GenerateTicket
+- [x] InspectionSubmitted queued email; TicketQr (chillerlan SVG → /verify/{ticket})
+- [x] PaymentController (pay page, start → Inertia::location, return page, verify JSON), MonnifyWebhookController (signature in prod, IP list, re-verify), TicketController; routes; CSRF exemption
+- [x] PayPanel component, pages/contractor/Pay.svelte (CP-01)
+- [x] pages/contractor/PaymentStatus.svelte (CP-02 polling ≤2 min, CP-03 failed + Try again)
+- [x] pages/contractor/Ticket.svelte (CT-01 phone, CK-04 desktop)
+- [x] Wire Review: phone footer → /inspections/{uuid}/pay; desktop review grid + PayPanel (CK-03)
+- [x] Pest with Http::fake: init, verify paid/pending/failed/underpaid, webhook signature, idempotent finalise, sequential tickets, fee taken at init
+- [x] MySQL concurrency test (Process pool on kens_testing) for duplicate-safe finalisation
+- [x] Decisions (redirect checkout over Web SDK; duplicate payment keeps first ticket), build, autofixer, visual check, commit

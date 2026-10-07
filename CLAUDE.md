@@ -23,7 +23,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | 1 | Auth and accounts | Done |
 | 2 | Admin management | Done |
 | 3 | Inspection form | Done |
-| 4 | Payment and ticket | Not started |
+| 4 | Payment and ticket | Done |
 | 5 | Viewing | Not started |
 | 6 | Print and verify | Not started |
 | 7 | Offline (PWA) | Not started |
@@ -33,7 +33,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 - declare(strict_types=1); backed enums for every enum column; model config via class properties ($fillable, $casts).
 - Thin controllers + Form Requests; business logic in single-purpose Action classes (app/Actions).
 - Inertia props via dedicated Resource/DTO classes; never send full models.
-- Pest feature tests for every access rule and money/ticket path; Http::fake for Monnify.
+- Pest feature tests for every access rule and money/ticket path; Http::fake for Monnify (tests/Feature/Payments/MonnifyFake.php). Row-locking tests live in tests/Concurrency and run against MySQL `kens_testing` with parallel processes.
 - Svelte: runes only, $derived over $effect, keyed each blocks, snippets over slots; run the svelte-code-writer autofixer before finishing a component.
 - UI: match docs/design; contractor touch targets ≥ 56 px; light/dark/auto themes; IBM Plex Mono + tabular figures for tickets, coordinates, readings and money; status is never shown by colour alone.
 - No browser alert()/confirm(): confirmations are in-page.

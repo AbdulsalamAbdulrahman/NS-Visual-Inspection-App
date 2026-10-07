@@ -44,8 +44,8 @@ class InspectionFactory extends Factory
 
     public function complete(): static
     {
-        return $this->state(fn (): array => [
-            'service_area_id' => ServiceArea::factory(),
+        return $this->state(fn (array $attributes): array => [
+            'service_area_id' => $attributes['service_area_id'] ?? ServiceArea::factory(),
             'current_step' => 9,
             'form74_no' => 'F74/KD/2026/'.fake()->unique()->numerify('#####'),
             'owner_name' => fake()->name(),

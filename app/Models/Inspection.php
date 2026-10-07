@@ -9,6 +9,7 @@ use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
 use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
+use App\Enums\PaymentStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
 use App\Enums\VoltageLevel;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -207,6 +209,24 @@ class Inspection extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(InspectionAttachment::class)->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->latest('id');
+    }
+
+    /**
+     * The payment that submitted this inspection.
+     *
+     * @return HasOne<Payment, $this>
+     */
+    public function paidPayment(): HasOne
+    {
+        return $this->hasOne(Payment::class)->where('status', PaymentStatus::Paid)->oldest('paid_at');
     }
 
     public function isDraft(): bool

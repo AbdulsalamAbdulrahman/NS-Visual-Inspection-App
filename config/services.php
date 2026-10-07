@@ -41,7 +41,9 @@ return [
         'secret_key' => env('MONNIFY_SECRET_KEY'),
         'contract_code' => env('MONNIFY_CONTRACT_CODE'),
         // Comma-separated list; empty means no IP restriction on the webhook.
-        'webhook_ips' => array_filter(explode(',', (string) env('MONNIFY_WEBHOOK_IPS', ''))),
+        'webhook_ips' => array_values(array_filter(array_map('trim', explode(',', (string) env('MONNIFY_WEBHOOK_IPS', ''))))),
+        // Monnify only signs notifications in production, not sandbox.
+        'verify_signature' => (bool) env('MONNIFY_VERIFY_SIGNATURE', env('APP_ENV') === 'production'),
     ],
 
 ];

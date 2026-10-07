@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance']);
 
+        // Monnify posts here server-to-server; it's verified by signature + API re-check.
+        $middleware->validateCsrfTokens(except: ['webhooks/monnify']);
+
         $middleware->alias([
             'role' => EnsureRole::class,
         ]);

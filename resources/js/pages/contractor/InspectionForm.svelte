@@ -3,6 +3,7 @@
     import { onDestroy, tick } from 'svelte';
     import Button from '@/components/Button.svelte';
     import CircuitsStep from '@/components/inspection/CircuitsStep.svelte';
+    import PayPanel from '@/components/inspection/PayPanel.svelte';
     import ReviewStep from '@/components/inspection/ReviewStep.svelte';
     import SaveStatusChip from '@/components/inspection/SaveStatusChip.svelte';
     import StepA from '@/components/inspection/StepA.svelte';
@@ -17,7 +18,8 @@
     import { missingItems } from '@/lib/inspection/checklist';
     import { STEP_COUNT, STEPS, backLabel, nextLabel } from '@/lib/inspection/steps';
     import type { Draft, FormOptions, Inspector } from '@/lib/inspection/types';
-    import { index as home } from '@/routes/inspections';
+    import { index as home, pay as payPage } from '@/routes/inspections';
+    import { store as payStore } from '@/routes/inspections/pay';
     import ArrowBack from '~icons/ms/arrow-back';
     import ArrowForward from '~icons/ms/arrow-forward';
     import Check from '~icons/ms/check';
@@ -153,6 +155,34 @@
         router.visit(home.url());
     }
 
+    let paying = $state(false);
+    const payDisabled = $derived(missing.length > 0 || !fee || !online || paying);
+    const payLabel = $derived(
+        missing.length > 0
+            ? `Fix ${missing.length} item${missing.length === 1 ? '' : 's'} to pay`
+            : !online
+              ? 'Connect to pay'
+              : null,
+    );
+
+    /** Payment always needs network. Desktop pays from the panel; phones go to CP-01 first. */
+    async function pay(desktop: boolean): Promise<void> {
+        paying = true;
+        const saved = await saver.flush();
+
+        if (!saved && saver.status !== 'saved') {
+            paying = false;
+
+            return;
+        }
+
+        if (desktop) {
+            router.post(payStore.url(draft.uuid), {}, { onFinish: () => (paying = false) });
+        } else {
+            router.visit(payPage.url(draft.uuid));
+        }
+    }
+
     function setSignature(dataUrl: string | null): void {
         signature = dataUrl;
         draft.signature_url = dataUrl;
@@ -202,7 +232,21 @@
     {:else if step === 8}
         <StepD bind:draft {inspector} {errors} onsignature={setSignature} />
     {:else}
-        <ReviewStep {draft} {options} {areas} {inspector} {missing} onedit={goTo} />
+        <div class="flex flex-col gap-2.5 lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start lg:gap-8">
+            <div class="flex flex-col gap-2.5 lg:gap-3.5">
+                <ReviewStep {draft} {options} {areas} {inspector} {missing} onedit={goTo} />
+            </div>
+            <!-- CK-03 payment panel -->
+            <div class="hidden lg:sticky lg:top-0 lg:block">
+                <PayPanel {fee}>
+                    {#snippet action()}
+                        <Button block class="font-extrabold" disabled={payDisabled} onclick={() => pay(true)}>
+                            <Lock />{payLabel ?? (paying ? 'Opening Monnify…' : 'Pay with Monnify & submit')}
+                        </Button>
+                    {/snippet}
+                </PayPanel>
+            </div>
+        </div>
     {/if}
 {/snippet}
 
@@ -320,11 +364,7 @@
                         <ArrowBack />{backLabel(step)}
                     </Button>
                 {/if}
-                {#if isReview}
-                    <Button size="md" class="ml-auto h-12 px-[22px] text-[15px]" disabled={missing.length > 0}>
-                        <Lock />{missing.length > 0 ? `Fix ${missing.length} item${missing.length === 1 ? '' : 's'} to pay` : `Pay ${fee?.amount ?? ''} & submit`}
-                    </Button>
-                {:else}
+                {#if !isReview}
                     <Button size="md" class="ml-auto h-12 px-[22px] text-[15px]" onclick={next}>
                         {nextLabel(step)}<ArrowForward />
                     </Button>
@@ -337,8 +377,8 @@
     <div class="pb-safe sticky bottom-0 z-20 flex gap-2.5 border-t border-line bg-sf px-4 pt-3 lg:hidden">
         <Button variant="outline" class="px-4 text-base" onclick={saveNow}><Save />{isReview ? 'Save' : 'Save draft'}</Button>
         {#if isReview}
-            <Button block class="flex-1 text-base" disabled={missing.length > 0}>
-                <Lock />{missing.length > 0 ? `Fix ${missing.length} item${missing.length === 1 ? '' : 's'} to pay` : `Pay ${fee?.amount ?? ''}`}
+            <Button block class="flex-1 text-base" disabled={payDisabled} onclick={() => pay(false)}>
+                <Lock />{payLabel ?? `Pay ${fee?.amount.replace(/\.00$/, '') ?? ''}`}
             </Button>
         {:else}
             <Button block class="flex-1" onclick={next}>
