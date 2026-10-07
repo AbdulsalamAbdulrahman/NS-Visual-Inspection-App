@@ -203,7 +203,7 @@ class DemoSeeder extends Seeder
             $inspection = DB::transaction(fn () => Inspection::factory()->submitted()
                 ->forContractor($contractors->random())
                 ->inArea($area)
-                ->create(['ticket_no' => $tickets->handle(), 'submitted_at' => $at]));
+                ->create(['ticket_no' => $tickets->handle(), 'submitted_at' => $at, 'inspection_date' => $at->toDateString()]));
 
             Payment::factory()->forInspection($inspection)->create([
                 'status' => PaymentStatus::Paid,

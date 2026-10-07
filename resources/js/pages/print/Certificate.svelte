@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { Component } from 'svelte';
-    import ApprovedBadge from '@/components/print/ApprovedBadge.svelte';
     import KeSeal from '@/components/print/KeSeal.svelte';
     import PrintShell from '@/components/print/PrintShell.svelte';
     import { APP_TITLE } from '@/lib/brand';
@@ -73,7 +72,8 @@
     alternate={{ label: 'Full report', href: reportUrl, icon: Description }}
 >
     <section class="print-sheet paper cert-frame" aria-label="Certificate {c.certificateNo}">
-        <div class="cert-panel relative flex h-full flex-col gap-3 px-9 pt-8 pb-5">
+        <!-- Sections spread evenly down the sheet, so short addresses don't leave a gap. -->
+        <div class="cert-panel relative flex h-full flex-col justify-between gap-3 px-9 pt-8 pb-5">
             <div class="pointer-events-none absolute inset-3 rounded-[14px] border border-[#C9A84F]/70"></div>
             <img src="/images/ke-logo.png" alt="" class="pointer-events-none absolute top-[420px] left-1/2 size-[360px] -translate-x-1/2 object-contain opacity-[0.045]" />
 
@@ -91,8 +91,8 @@
                 <div class="flex justify-end"><KeSeal size={88} /></div>
             </header>
 
-            <!-- Certificate number · title · badge -->
-            <div class="relative grid grid-cols-[176px_1fr_96px] items-center gap-3">
+            <!-- Certificate number · title -->
+            <div class="relative grid grid-cols-[176px_1fr_16px] items-center gap-3">
                 <div class="rounded-[10px] border border-[#B9D59A] bg-[#E8F2E1] p-1.5">
                     <div class="flex flex-col items-center gap-0.5 rounded-md bg-white px-2 py-2">
                         <span class="text-[9px] font-extrabold tracking-[0.1em] text-ink">CERTIFICATE NO.</span>
@@ -100,14 +100,14 @@
                     </div>
                 </div>
                 <div class="flex flex-col items-center gap-2 text-center">
-                    <h1 class="text-[19px] leading-[1.25] font-extrabold tracking-[0.02em] text-ink">
+                    <h1 class="text-[18px] leading-[1.25] font-extrabold tracking-[0.01em] whitespace-nowrap text-ink">
                         CERTIFICATE OF BUILDING ELECTRICAL<br />INSPECTION AND COMPLIANCE
                     </h1>
                     <div class="flex w-56 items-center gap-2">
                         <span class="h-px flex-1 bg-[#C9A84F]"></span><span class="size-1.5 rotate-45 bg-[#C9A84F]"></span><span class="h-px flex-1 bg-[#C9A84F]"></span>
                     </div>
                 </div>
-                <div class="flex justify-end"><ApprovedBadge size={86} /></div>
+                <span aria-hidden="true"></span>
             </div>
 
             <!-- Statement -->
@@ -156,7 +156,7 @@
             </div>
 
             <!-- Signatures -->
-            <div class="relative mt-auto grid grid-cols-[1fr_120px_1fr] items-end gap-4 px-2">
+            <div class="relative grid grid-cols-[1fr_120px_1fr] items-end gap-4 px-2">
                 <div class="flex flex-col items-center text-center">
                     {#if c.contractor.signatureUrl}
                         <img src={c.contractor.signatureUrl} alt="Contractor's signature" class="h-12 w-auto max-w-[200px] object-contain" />
