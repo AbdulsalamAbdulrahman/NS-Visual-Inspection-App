@@ -1,0 +1,1 @@
+import{a as e,ht as t,q as n}from"./dist-D3R0IAda.js";function r(){let r=t(()=>new URL(e.url,`http://localhost`).pathname);return{get path(){return n(r)},isActive(e,t=!1){return t?n(r)===e:n(r)===e||n(r).startsWith(`${e}/`)}}}export{r as t};

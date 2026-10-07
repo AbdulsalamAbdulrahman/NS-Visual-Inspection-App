@@ -1,0 +1,38 @@
+# Paths left out of the `deploy` branch (rsync --exclude-from, relative to the repo root).
+# public/build IS shipped: it is built in CI because the server has no Node.
+# Note: rsync treats a line starting with "!" as "clear the list", so no negations.
+/.git
+/.github
+/.claude
+/.ai
+/.env
+/.env.*
+/node_modules
+/vendor
+/tests
+/docs
+/tasks
+/resources/js
+/resources/css
+/storage/logs/*.log
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*.php
+/bootstrap/cache/*.php
+/public/hot
+/CLAUDE.md
+/AGENTS.md
+/boost.json
+/.mcp.json
+/phpunit.xml
+/phpstan.neon
+/vite.config.ts
+/tsconfig.json
+/package.json
+/package-lock.json
+/.editorconfig
+/.prettierrc
+/.prettierignore
+/.gitattributes
+/.phpunit.result.cache
+/.phpunit.cache

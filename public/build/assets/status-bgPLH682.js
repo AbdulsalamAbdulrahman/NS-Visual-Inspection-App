@@ -1,0 +1,1 @@
+var e={active:`ok`,invited:`info`,suspended:`bad`},t={paid:`ok`,failed:`bad`,abandoned:`imp`,pending:`muted`};export{t as n,e as t};
