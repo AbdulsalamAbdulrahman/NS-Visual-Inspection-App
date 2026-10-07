@@ -1,0 +1,233 @@
+@import 'tailwindcss';
+
+/* Self-hosted fonts (no Google Fonts call). Subsets load by unicode-range. */
+@import '@fontsource/public-sans/400.css';
+@import '@fontsource/public-sans/500.css';
+@import '@fontsource/public-sans/600.css';
+@import '@fontsource/public-sans/700.css';
+@import '@fontsource/public-sans/800.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+
+@source '../../storage/framework/views/*.php';
+
+/* `dark:` follows the resolved theme on <html data-theme>. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Design tokens — ported 1:1 from docs/design/01 Foundations and Sign-in.
+ * Light is the default; dark applies via data-theme, and "auto" falls back
+ * to the OS preference before JS has resolved it.
+ */
+:root,
+[data-theme='light'] {
+    --bg: #f4f6f2;
+    --sf: #ffffff;
+    --sf2: #ecf0e9;
+    --ink: #0d1b13;
+    --mut: #4a5a50;
+    --line: #d3dbd1;
+    --brand: #09502e;
+    --pri: #09502e;
+    --on-pri: #ffffff;
+    --acc: #7bb43b;
+    --mid: #188815;
+    --soft: #e2eedd;
+    --ok: #16723a;
+    --ok-bg: #dff1e2;
+    --imp: #7a5800;
+    --imp-bg: #fbefcb;
+    --urg: #a84300;
+    --urg-bg: #fce4d3;
+    --bad: #b3261e;
+    --bad-bg: #fbe2df;
+    --info: #0b5c8a;
+    --info-bg: #ddeef8;
+    --scrim: rgba(8, 20, 13, 0.45);
+    /* Brand panels (sign-in hero, ticket band) keep the deep green in light. */
+    --hero: #09502e;
+    color-scheme: light;
+}
+
+
+[data-theme='dark'] {
+    --bg: #09110d;
+    --sf: #111c16;
+    --sf2: #18261e;
+    --ink: #eef4ef;
+    --mut: #a2b3a8;
+    --line: #283a31;
+    --brand: #9fd763;
+    --pri: #8cc84b;
+    --on-pri: #062012;
+    --acc: #7bb43b;
+    --mid: #3fb83a;
+    --soft: #1a2f21;
+    --ok: #74d38f;
+    --ok-bg: #133120;
+    --imp: #ebc65c;
+    --imp-bg: #332a0e;
+    --urg: #f7a066;
+    --urg-bg: #3b2313;
+    --bad: #f58b81;
+    --bad-bg: #3c1815;
+    --info: #7cc4f0;
+    --info-bg: #0f2a3b;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --hero: #0b2e1c;
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg: #09110d;
+        --sf: #111c16;
+        --sf2: #18261e;
+        --ink: #eef4ef;
+        --mut: #a2b3a8;
+        --line: #283a31;
+        --brand: #9fd763;
+        --pri: #8cc84b;
+        --on-pri: #062012;
+        --acc: #7bb43b;
+        --mid: #3fb83a;
+        --soft: #1a2f21;
+        --ok: #74d38f;
+        --ok-bg: #133120;
+        --imp: #ebc65c;
+        --imp-bg: #332a0e;
+        --urg: #f7a066;
+        --urg-bg: #3b2313;
+        --bad: #f58b81;
+        --bad-bg: #3c1815;
+        --info: #7cc4f0;
+        --info-bg: #0f2a3b;
+        --scrim: rgba(0, 0, 0, 0.6);
+        --hero: #0b2e1c;
+        color-scheme: dark;
+    }
+}
+
+@theme inline {
+    --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+    --color-bg: var(--bg);
+    --color-sf: var(--sf);
+    --color-sf2: var(--sf2);
+    --color-ink: var(--ink);
+    --color-mut: var(--mut);
+    --color-line: var(--line);
+    --color-brand: var(--brand);
+    --color-pri: var(--pri);
+    --color-on-pri: var(--on-pri);
+    --color-acc: var(--acc);
+    --color-mid: var(--mid);
+    --color-soft: var(--soft);
+    --color-ok: var(--ok);
+    --color-ok-bg: var(--ok-bg);
+    --color-imp: var(--imp);
+    --color-imp-bg: var(--imp-bg);
+    --color-urg: var(--urg);
+    --color-urg-bg: var(--urg-bg);
+    --color-bad: var(--bad);
+    --color-bad-bg: var(--bad-bg);
+    --color-info: var(--info);
+    --color-info-bg: var(--info-bg);
+    --color-scrim: var(--scrim);
+    --color-hero: var(--hero);
+    --color-lime: #7bb43b;
+    --color-leaf: #188815;
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--line);
+    }
+
+    html {
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+        color: var(--brand);
+    }
+
+    button,
+    [role='button'] {
+        cursor: pointer;
+    }
+
+    button:disabled,
+    [aria-disabled='true'] {
+        cursor: not-allowed;
+    }
+
+    /* Visible, high-contrast focus ring everywhere. */
+    :focus-visible {
+        outline: 3px solid var(--mid);
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--mut);
+        opacity: 1;
+    }
+}
+
+@utility font-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Field-label caps used for section headings ("DRAFTS · 2"). */
+@utility eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mut);
+}
+
+/* Mono caps used for "NEW SERVICE DEPARTMENT", "FIRST SIGN-IN" etc. */
+@utility mono-caps {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Bottom thumb-zone bar respects the iOS home indicator. */
+@utility pb-safe {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme=light]{--bg:#F4F6F2;--sf:#FFFFFF;--sf2:#ECF0E9;--ink:#0D1B13;--mut:#4A5A50;--line:#D3DBD1;--brand:#09502E;--pri:#09502E;--on-pri:#FFFFFF;--acc:#7BB43B;--mid:#188815;--soft:#E2EEDD;--ok:#16723A;--ok-bg:#DFF1E2;--imp:#7A5800;--imp-bg:#FBEFCB;--urg:#A84300;--urg-bg:#FCE4D3;--bad:#B3261E;--bad-bg:#FBE2DF;--info:#0B5C8A;--info-bg:#DDEEF8;--scrim:rgba(8,20,13,.45)}
+[data-theme=dark]{--bg:#09110D;--sf:#111C16;--sf2:#18261E;--ink:#EEF4EF;--mut:#A2B3A8;--line:#283A31;--brand:#9FD763;--pri:#8CC84B;--on-pri:#062012;--acc:#7BB43B;--mid:#3FB83A;--soft:#1A2F21;--ok:#74D38F;--ok-bg:#133120;--imp:#EBC65C;--imp-bg:#332A0E;--urg:#F7A066;--urg-bg:#3B2313;--bad:#F58B81;--bad-bg:#3C1815;--info:#7CC4F0;--info-bg:#0F2A3B;--scrim:rgba(0,0,0,.6)}
+body{margin:0;background:#E4E8E2;font-family:'Public Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+i{font-family:'Material Symbols Rounded';font-style:normal;font-weight:400;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';user-select:none;vertical-align:middle}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="padding:72px;display:flex;flex-direction:column;gap:96px;background:#E4E8E2;min-height:100vh;color:#0D1B13">
+
+<header style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;flex:none"></div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div style="font:600 13px 'IBM Plex Mono';color:#09502E;letter-spacing:.06em">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</div>
+    <div style="font:800 34px 'Public Sans';letter-spacing:-.02em">03 Contractor · home, review, pay, ticket (mobile)</div>
+  </div>
+  <nav style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;font:500 13px 'IBM Plex Mono'">
+    <a href="01%20Foundations%20and%20Sign-in.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">01</a>
+    <a href="02%20Contractor%20Mobile%20-%20Form.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">02</a>
+    <a href="03%20Contractor%20Mobile%20-%20Review%20Pay%20Ticket.dc.html" style="padding:8px 12px;border-radius:8px;background:#09502E;color:#fff">03 Review · pay</a>
+    <a href="04%20Contractor%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">04</a>
+    <a href="05%20Admin%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">05</a>
+    <a href="06%20Admin%20Mobile.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">06</a>
+    <a href="07%20Service%20Rep.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">07</a>
+    <a href="08%20Print%20Report.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">08</a>
+  </nav>
+</header>
+
+<section id="home" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">H</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">My inspections &amp; profile</h2><span style="font-size:15px;color:#4A5A50">Start button lives in the thumb zone.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- CH-01 Home -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CH-01 · Home — drafts &amp; submitted</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:11px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;box-shadow:0 0 0 1px var(--line)"></div><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:20px">My inspections</b><span style="font-size:13px;color:var(--mut)">Engr. Yusuf Bello · Cat A</span></div><span style="width:44px;height:44px;border-radius:50%;background:var(--soft);color:var(--brand);font-weight:800;display:flex;align-items:center;justify-content:center">YB</span></div>
+            <div style="height:48px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;gap:8px;padding:0 14px;color:var(--mut);font-size:16px"><i>search</i>Ticket, owner or Form 74</div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><b style="font-size:13px;letter-spacing:.08em;color:var(--mut)">DRAFTS · 2</b></div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;gap:8px"><div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">Alhaji Musa Ibrahim</b><span style="font-size:14px;color:var(--mut)">14 Ahmadu Bello Way · Kawo</span></div><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">5/9</span></div>
+            <div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:56%;height:100%;border-radius:3px;background:var(--mid)"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:14px;color:var(--mut)">B4 · Wiring · saved 11:03</span><span style="height:44px;padding:0 16px;border-radius:12px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:15px;display:flex;align-items:center;gap:4px">Resume<i style="font-size:20px">arrow_forward</i></span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;gap:8px"><div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">Hajiya Zainab Umar</b><span style="font-size:14px;color:var(--mut)">7 Kachia Road · Sabon Tasha</span></div><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">2/9</span></div>
+            <div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:22%;height:100%;border-radius:3px;background:var(--mid)"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;font-weight:600;color:var(--info);display:flex;gap:4px;align-items:center"><i style="font-size:17px">cloud_upload</i>On device · syncs when online</span><span style="height:44px;padding:0 16px;border-radius:12px;background:var(--sf2);font-weight:700;font-size:15px;display:flex;align-items:center">Resume</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 4px 0"><b style="font-size:13px;letter-spacing:.08em;color:var(--mut)">SUBMITTED · 38</b><span style="font-size:14px;font-weight:700;color:var(--brand)">See all</span></div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <sc-for list="{{ submitted }}" as="s" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:10px;padding:12px 8px 12px 14px;border-bottom:1px solid var(--line)">
+                <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font:500 14px 'IBM Plex Mono';color:var(--brand)">{{ s.t }}</span><b style="font-size:15px">{{ s.o }}</b><span style="font-size:13px;color:var(--mut)">{{ s.a }} · {{ s.d }}</span></div>
+                <i style="color:var(--mut)">chevron_right</i>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px"><span style="height:60px;border-radius:16px;background:var(--pri);color:var(--on-pri);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px"><i style="font-size:26px">add_circle</i>Start new inspection</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CH-02 Empty -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CH-02 · Home — empty (first day)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:4px 16px 14px;display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:11px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;box-shadow:0 0 0 1px var(--line)"></div><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:20px">My inspections</b><span style="font-size:13px;color:var(--mut)">Aisha Lawal · Cat B</span></div><span style="width:44px;height:44px;border-radius:50%;background:var(--soft);color:var(--brand);font-weight:800;display:flex;align-items:center;justify-content:center">AL</span></div>
+        </div>
+        <div style="flex:1;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center">
+          <div style="width:88px;height:88px;border-radius:24px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center"><i style="font-size:44px">assignment_add</i></div>
+          <b style="font-size:22px">No inspections yet</b>
+          <span style="font-size:16px;line-height:1.5;color:var(--mut);max-width:290px;text-wrap:pretty">Start your first inspection at the property. Your progress saves as you go — even without network.</span>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;text-align:left;width:100%;max-width:300px">
+            <span style="display:flex;gap:10px;align-items:center;font-size:15px"><span style="width:28px;height:28px;border-radius:50%;background:var(--sf2);font:600 13px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center">1</span>Fill sections A–D on site</span>
+            <span style="display:flex;gap:10px;align-items:center;font-size:15px"><span style="width:28px;height:28px;border-radius:50%;background:var(--sf2);font:600 13px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center">2</span>Pay the ₦15,000 inspection fee</span>
+            <span style="display:flex;gap:10px;align-items:center;font-size:15px"><span style="width:28px;height:28px;border-radius:50%;background:var(--sf2);font:600 13px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center">3</span>Get your ticket number</span>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px"><span style="height:60px;border-radius:16px;background:var(--pri);color:var(--on-pri);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px"><i style="font-size:26px">add_circle</i>Start new inspection</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CH-03 Profile -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CH-03 · Profile — licence (read-only)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="height:56px;display:flex;align-items:center;padding:0 8px;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><b style="font-size:18px">Profile</b></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px 16px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:14px;padding:0 4px"><span style="width:64px;height:64px;border-radius:50%;background:var(--soft);color:var(--brand);font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center">YB</span><div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:20px">Engr. Yusuf Bello</b><span style="font-size:14px;color:var(--mut)">y.bello@bellopower.ng</span><span style="font:500 14px 'IBM Plex Mono';color:var(--mut)">0803 412 7790</span></div></div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <div style="padding:12px 16px;display:flex;align-items:center;gap:6px;font:600 12px 'IBM Plex Mono';letter-spacing:.05em;color:var(--mut);border-bottom:1px solid var(--line)"><i style="font-size:16px">badge</i>LICENCE</div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)"><span style="color:var(--mut)">NEMSA category</span><b>Cat A</b></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)"><span style="color:var(--mut)">NEMSA reg. no.</span><span style="font:500 15px 'IBM Plex Mono'">NEMSA/A/2023/0142</span></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--line)"><span style="color:var(--mut)">COREN no.</span><span style="font:500 15px 'IBM Plex Mono'">R.12873</span></div>
+            <div style="padding:12px 16px;display:flex;justify-content:space-between"><span style="color:var(--mut)">Firm</span><b>Bello Power Systems Ltd</b></div>
+          </div>
+          <span style="font-size:14px;color:var(--mut);line-height:1.45;padding:0 4px">Licence details are managed by Kaduna Electric. Contact the New Service Department to update them.</span>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <div style="height:56px;padding:0 12px 0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)"><i style="color:var(--mut)">key</i><b style="flex:1;font-size:16px">Change password</b><i style="color:var(--mut)">chevron_right</i></div>
+            <div style="padding:10px 12px 10px 16px;display:flex;align-items:center;gap:12px"><i style="color:var(--mut)">contrast</i><b style="flex:1;font-size:16px">Theme</b><div style="display:grid;grid-template-columns:repeat(3,auto);gap:2px;padding:3px;border-radius:10px;background:var(--sf2);font-size:13px;font-weight:600"><span style="padding:9px 10px;border-radius:8px">Light</span><span style="padding:9px 10px;border-radius:8px">Dark</span><span style="padding:9px 10px;border-radius:8px;background:var(--sf);box-shadow:0 1px 2px rgba(0,0,0,.12)">Auto</span></div></div>
+          </div>
+          <div style="height:56px;border-radius:14px;border:2px solid var(--line);color:var(--bad);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px"><i>logout</i>Sign out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="review" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">R</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">Review → payment → ticket</h2><span style="font-size:15px;color:#4A5A50">Submission only happens after Monnify confirms payment. Nothing is editable after.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- CR-01 Review -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CR-01 · Review (top) — 2 items missing</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">Review inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>Review</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">9 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:100%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="padding:14px;border-radius:14px;background:var(--bad-bg);display:flex;flex-direction:column;gap:8px">
+            <b style="color:var(--bad);font-size:16px;display:flex;gap:8px;align-items:center"><i>error</i>2 items to fix before payment</b>
+            <span style="font-size:14px;display:flex;justify-content:space-between"><span>Photos of DB &amp; earthing</span><a href="#" style="font-weight:700;color:var(--bad)">Fix</a></span>
+            <span style="font-size:14px;display:flex;justify-content:space-between"><span>Signature</span><a href="#" style="font-weight:700;color:var(--bad)">Fix</a></span>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">A · Customer</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px"><span style="color:var(--mut)">Form 74</span><span style="font-family:'IBM Plex Mono'">F74/KD/2026/08841</span><span style="color:var(--mut)">Address</span><span>14 Ahmadu Bello Way, Kaduna North</span><span style="color:var(--mut)">Area</span><span>Kawo · Residential</span><span style="color:var(--mut)">Supply</span><span>Three phase · <span style="font-family:'IBM Plex Mono'">415 V</span></span><span style="color:var(--mut)">GPS</span><span style="font-family:'IBM Plex Mono'">10.52217, 7.43831 ±6 m</span></div>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">B1–B3 · Earthing &amp; mains</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px"><span style="color:var(--mut)">Earth</span><span style="font-family:'IBM Plex Mono'">8 ft · 16 mm² · <span style="color:var(--imp);font-weight:600">2.6 Ω ⚠</span></span><span style="color:var(--mut)">Not standard</span><span>Cut-out fuse · Circuit breaker type</span></div>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">B4 · Wiring · 4 circuits</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:13px;font-weight:700"><span style="padding:4px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok)">1 Satisfactory</span><span style="padding:4px 10px;border-radius:999px;background:var(--imp-bg);color:var(--imp)">1 Improvement</span><span style="padding:4px 10px;border-radius:999px;background:var(--urg-bg);color:var(--urg)">1 Urgent</span><span style="padding:4px 10px;border-radius:999px;background:var(--bad-bg);color:var(--bad)">1 Non-compliant</span></div>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:2px solid var(--bad);padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">Attachments</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center"><i style="font-size:18px;color:var(--ok)">check_circle</i>Layout &amp; load schedule</span>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center;color:var(--bad);font-weight:600"><i style="font-size:18px">error</i>DB &amp; earthing photos — required</span>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save</span><span style="flex:1;height:56px;border-radius:14px;background:var(--sf2);color:var(--mut);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px"><i>lock</i>Fix 2 items to pay</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CR-01b Review scrolled -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CR-01b · Review (scrolled) — B4, C, attachments, D</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">Review inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>Review</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">9 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:100%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">B4 · Wiring · 4 circuits</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:13px;font-weight:700"><span style="padding:4px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok)">1 Satisfactory</span><span style="padding:4px 10px;border-radius:999px;background:var(--imp-bg);color:var(--imp)">1 Improvement</span><span style="padding:4px 10px;border-radius:999px;background:var(--urg-bg);color:var(--urg)">1 Urgent</span><span style="padding:4px 10px;border-radius:999px;background:var(--bad-bg);color:var(--bad)">1 Non-compliant</span></div>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">C · System details</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px"><span style="color:var(--mut)">Earthing</span><span style="font-family:'IBM Plex Mono'">TT</span><span style="color:var(--mut)">Boards</span><span>2 DBs · 14 sub-circuits</span><span style="color:var(--mut)">Main cable</span><span><span style="font-family:'IBM Plex Mono'">16 mm²</span> copper · PVC</span><span style="color:var(--mut)">Method</span><span>Conduit + cable tray</span></div>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:2px solid var(--bad);padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">Attachments</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center"><i style="font-size:18px;color:var(--ok)">check_circle</i>Layout &amp; load schedule</span>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center;color:var(--bad);font-weight:600"><i style="font-size:18px">error</i>DB &amp; earthing photos — required</span>
+          </div>
+          <div style="border-radius:14px;background:var(--sf);border:2px solid var(--bad);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">D · Attestation</b><a href="#" style="font-weight:700;font-size:14px;padding:6px 0">Edit</a></div>
+            <span style="font-size:14px">Engr. Yusuf Bello · Cat A · <span style="font-family:'IBM Plex Mono'">NEMSA/A/2023/0142</span></span>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center"><i style="font-size:18px;color:var(--ok)">check_circle</i>Declaration accepted</span>
+            <span style="font-size:14px;display:flex;gap:6px;align-items:center;color:var(--bad);font-weight:600"><i style="font-size:18px">error</i>Signature — required</span>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save</span><span style="flex:1;height:56px;border-radius:14px;background:var(--sf2);color:var(--mut);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px"><i>lock</i>Fix 2 items to pay</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CP-01 Pay summary -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CP-01 · Payment — fee before paying</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="height:56px;display:flex;align-items:center;padding:0 8px;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><b style="font-size:18px">Pay &amp; submit</b></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px 16px;display:flex;flex-direction:column;gap:16px">
+          <div style="border-radius:20px;background:var(--sf);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:6px">
+            <span style="font:600 12px 'IBM Plex Mono';letter-spacing:.06em;color:var(--mut)">INSPECTION FEE</span>
+            <span style="font:600 40px 'IBM Plex Mono';letter-spacing:-.02em">₦15,000<span style="font-size:22px;color:var(--mut)">.00</span></span>
+            <span style="font-size:14px;color:var(--mut)">Set by Kaduna Electric · effective 01 Jul 2026</span>
+            <div style="height:1px;background:var(--line);margin:10px 0"></div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px"><span style="color:var(--mut)">Owner</span><b>Alhaji Musa Ibrahim</b><span style="color:var(--mut)">Area</span><b>Kawo</b><span style="color:var(--mut)">Form 74</span><span style="font-family:'IBM Plex Mono'">F74/KD/2026/08841</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--mut);padding:0 4px">Pay securely via Monnify</span>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:14px;font-weight:600">
+              <span style="height:64px;border-radius:12px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><i>credit_card</i>Card</span>
+              <span style="height:64px;border-radius:12px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><i>account_balance</i>Transfer</span>
+              <span style="height:64px;border-radius:12px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><i>dialpad</i>USSD</span>
+            </div>
+          </div>
+          <div style="padding:14px;border-radius:14px;background:var(--imp-bg);display:flex;gap:10px;align-items:flex-start"><i style="color:var(--imp)">info</i><span style="font-size:14px;line-height:1.45"><b>Paying submits the report.</b> After payment it can't be edited. If payment fails, your draft is kept.</span></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px"><span style="height:60px;border-radius:16px;background:var(--pri);color:var(--on-pri);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px"><i>lock</i>Pay ₦15,000 &amp; submit</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CP-02 processing -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CP-02 · Payment — processing</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="flex:1;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:28px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center">
+            <span style="width:72px;height:72px;border-radius:50%;border:6px solid var(--sf2);border-top-color:var(--mid);border-right-color:var(--mid);box-sizing:border-box;transform:rotate(20deg)"></span>
+            <b style="font-size:22px">Confirming your payment</b>
+            <span style="font-size:16px;line-height:1.5;color:var(--mut);max-width:300px">Keep this screen open. Bank transfers can take up to 2 minutes to confirm.</span>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px;font-size:15px">
+            <span style="display:flex;gap:10px;align-items:center"><i style="color:var(--ok)">check_circle</i>Monnify checkout completed</span>
+            <span style="display:flex;gap:10px;align-items:center;font-weight:700"><i style="color:var(--mid)">pending</i>Confirming with bank…</span>
+            <span style="display:flex;gap:10px;align-items:center;color:var(--mut)"><i>radio_button_unchecked</i>Generating ticket</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;padding:0 4px"><span style="color:var(--mut)">Reference</span><span style="font-family:'IBM Plex Mono'">MNFY|20261001|0042871</span></div>
+        </div>
+        <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+      </div>
+    </div>
+
+    <!-- CP-03 failed -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CP-03 · Payment — failed / cancelled</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="flex:1;padding:24px;display:flex;flex-direction:column;justify-content:center;gap:24px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+            <span style="width:80px;height:80px;border-radius:50%;background:var(--bad-bg);color:var(--bad);display:flex;align-items:center;justify-content:center"><i style="font-size:44px">credit_card_off</i></span>
+            <b style="font-size:22px">Payment didn't go through</b>
+            <span style="font-size:16px;line-height:1.5;color:var(--mut);max-width:310px">The card was declined by the issuing bank. You have not been charged.</span>
+          </div>
+          <div style="padding:14px 16px;border-radius:14px;background:var(--ok-bg);display:flex;gap:10px;align-items:center"><i style="color:var(--ok)">inventory</i><span style="font-size:15px;line-height:1.4"><b>Your draft is safe.</b> Nothing has been submitted yet.</span></div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;padding:0 4px"><span style="color:var(--mut)">Reference</span><span style="font-family:'IBM Plex Mono';text-align:right">MNFY|20261001|0042866</span><span style="color:var(--mut)">Status</span><span style="text-align:right;font-weight:700;color:var(--bad)">Failed · 11:31</span></div>
+        </div>
+        <div style="padding:12px 16px 4px;display:flex;flex-direction:column;gap:10px"><span style="height:60px;border-radius:16px;background:var(--pri);color:var(--on-pri);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px"><i>refresh</i>Try again</span><span style="height:52px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Back to my inspections</span></div>
+        <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+      </div>
+    </div>
+
+    <!-- CT-01 Ticket -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CT-01 · Success — ticket</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="position:absolute;left:0;right:0;top:0;height:250px;background:#09502E;overflow:hidden"><div style="position:absolute;left:-60px;top:150px;width:560px;height:30px;background:#7BB43B;transform:rotate(-26deg)"></div></div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans';color:#fff;position:relative"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="position:relative;padding:14px 24px 18px;color:#fff;display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:50%;background:#7BB43B;color:#062012;display:flex;align-items:center;justify-content:center"><i style="font-size:28px">check</i></span><div style="display:flex;flex-direction:column"><b style="font-size:21px">Inspection submitted</b><span style="font-size:14px;opacity:.85">Payment confirmed · 11:34</span></div></div>
+        <div style="position:relative;margin:0 16px;flex:1;border-radius:20px;background:var(--sf);box-shadow:0 10px 30px rgba(0,0,0,.14);display:flex;flex-direction:column;overflow:hidden">
+          <div style="padding:18px 20px 14px;display:flex;flex-direction:column;align-items:center;gap:12px">
+            <span style="font:600 12px 'IBM Plex Mono';letter-spacing:.08em;color:var(--mut)">TICKET NUMBER</span>
+            <span style="font:600 23px 'IBM Plex Mono';color:var(--brand);letter-spacing:-.01em">KE-NSD-2026-000123</span>
+            <div style="padding:6px;border-radius:12px;border:1px solid var(--line);background:#fff">{{ qrBig }}</div>
+          </div>
+          <div style="position:relative;height:0;border-top:2px dashed var(--line);margin:0 18px"><span style="position:absolute;left:-30px;top:-12px;width:22px;height:22px;border-radius:50%;background:var(--bg)"></span><span style="position:absolute;right:-30px;top:-12px;width:22px;height:22px;border-radius:50%;background:var(--bg)"></span></div>
+          <div style="padding:14px 20px;display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:14px">
+            <span style="color:var(--mut)">Owner</span><b style="text-align:right">Alhaji Musa Ibrahim</b>
+            <span style="color:var(--mut)">Address</span><span style="text-align:right">14 Ahmadu Bello Way, Kaduna</span>
+            <span style="color:var(--mut)">Service area</span><span style="text-align:right">Kawo</span>
+            <span style="color:var(--mut)">Amount paid</span><span style="text-align:right;font-family:'IBM Plex Mono';font-weight:600">₦15,000.00</span>
+            <span style="color:var(--mut)">Payment ref.</span><span style="text-align:right;font-family:'IBM Plex Mono';font-size:13px">MNFY|20261001|0042871</span>
+            <span style="color:var(--mut)">Date</span><span style="text-align:right;font-family:'IBM Plex Mono'">01 Oct 2026, 11:34</span>
+          </div>
+        </div>
+        <div style="padding:14px 16px 4px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><span style="height:56px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px"><i>description</i>View report</span><span style="height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px"><i>print</i>Print report</span></div>
+          <span style="height:44px;font-weight:700;font-size:15px;color:var(--brand);display:flex;align-items:center;justify-content:center">Back to my inspections</span>
+        </div>
+        <div style="height:22px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+      </div>
+    </div>
+
+    <!-- CD-01 Submission detail dark -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CD-01 · Submission detail (read-only) · dark</div>
+      <div data-theme="dark" style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none;border-bottom:1px solid var(--line)">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 8px 14px;display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:600 16px 'IBM Plex Mono';color:var(--brand)">KE-NSD-2026-000123</span><span style="font-size:13px;color:var(--mut)">Submitted 01 Oct 2026 · Paid ₦15,000</span></div><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>share</i></span></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="padding:10px 14px;border-radius:12px;background:var(--sf2);font-size:14px;color:var(--mut);display:flex;gap:8px;align-items:center"><i style="font-size:18px">lock</i>Submitted reports can't be edited.</div>
+          <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);display:flex;flex-direction:column">
+            <div style="height:56px;padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">A · Customer information</b><i>expand_less</i></div>
+            <div style="padding:0 16px 16px;display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:14px"><span style="color:var(--mut)">Form 74</span><span style="font-family:'IBM Plex Mono'">F74/KD/2026/08841</span><span style="color:var(--mut)">Owner</span><span>Alhaji Musa Ibrahim</span><span style="color:var(--mut)">Address</span><span>14 Ahmadu Bello Way, Kaduna North</span><span style="color:var(--mut)">Area</span><span>Kawo</span><span style="color:var(--mut)">Purpose</span><span>Residential</span><span style="color:var(--mut)">Supply</span><span>Three phase · <span style="font-family:'IBM Plex Mono'">415 V</span></span><span style="color:var(--mut)">GPS</span><span style="font-family:'IBM Plex Mono'">10.52217° N, 7.43831° E ±6 m</span></div>
+          </div>
+          <div style="height:56px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">B1–B3 · Earthing &amp; mains</b><span style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--imp-bg);color:var(--imp)">1 warning</span><i>expand_more</i></div>
+          <div style="height:56px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">B4 · Wiring · 4 circuits</b><i>expand_more</i></div>
+          <div style="height:56px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">C · System details</b><i>expand_more</i></div>
+          <div style="height:56px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">Attachments · 4</b><i>expand_more</i></div>
+          <div style="height:56px;border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:0 12px 0 16px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:16px">D · Attestation</b><i>expand_more</i></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px"><span style="height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px"><i>print</i>Print report</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
+</section>
+<!--END-->
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;}}">
+class Component extends DCLogic {
+  qr(seed, size) {
+    const n = 25, cells = [];
+    let x = seed;
+    const rnd = () => (x = (x * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const finder = (r, c) => { for (const [fr, fc] of [[0,0],[0,n-7],[n-7,0]]) { const a = r-fr, b = c-fc; if (a>=0&&a<7&&b>=0&&b<7) return (a===0||a===6||b===0||b===6||(a>=2&&a<=4&&b>=2&&b<=4)) ? 1 : 0; if (a>=-1&&a<=7&&b>=-1&&b<=7) return 0; } return -1; };
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { const f = finder(r, c); if (f === 1 || (f === -1 && rnd() > 0.52)) cells.push(React.createElement('rect', { key: r + '-' + c, x: c, y: r, width: 1, height: 1 })); }
+    return React.createElement('svg', { viewBox: '-2 -2 29 29', width: size, height: size, style: { display: 'block', background: '#fff', borderRadius: 8 }, fill: '#0D1B13', shapeRendering: 'crispEdges' }, cells);
+  }
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'light',
+      qrBig: this.qr(123, 168),
+      submitted: [
+        { t: 'KE-NSD-2026-000123', o: 'Alhaji Musa Ibrahim', a: 'Kawo', d: '01 Oct 2026' },
+        { t: 'KE-NSD-2026-000117', o: 'St. Joseph Clinic', a: 'Barnawa', d: '29 Sep 2026' },
+        { t: 'KE-NSD-2026-000109', o: 'Ibrahim Danjuma', a: 'Rigasa', d: '26 Sep 2026' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

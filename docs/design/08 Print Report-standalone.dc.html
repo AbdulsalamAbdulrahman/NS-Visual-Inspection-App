@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#09502E"><svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect x="-200" y="430" width="1700" height="70" fill="#7BB43B" transform="rotate(-26 600 400)"/><rect x="430" y="210" width="340" height="420" rx="18" fill="#fff"/><rect x="470" y="260" width="200" height="22" fill="#09502E"/><rect x="470" y="310" width="260" height="12" fill="#C9D2C7"/><rect x="470" y="340" width="260" height="12" fill="#C9D2C7"/><rect x="470" y="370" width="180" height="12" fill="#C9D2C7"/></svg></template>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme=light]{--bg:#F4F6F2;--sf:#FFFFFF;--sf2:#ECF0E9;--ink:#0D1B13;--mut:#4A5A50;--line:#D3DBD1;--brand:#09502E;--pri:#09502E;--on-pri:#FFFFFF;--acc:#7BB43B;--mid:#188815;--soft:#E2EEDD;--ok:#16723A;--ok-bg:#DFF1E2;--imp:#7A5800;--imp-bg:#FBEFCB;--urg:#A84300;--urg-bg:#FCE4D3;--bad:#B3261E;--bad-bg:#FBE2DF;--info:#0B5C8A;--info-bg:#DDEEF8;--scrim:rgba(8,20,13,.45)}
+[data-theme=dark]{--bg:#09110D;--sf:#111C16;--sf2:#18261E;--ink:#EEF4EF;--mut:#A2B3A8;--line:#283A31;--brand:#9FD763;--pri:#8CC84B;--on-pri:#062012;--acc:#7BB43B;--mid:#3FB83A;--soft:#1A2F21;--ok:#74D38F;--ok-bg:#133120;--imp:#EBC65C;--imp-bg:#332A0E;--urg:#F7A066;--urg-bg:#3B2313;--bad:#F58B81;--bad-bg:#3C1815;--info:#7CC4F0;--info-bg:#0F2A3B;--scrim:rgba(0,0,0,.6)}
+body{margin:0;background:#E4E8E2;font-family:'Public Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+i{font-family:'Material Symbols Rounded';font-style:normal;font-weight:400;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';user-select:none;vertical-align:middle}
+</style>
+</helmet>
+<div style="padding:72px;display:flex;flex-direction:column;gap:96px;background:#E4E8E2;min-height:100vh;color:#0D1B13">
+
+<header style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;flex:none"></div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div style="font:600 13px 'IBM Plex Mono';color:#09502E;letter-spacing:.06em">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</div>
+    <div style="font:800 34px 'Public Sans';letter-spacing:-.02em">08 Print report · A4</div>
+  </div>
+  <nav style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;font:500 13px 'IBM Plex Mono'">
+    <a href="01%20Foundations%20and%20Sign-in.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">01</a>
+    <a href="02%20Contractor%20Mobile%20-%20Form.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">02</a>
+    <a href="03%20Contractor%20Mobile%20-%20Review%20Pay%20Ticket.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">03</a>
+    <a href="04%20Contractor%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">04</a>
+    <a href="05%20Admin%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">05</a>
+    <a href="06%20Admin%20Mobile.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">06</a>
+    <a href="07%20Service%20Rep.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">07</a>
+    <a href="08%20Print%20Report.dc.html" style="padding:8px 12px;border-radius:8px;background:#09502E;color:#fff">08 Print</a>
+  </nav>
+</header>
+
+<section style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">P</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">Printable report</h2><span style="font-size:15px;color:#4A5A50">Same for every role. Payment details are left off so reps can print it too.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">PR-01 · Page 1 — header, A, B1–B3, C</div>
+      <div style="box-shadow:0 20px 50px rgba(10,30,18,.18)"><dc-import name="Inspection Report Page" page="1" hint-size="794px,1123px"></dc-import></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">PR-02 · Page 2 — B4, GPS, attachments, D</div>
+      <div style="box-shadow:0 20px 50px rgba(10,30,18,.18)"><dc-import name="Inspection Report Page" page="2" hint-size="794px,1123px"></dc-import></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">PR-03 · Phone — full-screen A4 preview</div>
+      <div data-theme="dark" style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:#1A221D;color:#EEF4EF;box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="height:56px;flex:none;display:flex;align-items:center;padding:0 8px;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:16px">Print preview</b><span style="font:500 12px 'IBM Plex Mono';color:#A2B3A8">KE-NSD-2026-000123 · A4 · 2 pages</span></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden">
+          <div style="width:334px;height:472px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.4);flex:none">
+            <div style="width:794px;height:1123px;transform:scale(.4206);transform-origin:0 0"><dc-import name="Inspection Report Page" page="1" hint-size="794px,1123px"></dc-import></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font:500 13px 'IBM Plex Mono';color:#A2B3A8"><span style="width:8px;height:8px;border-radius:4px;background:#7BB43B"></span><span style="width:8px;height:8px;border-radius:4px;background:#3A4A41"></span><span>1 / 2 · swipe · pinch to zoom</span></div>
+        </div>
+        <div style="flex:none;padding:12px 16px 4px;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#111C16;border-top:1px solid #283A31">
+          <span style="height:56px;border-radius:14px;border:2px solid #283A31;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i>ios_share</i>Share as PDF</span>
+          <span style="height:56px;border-radius:14px;background:#8CC84B;color:#062012;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i>print</i>Print</span>
+        </div>
+        <div style="height:26px;flex:none;display:flex;align-items:center;justify-content:center;background:#111C16"><div style="width:134px;height:5px;border-radius:3px;background:#EEF4EF"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block" rel="stylesheet">
+<style>
+:root,[data-theme=light]{--bg:#F4F6F2;--sf:#FFFFFF;--sf2:#ECF0E9;--ink:#0D1B13;--mut:#4A5A50;--line:#D3DBD1;--brand:#09502E;--pri:#09502E;--on-pri:#FFFFFF;--acc:#7BB43B;--mid:#188815;--soft:#E2EEDD;--ok:#16723A;--ok-bg:#DFF1E2;--imp:#7A5800;--imp-bg:#FBEFCB;--urg:#A84300;--urg-bg:#FCE4D3;--bad:#B3261E;--bad-bg:#FBE2DF;--info:#0B5C8A;--info-bg:#DDEEF8;--scrim:rgba(8,20,13,.45)}
+[data-theme=dark]{--bg:#09110D;--sf:#111C16;--sf2:#18261E;--ink:#EEF4EF;--mut:#A2B3A8;--line:#283A31;--brand:#9FD763;--pri:#8CC84B;--on-pri:#062012;--acc:#7BB43B;--mid:#3FB83A;--soft:#1A2F21;--ok:#74D38F;--ok-bg:#133120;--imp:#EBC65C;--imp-bg:#332A0E;--urg:#F7A066;--urg-bg:#3B2313;--bad:#F58B81;--bad-bg:#3C1815;--info:#7CC4F0;--info-bg:#0F2A3B;--scrim:rgba(0,0,0,.6)}
+body{margin:0;background:#E4E8E2;font-family:'Public Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+i{font-family:'Material Symbols Rounded';font-style:normal;font-weight:400;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';user-select:none;vertical-align:middle}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="padding:72px;display:flex;flex-direction:column;gap:96px;background:#E4E8E2;min-height:100vh;color:#0D1B13">
+
+<header style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff url(assets/ke-logo.png) 52% 50%/165% no-repeat;flex:none"></div>
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div style="font:600 13px 'IBM Plex Mono';color:#09502E;letter-spacing:.06em">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</div>
+    <div style="font:800 34px 'Public Sans';letter-spacing:-.02em">02 Contractor · inspection form (mobile)</div>
+  </div>
+  <nav style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;font:500 13px 'IBM Plex Mono'">
+    <a href="01%20Foundations%20and%20Sign-in.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">01</a>
+    <a href="02%20Contractor%20Mobile%20-%20Form.dc.html" style="padding:8px 12px;border-radius:8px;background:#09502E;color:#fff">02 Form</a>
+    <a href="03%20Contractor%20Mobile%20-%20Review%20Pay%20Ticket.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">03</a>
+    <a href="04%20Contractor%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">04</a>
+    <a href="05%20Admin%20Desktop.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">05</a>
+    <a href="06%20Admin%20Mobile.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">06</a>
+    <a href="07%20Service%20Rep.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">07</a>
+    <a href="08%20Print%20Report.dc.html" style="padding:8px 12px;border-radius:8px;background:#fff;color:#09502E">08</a>
+  </nav>
+</header>
+
+<section id="sec-a" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">A</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">Basic customer information</h2><span style="font-size:15px;color:#4A5A50">9 steps · Save draft on every step · auto-save indicator top-right.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- CF-01 -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-01 · A · Customer &amp; property</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Draft · not yet named</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:42</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>A · Customer information</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">1 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:11%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Form 74 number <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font:500 17px 'IBM Plex Mono'">F74/KD/2026/08841</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Property owner name <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px">Alhaji Musa Ibrahim</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Property address <span style="color:var(--bad)">*</span></label><div style="height:84px;border-radius:12px;border:2px solid var(--pri);background:var(--sf);padding:14px;box-sizing:border-box;font-size:17px;line-height:1.4">14 Ahmadu Bello Way,<br>Kaduna North<span style="display:inline-block;width:2px;height:20px;background:var(--pri);vertical-align:middle;margin-left:1px"></span></div></div>
+          <div style="display:flex;flex-direction:column;gap:10px"><label style="font-weight:600;font-size:15px">Purpose of property <span style="color:var(--bad)">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <span style="height:56px;border-radius:12px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px"><i style="font-size:20px">check</i>Residential</span>
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center">Commercial</span>
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center">Industrial</span>
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center">Government</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Service area <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px;justify-content:space-between">Kawo<i style="color:var(--mut)">expand_more</i></div><span style="font-size:13px;color:var(--mut)">Decides which area office can view this report.</span></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Continue<i>arrow_downward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-02 -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-02 · A · Supply &amp; location (scrolled)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--mut);padding-right:8px"><i style="font-size:18px">sync</i>Saving…</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>A · Customer information</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">1 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:11%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:10px"><label style="font-weight:600;font-size:15px">Connection type <span style="color:var(--bad)">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--sf2)"><span style="height:52px;border-radius:10px;background:var(--sf);font-weight:600;display:flex;align-items:center;justify-content:center">Single phase</span><span style="height:52px;border-radius:10px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Three phase</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px"><label style="font-weight:600;font-size:15px">Voltage level <span style="color:var(--bad)">*</span></label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-family:'IBM Plex Mono'">
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:500;font-size:16px;display:flex;align-items:center;justify-content:center">240 V</span>
+              <span style="height:56px;border-radius:12px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center">415 V</span>
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:500;font-size:16px;display:flex;align-items:center;justify-content:center">11 kV</span>
+              <span style="height:56px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:500;font-size:16px;display:flex;align-items:center;justify-content:center">33 kV</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px"><label style="font-weight:600;font-size:15px">GPS location <span style="color:var(--bad)">*</span></label>
+            <div style="border-radius:16px;background:var(--sf);border:1.5px solid var(--line);overflow:hidden">
+              <div style="height:110px;background:repeating-linear-gradient(135deg,var(--sf2) 0 10px,var(--bg) 10px 20px);display:flex;align-items:center;justify-content:center;position:relative"><span style="font:500 12px 'IBM Plex Mono';color:var(--mut)">map preview tile</span><span style="position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--mid);box-shadow:0 0 0 4px var(--sf),0 0 0 22px rgba(24,136,21,.18)"></span></div>
+              <div style="padding:14px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:8px;color:var(--ok);font-weight:700;font-size:15px"><i style="font-size:20px">my_location</i>Location captured<span style="margin-left:auto;font:600 13px 'IBM Plex Mono';padding:4px 8px;border-radius:6px;background:var(--ok-bg)">±6 m</span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-family:'IBM Plex Mono'"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--mut)">LAT</span><span style="font-size:17px;font-weight:500">10.52217° N</span></div><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:var(--mut)">LONG</span><span style="font-size:17px;font-weight:500">7.43831° E</span></div></div>
+                <div style="height:48px;border-radius:12px;background:var(--sf2);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i style="font-size:20px">refresh</i>Re-capture</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:12px;background:var(--sf2)"><span style="font-weight:600;font-size:15px;display:flex;gap:6px;align-items:center"><i style="font-size:20px;color:var(--mut)">lock</i>Inspection date</span><span style="font:500 16px 'IBM Plex Mono'">01 Oct 2026</span></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Earthing<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-03 validation -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-03 · A · Inline validation (tapped Next)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Draft · not yet named</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:44</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>A · Customer information</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">1 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:11%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div style="padding:14px 16px;border-radius:14px;background:var(--bad-bg);display:flex;gap:10px;align-items:flex-start"><i style="color:var(--bad)">error</i><div style="display:flex;flex-direction:column;gap:4px"><b style="color:var(--bad);font-size:16px">3 fields need attention</b><span style="font-size:14px;line-height:1.45">Form 74 number · Service area · GPS location. You can still Save draft.</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Form 74 number <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:2px solid var(--bad);background:var(--sf)"></div><span style="font-size:14px;color:var(--bad);font-weight:600;display:flex;gap:4px;align-items:center"><i style="font-size:18px">error</i>Enter the Form 74 number from the application</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Property owner name <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px">Alhaji Musa Ibrahim</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Service area <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:12px;border:2px solid var(--bad);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px;justify-content:space-between;color:var(--mut)">Select service area<i>expand_more</i></div><span style="font-size:14px;color:var(--bad);font-weight:600;display:flex;gap:4px;align-items:center"><i style="font-size:18px">error</i>Choose the area office for this property</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">GPS location <span style="color:var(--bad)">*</span></label><div style="height:56px;border-radius:14px;border:2px solid var(--bad);background:var(--sf);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:16px;color:var(--brand)"><i>my_location</i>Capture location</div><span style="font-size:14px;color:var(--bad);font-weight:600;display:flex;gap:4px;align-items:center"><i style="font-size:18px">error</i>Capture GPS while standing at the property</span></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Earthing<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-04 GPS states -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-04 · GPS field states</div>
+      <div style="width:390px;padding:20px;border-radius:24px;background:var(--bg);color:var(--ink);box-sizing:border-box;display:flex;flex-direction:column;gap:16px">
+        <div style="font:600 12px 'IBM Plex Mono';letter-spacing:.06em;color:var(--mut)">1 · CAPTURING</div>
+        <div style="border-radius:16px;background:var(--sf);border:1.5px solid var(--line);padding:16px;display:flex;gap:14px;align-items:center">
+          <span style="width:36px;height:36px;border-radius:50%;border:4px solid var(--sf2);border-top-color:var(--mid);box-sizing:border-box;flex:none;transform:rotate(30deg)"></span>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px"><b style="font-size:16px">Finding your location…</b><span style="font-size:14px;color:var(--mut);line-height:1.4">Stand outside, near the meter point. Current fix ±31 m</span></div>
+          <span style="font-weight:700;font-size:15px;color:var(--brand);padding:12px 4px">Cancel</span>
+        </div>
+        <div style="font:600 12px 'IBM Plex Mono';letter-spacing:.06em;color:var(--mut)">2 · CAPTURED</div>
+        <div style="border-radius:16px;background:var(--sf);border:1.5px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px;color:var(--ok);font-weight:700;font-size:15px"><i style="font-size:20px">check_circle</i>Location captured · 10:41<span style="margin-left:auto;font:600 13px 'IBM Plex Mono';padding:4px 8px;border-radius:6px;background:var(--ok-bg)">±6 m</span></div>
+          <div style="font:500 16px 'IBM Plex Mono'">10.52217° N, 7.43831° E</div>
+          <div style="height:48px;border-radius:12px;background:var(--sf2);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i style="font-size:20px">refresh</i>Re-capture</div>
+        </div>
+        <div style="font:600 12px 'IBM Plex Mono';letter-spacing:.06em;color:var(--mut)">3 · PERMISSION DENIED</div>
+        <div style="border-radius:16px;background:var(--bad-bg);padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><i style="color:var(--bad)">location_disabled</i><div style="display:flex;flex-direction:column;gap:4px"><b style="font-size:16px;color:var(--bad)">Location access is blocked</b><span style="font-size:14px;line-height:1.45">Allow location for this app in your phone's settings. A GPS fix is required to submit.</span></div></div>
+          <div style="display:flex;gap:8px"><span style="flex:1;height:48px;border-radius:12px;background:var(--sf);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">How to allow</span><span style="flex:1;height:48px;border-radius:12px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Try again</span></div>
+        </div>
+        <div style="font:600 12px 'IBM Plex Mono';letter-spacing:.06em;color:var(--mut)">4 · LOW ACCURACY</div>
+        <div style="border-radius:16px;background:var(--imp-bg);padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><i style="color:var(--imp)">wrong_location</i><div style="display:flex;flex-direction:column;gap:4px"><b style="font-size:16px;color:var(--imp)">Low accuracy · <span style="font-family:'IBM Plex Mono'">±48 m</span></b><span style="font-family:'IBM Plex Mono';font-size:14px">10.5231° N, 7.4391° E</span><span style="font-size:14px;line-height:1.45">Move away from roofs and walls, then re-capture. Aim for ±20 m or better.</span></div></div>
+          <div style="display:flex;gap:8px"><span style="flex:1;height:48px;border-radius:12px;background:var(--sf);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Use anyway</span><span style="flex:1;height:48px;border-radius:12px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Re-capture</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="sec-b" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">B</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">Building inspection report</h2><span style="font-size:15px;color:#4A5A50">B1–B4. Minimums shown as hints; out-of-range readings warn but don't block.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- CF-05 B1 -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-05 · B1 · Earthing (soft warning)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:47</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>B1 · Earthing system</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">2 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:22%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Earth electrode size</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;gap:8px"><span style="font:500 18px 'IBM Plex Mono';flex:1">8</span><span style="font:500 15px 'IBM Plex Mono';color:var(--mut)">ft</span></div><span style="font-size:14px;color:var(--mut);display:flex;gap:4px;align-items:center"><i style="font-size:17px">straighten</i>Minimum 6 ft</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Earth conductor size</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;gap:8px"><span style="font:500 18px 'IBM Plex Mono';flex:1">16</span><span style="font:500 15px 'IBM Plex Mono';color:var(--mut)">mm²</span></div><span style="font-size:14px;color:var(--mut);display:flex;gap:4px;align-items:center"><i style="font-size:17px">straighten</i>Minimum 10 mm²</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Earth resistance value</label><div style="height:56px;border-radius:12px;border:2px solid var(--imp);background:var(--sf);display:flex;align-items:center;padding:0 14px;gap:8px"><span style="font:500 18px 'IBM Plex Mono';flex:1">2.6</span><span style="font:500 15px 'IBM Plex Mono';color:var(--mut)">Ω</span></div>
+            <div style="padding:12px 14px;border-radius:12px;background:var(--imp-bg);display:flex;gap:8px;align-items:flex-start"><i style="color:var(--imp);font-size:20px">warning</i><span style="font-size:14px;line-height:1.45"><b style="color:var(--imp)">Above 2 Ω.</b> You can continue — this reading will be highlighted on the report.</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px"><label style="font-weight:600;font-size:15px">Earth inspection pit available?</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--sf2)"><span style="height:52px;border-radius:10px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Yes</span><span style="height:52px;border-radius:10px;font-weight:600;display:flex;align-items:center;justify-content:center">No</span></div>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Protection<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-06 B2 dark -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-06 · B2 · Over-current protection · dark</div>
+      <div data-theme="dark" style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:49</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>B2 · Primary supply protection</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">3 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:33%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px">
+            <b style="font-size:17px">Circuit breaker</b>
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:14px;color:var(--mut)">Rated current</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf2);display:flex;align-items:center;padding:0 14px;gap:8px"><span style="font:500 18px 'IBM Plex Mono';flex:1">63</span><span style="font:500 15px 'IBM Plex Mono';color:var(--mut)">A</span></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:600;font-size:15px">Standard?</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--sf2);width:180px"><span style="height:48px;border-radius:10px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Yes</span><span style="height:48px;border-radius:10px;font-weight:600;display:flex;align-items:center;justify-content:center">No</span></div></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px">
+            <b style="font-size:17px">Cut-out fuse</b>
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:14px;color:var(--mut)">Rated current</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf2);display:flex;align-items:center;padding:0 14px;gap:8px"><span style="font:500 18px 'IBM Plex Mono';flex:1">100</span><span style="font:500 15px 'IBM Plex Mono';color:var(--mut)">A</span></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-weight:600;font-size:15px">Standard?</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--sf2);width:180px"><span style="height:48px;border-radius:10px;font-weight:600;display:flex;align-items:center;justify-content:center">Yes</span><span style="height:48px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-weight:700;display:flex;align-items:center;justify-content:center">No</span></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:16px;background:var(--sf);border:1px solid var(--line)"><span style="font-weight:600;font-size:16px">Number of poles</span><div style="display:flex;align-items:center;gap:6px"><span style="width:48px;height:48px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;justify-content:center"><i>remove</i></span><span style="width:44px;text-align:center;font:600 20px 'IBM Plex Mono'">4</span><span style="width:48px;height:48px;border-radius:12px;background:var(--sf2);display:flex;align-items:center;justify-content:center"><i>add</i></span></div></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Mains<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-07 B3 -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-07 · B3 · Mains checklist (top)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:52</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>B3 · Mains checklist</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">4 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:44%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <b style="font-size:16px">Distribution board</b>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--sf2)"><span style="height:46px;border-radius:9px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Seen</span><span style="height:46px;border-radius:9px;font-weight:600;display:flex;align-items:center;justify-content:center">Not seen</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:48px;border-radius:12px;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">check</i>Standard</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Not standard</span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <b style="font-size:16px">Change-over switch</b>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--sf2)"><span style="height:46px;border-radius:9px;font-weight:600;display:flex;align-items:center;justify-content:center">Seen</span><span style="height:46px;border-radius:9px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Not seen</span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">Main switch type</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">BS</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:48px;border-radius:12px;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">check</i>Standard</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Not standard</span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">Circuit breaker type</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">BS EN 60898-1 · Type B · over-current</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Standard</span><span style="height:48px;border-radius:12px;background:var(--bad-bg);border:2px solid var(--bad);color:var(--bad);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">close</i>Not standard</span></div>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Wiring<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-07b B3 scrolled -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-07b · B3 · Mains checklist (scrolled)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 10:53</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>B3 · Mains checklist</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">4 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:44%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);padding:0 4px"><i style="font-size:18px">expand_less</i>Distribution board, change-over, main switch, circuit breaker above</div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;flex-direction:column;gap:2px"><b style="font-size:16px">Socket outlets type</b><span style="font:500 13px 'IBM Plex Mono';color:var(--mut)">BS 1363-2</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:48px;border-radius:12px;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">check</i>Standard</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Not standard</span></div>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px">
+            <b style="font-size:16px">Secondary main protection</b>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf2);display:flex;align-items:center;padding:0 12px;gap:6px"><span style="font:500 17px 'IBM Plex Mono';flex:1">40</span><span style="font:500 14px 'IBM Plex Mono';color:var(--mut)">A</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;border-radius:12px;background:var(--sf2)"><span style="border-radius:9px;font-weight:600;display:flex;align-items:center;justify-content:center">MCB</span><span style="border-radius:9px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">RCD</span></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:48px;border-radius:12px;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:4px"><i style="font-size:18px">check</i>Standard</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center">Not standard</span></div>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Wiring<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-08 B4 list -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-08 · B4 · Wiring circuits (cards)</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 11:03</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>B4 · Description of wiring</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">5 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:56%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><b style="font-size:16px">4 circuits</b><span style="font-size:13px;color:var(--mut)">Tap a card to edit</span></div>
+          <sc-for list="{{ circuits }}" as="c" hint-placeholder-count="4">
+            <div style="border-radius:16px;background:var(--sf);border:1px solid var(--line);padding:12px 6px 12px 14px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:32px;height:32px;border-radius:8px;background:var(--sf2);font:600 13px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center;flex:none">{{ c.n }}</span>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><b style="font-size:16px">{{ c.desc }}</b><span style="font:500 14px 'IBM Plex Mono';color:var(--mut)">{{ c.spec }}</span></div>
+                <span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--mut)"><i>more_vert</i></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding-right:8px">
+                <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 7px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:13px"><i style="font-size:17px">{{ c.icon }}</i>{{ c.cond }}</span>
+                <span style="font-size:14px;color:var(--mut);line-height:1.4">{{ c.obs }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height:56px;border-radius:14px;border:2px dashed var(--mid);color:var(--brand);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;flex:none"><i>add</i>Add circuit</div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: System<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-09 B4 edit sheet -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-09 · B4 · Add / edit circuit sheet</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column;position:relative">
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans';background:var(--sf)"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+        <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="height:90px;border-radius:16px;background:var(--sf)"></div><div style="height:90px;border-radius:16px;background:var(--sf)"></div></div>
+        <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;top:96px;background:var(--sf);border-radius:24px 24px 0 0;display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:center;padding:10px 0 4px"><div style="width:40px;height:5px;border-radius:3px;background:var(--line)"></div></div>
+          <div style="display:flex;align-items:center;padding:4px 8px 8px 20px"><div style="flex:1;display:flex;flex-direction:column"><span style="font:600 12px 'IBM Plex Mono';color:var(--mut)">C5</span><b style="font-size:20px">New circuit</b></div><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>close</i></span></div>
+          <div style="flex:1;overflow:hidden;padding:4px 20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Circuit description</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px;justify-content:space-between">Other<i style="color:var(--mut)">expand_more</i></div><div style="height:56px;border-radius:12px;border:2px solid var(--pri);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:17px">Perimeter security lights</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Rating</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:6px"><span style="font:500 18px 'IBM Plex Mono';flex:1">16</span><span style="font:500 14px 'IBM Plex Mono';color:var(--mut)">A</span></div></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Conductor</label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:6px"><span style="font:500 18px 'IBM Plex Mono';flex:1">2.5</span><span style="font:500 14px 'IBM Plex Mono';color:var(--mut)">mm²</span></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px"><label style="font-weight:600;font-size:15px">Condition</label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="height:50px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px"><i style="color:var(--ok)">check_circle</i><span style="font-weight:600;font-size:15px;flex:1">Satisfactory</span><i style="color:var(--line)">radio_button_unchecked</i></div>
+                <div style="height:50px;border-radius:12px;border:2px solid var(--imp);background:var(--imp-bg);display:flex;align-items:center;gap:10px;padding:0 14px"><i style="color:var(--imp)">build</i><span style="font-weight:700;font-size:15px;flex:1">Improvement required</span><i style="color:var(--imp)">radio_button_checked</i></div>
+                <div style="height:50px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px"><i style="color:var(--urg)">priority_high</i><span style="font-weight:600;font-size:15px;flex:1">Urgent attention required</span><i style="color:var(--line)">radio_button_unchecked</i></div>
+                <div style="height:50px;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px"><i style="color:var(--bad)">block</i><span style="font-weight:600;font-size:15px;flex:1">Does not comply with standard</span><i style="color:var(--line)">radio_button_unchecked</i></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Observation <span style="font-weight:400;color:var(--mut)">(optional)</span></label><div style="height:56px;border-radius:12px;border:1.5px solid var(--line);padding:14px;box-sizing:border-box;font-size:16px;color:var(--mut)">e.g. two fittings without covers</div></div>
+          </div>
+          <div style="padding:12px 16px 4px;display:flex;gap:10px;border-top:1px solid var(--line)"><span style="height:56px;padding:0 16px;border-radius:14px;color:var(--bad);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>delete</i>Remove</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center">Save circuit</span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-c" style="display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0D1B13;padding-bottom:12px"><span style="font:600 14px 'IBM Plex Mono';color:#09502E">C–D</span><h2 style="margin:0;font:800 30px 'Public Sans';letter-spacing:-.02em">System details, attachments, attestation</h2><span style="font-size:15px;color:#4A5A50">Includes the weak / no-network state.</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- CF-10 C offline -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-10 · C · System details — offline</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px;opacity:.4">signal_cellular_alt</i> <i style="font-size:17px">signal_wifi_off</i> <i style="font-size:17px">battery_5_bar</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--info);padding-right:8px"><i style="font-size:18px">phone_android</i>On device</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>C · System details</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">6 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:67%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+          <div style="padding:10px 16px;background:var(--info-bg);display:flex;gap:10px;align-items:center"><i style="color:var(--info)">cloud_off</i><span style="font-size:14px;line-height:1.4;flex:1"><b>No network.</b> Draft is saved on this phone and will sync when you're back online.</span></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:18px 20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:8px"><label style="font-weight:600;font-size:15px">Earthing system type</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-family:'IBM Plex Mono'"><span style="height:52px;border-radius:12px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-weight:600;display:flex;align-items:center;justify-content:center">TT</span><span style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;justify-content:center">TN-S</span><span style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;justify-content:center">TN-C-S</span><span style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;justify-content:center">IT</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:13px;line-height:1.2;min-height:32px">Distribution boards</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 12px;font:500 18px 'IBM Plex Mono'">2</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:13px;line-height:1.2;min-height:32px">Sub-circuits</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 12px;font:500 18px 'IBM Plex Mono'">14</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:13px;line-height:1.2;min-height:32px">Main cable</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 10px;gap:4px"><span style="font:500 18px 'IBM Plex Mono';flex:1">16</span><span style="font:500 12px 'IBM Plex Mono';color:var(--mut)">mm²</span></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px"><label style="font-weight:600;font-size:15px">Conductor type</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--sf2)"><span style="height:48px;border-radius:10px;background:var(--pri);color:var(--on-pri);font-weight:700;display:flex;align-items:center;justify-content:center">Copper</span><span style="height:48px;border-radius:10px;font-weight:600;display:flex;align-items:center;justify-content:center">Aluminium</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><label style="font-weight:600;font-size:15px">Wiring method</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center">Surface</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center">Conduit</span><span style="height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center">Trunking</span><span style="height:48px;border-radius:12px;background:var(--soft);border:2px solid var(--pri);color:var(--brand);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center">Other</span></div>
+            <div style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:16px">Conduit + cable tray (plant room)</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px"><label style="font-weight:600;font-size:15px">Cable insulation type</label><div style="height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sf);display:flex;align-items:center;padding:0 14px;font-size:16px">PVC</div></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Attachments<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-11 Attachments -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-11 · Attachments — uploading</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 11:20</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>Attachments</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">7 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:78%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:18px 16px;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 4px"><b style="font-size:16px">Electrical layout &amp; load schedule <span style="color:var(--bad)">*</span></b></div>
+            <div style="border-radius:14px;background:var(--sf);border:1px solid var(--line);padding:10px 6px 10px 12px;display:flex;align-items:center;gap:12px"><span style="width:44px;height:52px;border-radius:8px;background:var(--bad-bg);color:var(--bad);font:700 11px 'IBM Plex Mono';display:flex;align-items:center;justify-content:center">PDF</span><div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><b style="font-size:15px">Layout_14-ABW.pdf</b><span style="font-size:13px;color:var(--ok);font-weight:600;display:flex;gap:4px;align-items:center"><i style="font-size:16px">check_circle</i>Uploaded · 1.2 MB</span></div><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--mut)"><i>close</i></span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;flex-direction:column;gap:2px;padding:0 4px"><b style="font-size:16px">Photos of DB &amp; earthing <span style="color:var(--bad)">*</span></b><span style="font-size:13px;color:var(--mut)">Use a GPS-stamp camera — coordinates must be visible in the photo.</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <div style="aspect-ratio:1;border-radius:12px;background:repeating-linear-gradient(135deg,var(--sf2) 0 8px,var(--line) 8px 9px);position:relative;display:flex;align-items:flex-end;padding:6px;box-sizing:border-box"><span style="font:500 10px 'IBM Plex Mono';color:var(--mut)">DB front</span><span style="position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center"><i style="font-size:16px">close</i></span></div>
+              <div style="aspect-ratio:1;border-radius:12px;background:repeating-linear-gradient(135deg,var(--sf2) 0 8px,var(--line) 8px 9px);position:relative;display:flex;align-items:flex-end;padding:6px;box-sizing:border-box"><span style="font:500 10px 'IBM Plex Mono';color:var(--mut)">earth pit</span><span style="position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center"><i style="font-size:16px">close</i></span></div>
+              <div style="aspect-ratio:1;border-radius:12px;background:repeating-linear-gradient(135deg,var(--sf2) 0 8px,var(--line) 8px 9px);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:6px;box-sizing:border-box;gap:4px"><span style="position:absolute;inset:0;border-radius:12px;background:rgba(9,17,13,.45)"></span><span style="position:relative;font:600 12px 'IBM Plex Mono';color:#fff">64%</span><span style="position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.35)"><span style="display:block;width:64%;height:100%;border-radius:3px;background:#7BB43B"></span></span></div>
+              <div style="aspect-ratio:1;border-radius:12px;border:2px dashed var(--mid);color:var(--brand);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:13px"><i style="font-size:28px">photo_camera</i>Take photo</div>
+              <div style="aspect-ratio:1;border-radius:12px;border:2px dashed var(--line);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:13px"><i style="font-size:28px">photo_library</i>Gallery</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;flex-direction:column;gap:2px;padding:0 4px"><b style="font-size:16px">Test equipment calibration certificate</b><span style="font-size:13px;color:var(--mut)">Optional · where applicable</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><span style="height:52px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i style="font-size:20px">photo_camera</i>Camera</span><span style="height:52px;border-radius:12px;background:var(--sf);border:1.5px solid var(--line);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px"><i style="font-size:20px">upload_file</i>Upload file</span></div>
+          </div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Next: Attestation<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CF-12 Attestation -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 13px 'IBM Plex Mono';color:#4A5A50">CF-12 · D · Attestation &amp; signature</div>
+      <div style="width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--ink);box-shadow:0 0 0 8px #141B17,0 24px 60px rgba(10,30,18,.25);display:flex;flex-direction:column">
+        <div style="background:var(--sf);flex:none">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font:600 15px 'Public Sans'"><span>9:41</span><span><i style="font-size:17px">signal_cellular_alt</i> <i style="font-size:17px">wifi</i> <i style="font-size:17px">battery_full</i></span></div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)">
+            <div style="display:flex;align-items:center;gap:4px"><span style="width:48px;height:48px;display:flex;align-items:center;justify-content:center"><i>arrow_back</i></span><div style="flex:1;display:flex;flex-direction:column"><b style="font-size:17px">New inspection</b><span style="font-size:13px;color:var(--mut)">Alhaji Musa Ibrahim</span></div><span style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ok);padding-right:8px"><i style="font-size:18px">cloud_done</i>Saved 11:24</span></div>
+            <div style="padding:0 8px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><b>D · Attestation</b><span style="font-family:'IBM Plex Mono';color:var(--mut)">8 / 9</span></div><div style="height:6px;border-radius:3px;background:var(--sf2)"><div style="width:89%;height:100%;border-radius:3px;background:var(--mid)"></div></div></div>
+          </div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:14px">
+          <div style="border-radius:16px;background:var(--sf2);padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px">
+            <span style="grid-column:1/-1;display:flex;align-items:center;gap:6px;font:600 12px 'IBM Plex Mono';letter-spacing:.05em;color:var(--mut);margin-bottom:2px"><i style="font-size:16px">lock</i>FROM YOUR PROFILE</span>
+            <span style="color:var(--mut)">Inspector</span><b>Engr. Yusuf Bello</b>
+            <span style="color:var(--mut)">NEMSA reg. no.</span><b style="font-family:'IBM Plex Mono';font-weight:500">NEMSA/A/2023/0142</b>
+            <span style="color:var(--mut)">NEMSA category</span><b>Cat A</b>
+            <span style="color:var(--mut)">COREN no.</span><b style="font-family:'IBM Plex Mono';font-weight:500">R.12873</b>
+            <span style="color:var(--mut)">Firm</span><b>Bello Power Systems Ltd</b>
+          </div>
+          <div style="border-radius:16px;background:var(--sf);border:2px solid var(--pri);padding:14px;display:flex;gap:12px;align-items:flex-start">
+            <span style="width:28px;height:28px;border-radius:7px;background:var(--pri);color:var(--on-pri);display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px"><i style="font-size:20px">check</i></span>
+            <span style="font-size:14px;line-height:1.5">I hereby certify that the electrical installation at the location above was inspected and tested in accordance with the Nigerian Electricity Supply Installation Standards (NESIS), the Nigerian Electricity Health and Safety Code, and all applicable regulations. The findings are accurate and complete to the best of my knowledge.</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><label style="font-weight:600;font-size:15px">Signature</label><span style="font-weight:700;font-size:14px;color:var(--brand);padding:8px 4px;display:flex;gap:4px;align-items:center"><i style="font-size:18px">ink_eraser</i>Clear</span></div>
+            <div style="height:120px;border-radius:14px;background:var(--sf);border:1.5px dashed var(--line);position:relative;display:flex;align-items:center;justify-content:center"><span style="font:52px 'Mrs Saint Delafield';color:var(--ink);transform:rotate(-4deg)">Yusuf Bello</span><span style="position:absolute;left:20px;right:20px;bottom:26px;height:1px;background:var(--line)"></span><span style="position:absolute;left:20px;bottom:8px;font-size:12px;color:var(--mut)">Sign with your finger</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:12px;background:var(--sf2)"><span style="font-weight:600;font-size:15px;display:flex;gap:6px;align-items:center"><i style="font-size:20px;color:var(--mut)">lock</i>Date</span><span style="font:500 16px 'IBM Plex Mono'">01 Oct 2026</span></div>
+        </div>
+        <div style="background:var(--sf);border-top:1px solid var(--line);flex:none">
+          <div style="padding:12px 16px 4px;display:flex;gap:10px"><span style="height:56px;padding:0 16px;border-radius:14px;border:2px solid var(--line);font-weight:700;font-size:16px;display:flex;align-items:center;gap:6px"><i>save</i>Save draft</span><span style="flex:1;height:56px;border-radius:14px;background:var(--pri);color:var(--on-pri);font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px">Review<i>arrow_forward</i></span></div>
+          <div style="height:26px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:var(--ink)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
+</section>
+<!--END-->
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const S = {
+      ok: ['var(--ok)', 'var(--ok-bg)', 'check_circle', 'Satisfactory'],
+      imp: ['var(--imp)', 'var(--imp-bg)', 'build', 'Improvement required'],
+      urg: ['var(--urg)', 'var(--urg-bg)', 'priority_high', 'Urgent attention required'],
+      bad: ['var(--bad)', 'var(--bad-bg)', 'block', 'Does not comply with standard']
+    };
+    const mk = (n, desc, spec, s, obs) => ({ n, desc, spec, obs, fg: S[s][0], bg: S[s][1], icon: S[s][2], cond: S[s][3] });
+    return {
+      theme: this.props.theme ?? 'light',
+      circuits: [
+        mk('C1', 'Lighting', '10 A · 1.5 mm²', 'ok', 'No issues found.'),
+        mk('C2', 'Socket outlet', '20 A · 2.5 mm²', 'imp', 'Loose faceplate in kitchen.'),
+        mk('C3', 'Air conditioner', '32 A · 4 mm²', 'urg', 'Undersized isolator, heat marks.'),
+        mk('C4', 'Borehole pump', '20 A · 2.5 mm²', 'bad', 'Outdoor run without conduit.')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
