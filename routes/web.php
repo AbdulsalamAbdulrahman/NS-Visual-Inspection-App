@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\ContractorController;
 use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\RepController;
 use App\Http\Controllers\Admin\ServiceAreaController;
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InspectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -27,8 +29,18 @@ Route::middleware('auth')->group(function () {
         ->name('password.change');
 
     Route::middleware('role:contractor')->group(function () {
-        Route::inertia('inspections', 'contractor/Home')->name('inspections.index');
+        Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
+        Route::post('inspections', [InspectionController::class, 'store'])->name('inspections.store');
+        Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
+        Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
+
+        Route::post('inspections/{inspection}/attachments', [AttachmentController::class, 'store'])->name('inspections.attachments.store');
+        Route::delete('inspections/{inspection}/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('inspections.attachments.destroy');
     });
+
+    // Shared by every role; access is checked by policy (role + service area).
+    Route::get('inspections/{inspection}/signature', [InspectionController::class, 'signature'])->name('inspections.signature');
+    Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::inertia('/', 'admin/Overview')->name('overview');

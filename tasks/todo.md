@@ -40,4 +40,15 @@
 - [x] Fee settings: current card, schedule form, cancel scheduled, history
 - [x] Admin nav counts + current fee shared on admin responses
 - [x] Pest: contractor CRUD/validation, account actions, rep areas, areas, fee timing
-- [ ] Contractor INSP. and area inspection counts (needs inspections — Phase 3/5)
+- [x] Contractor INSP. and area inspection counts (wired in Phase 3)
+
+## Phase 3 · Inspection form
+- [x] Enums for every inspection field; inspections, inspection_circuits, inspection_attachments tables with spec indexes
+- [x] Models, policies (view / update / pay / print), visibleTo scope mirrored by policy
+- [x] InspectionChecklist (server) + checklist.ts (client) for full validation; soft warnings never block
+- [x] StartInspection / SaveDraft (upsert, circuits replace, signature PNG) / StoreAttachment actions
+- [x] Contractor home: drafts with progress + resume, submitted list with search and pagination, empty state
+- [x] 9-step form: phone header + progress, desktop top bar + step rail, CF-03 step check, offline banner, autosave chip
+- [x] Steps A (GPS states), B1 (warnings), B2 (stepper), B3, B4 (cards + sheet / table + inline editor), C, Attachments (EXIF + compression + progress), D (signature), Review (fix list, edit links)
+- [x] Authorised attachment + signature routes
+- [x] Pest: drafts, upsert, circuits, signature storage, ownership, submitted lock, attachments (MIME, size, private disk, rep/area access), checklist

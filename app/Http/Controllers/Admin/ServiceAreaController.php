@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceAreaRequest;
 use App\Models\ServiceArea;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,6 +22,11 @@ class ServiceAreaController extends Controller
     {
         $areas = ServiceArea::query()
             ->with(['reps' => fn ($q) => $q->select('users.id', 'users.name')->orderBy('users.name')])
+            ->withCount([
+                'inspections as inspections_total' => fn (Builder $q) => $q->submitted(),
+                'inspections as inspections_this_month' => fn (Builder $q) => $q->submitted()
+                    ->where('submitted_at', '>=', now()->startOfMonth()),
+            ])
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get()

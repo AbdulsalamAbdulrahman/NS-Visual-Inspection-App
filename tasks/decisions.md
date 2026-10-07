@@ -36,3 +36,15 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 - **Fee scheduling:** one scheduled change at a time (the AD-10 card shows a single "Scheduled" line). A change effective today applies immediately. Only future changes can be cancelled (soft delete). The launch fee is seeded at ₦15,000 from the day the app is first seeded (`FeeScheduleSeeder`).
 - **Email is queued:** login details and password reset notifications implement `ShouldQueue` (database queue drained by the scheduler).
 - **Contractor INSP. and area inspection counts** show 0 until inspections exist; they're wired up in Phase 3/5.
+
+## Phase 3
+- **Next on a step with gaps (CF-03):** the first tap flags the step's missing fields with the CF-03 banner; the banner offers "continue anyway" and a second tap moves on. Drafts stay incomplete-friendly (spec), and contractors without the Form 74 number on site aren't blocked. Review is the real gate.
+- **Full validation = every report field.** B1–B3 and C readings, ≥1 circuit (each with description, rating, conductor, condition), layout + ≥1 photo, declaration and signature are required to pay, even though B/C labels carry no asterisk in the designs. Conditional: "Standard" only when equipment was seen; free text only for "Other".
+- **One page, nine client-side steps.** Steps switch without a server round trip (works offline later). `current_step` is saved so Resume returns to where the contractor left off. `?step=N` deep-links Review "Fix" / "Edit".
+- **Auto-save** sends the full draft (minus attachments) as JSON to `PUT /inspections/{uuid}/draft` ~2 s after the last change, and immediately on Save draft / close. The endpoint upserts so phone-generated uuids work offline (Phase 7). Two devices editing the same draft = last write wins.
+- **Circuits** carry client uuids (unique per inspection) and are replaced as a list on each save; position gives C1, C2….
+- **Signature** is a PNG data URL sent once with the next save, stored privately as `inspections/{uuid}/signature-*.png`. The pad is always dark ink on white "paper" so it stays visible in dark mode and prints correctly.
+- **Attachments** upload one file per request with progress (XHR). Photos: EXIF GPS/time read with exifr first, then compressed to ~1600 px / ≤0.5 MB JPEG. Limits: layout 3, photos 12, calibration 3; server sniffs MIME and caps 10 MB.
+- **GPS** watches position up to 20 s and keeps the best fix; ≤ ±20 m is accepted automatically, worse shows the low-accuracy state with "Use anyway". No map library: the captured card keeps the design's map-tile placeholder with a pin.
+- **Inspection date** is the day the draft was started (on-site date), not the payment date.
+- **Review with many gaps** groups the fix list by section (more than 6 items) so it stays readable; short lists show each item as in CR-01.

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Accounts\CreateContractor;
 use App\Actions\Accounts\UpdateContractor;
+use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
 use App\Enums\Role;
 use App\Enums\UserStatus;
@@ -28,6 +29,7 @@ class ContractorController extends Controller
         $contractors = User::query()
             ->role(Role::Contractor)
             ->with('contractorProfile')
+            ->withCount(['inspections' => fn (Builder $q) => $q->where('status', InspectionStatus::Submitted)])
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $search).'%';
 

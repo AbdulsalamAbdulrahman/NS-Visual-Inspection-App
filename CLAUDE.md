@@ -22,7 +22,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | 0 | Setup | Done |
 | 1 | Auth and accounts | Done |
 | 2 | Admin management | Done |
-| 3 | Inspection form | Not started |
+| 3 | Inspection form | Done |
 | 4 | Payment and ticket | Not started |
 | 5 | Viewing | Not started |
 | 6 | Print and verify | Not started |
