@@ -18,7 +18,7 @@
 
     onMount(() =>
         router.on('flash', (event) => {
-            const data = (event.detail.flash as Flash | undefined)?.toast;
+            const data = event.detail.flash?.toast;
 
             if (!data) {
                 return;

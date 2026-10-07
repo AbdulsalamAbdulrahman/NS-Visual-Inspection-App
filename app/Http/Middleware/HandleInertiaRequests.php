@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\Role;
 use App\Http\Resources\AuthUserResource;
+use App\Models\FeeSchedule;
+use App\Models\ServiceArea;
+use App\Models\User;
+use App\Support\Money;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -44,10 +49,28 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => fn () => $this->authUser($request),
             ],
+            'adminNav' => fn () => $request->user()?->isAdmin() ? $this->adminNav() : null,
             'nsd' => [
                 'phone' => config('kens.nsd.phone'),
                 'email' => config('kens.nsd.email'),
             ],
+        ];
+    }
+
+    /**
+     * Sidebar counts and the current fee for the admin shell (AD sidebar, AM-08).
+     *
+     * @return array<string, int|string|null>
+     */
+    private function adminNav(): array
+    {
+        $fee = FeeSchedule::currentAmountKobo();
+
+        return [
+            'contractors' => User::query()->role(Role::Contractor)->count(),
+            'reps' => User::query()->role(Role::Rep)->count(),
+            'areas' => ServiceArea::query()->count(),
+            'fee' => $fee === null ? null : Money::format($fee),
         ];
     }
 

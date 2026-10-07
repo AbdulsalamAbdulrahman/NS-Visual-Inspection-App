@@ -5,6 +5,11 @@ declare(strict_types=1);
 use App\Http\Controllers\Account\FirstPasswordController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\ContractorController;
+use App\Http\Controllers\Admin\FeeController;
+use App\Http\Controllers\Admin\RepController;
+use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +33,32 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::inertia('/', 'admin/Overview')->name('overview');
         Route::inertia('more', 'admin/More')->name('more');
+
+        Route::get('contractors', [ContractorController::class, 'index'])->name('contractors.index');
+        Route::post('contractors', [ContractorController::class, 'store'])->name('contractors.store');
+        Route::put('contractors/{contractor}', [ContractorController::class, 'update'])->name('contractors.update');
+
+        Route::get('reps', [RepController::class, 'index'])->name('reps.index');
+        Route::post('reps', [RepController::class, 'store'])->name('reps.store');
+        Route::put('reps/{rep}', [RepController::class, 'update'])->name('reps.update');
+
+        // Row actions shared by contractors and reps.
+        Route::controller(AccountController::class)->prefix('accounts/{user}')->name('accounts.')->group(function () {
+            Route::post('resend-login', 'resendLogin')->name('resend-login');
+            Route::post('reset-link', 'sendResetLink')->name('reset-link');
+            Route::post('suspend', 'suspend')->name('suspend');
+            Route::post('reactivate', 'reactivate')->name('reactivate');
+            Route::delete('/', 'destroy')->name('destroy');
+        });
+
+        Route::get('areas', [ServiceAreaController::class, 'index'])->name('areas.index');
+        Route::post('areas', [ServiceAreaController::class, 'store'])->name('areas.store');
+        Route::put('areas/{area}', [ServiceAreaController::class, 'update'])->name('areas.update');
+        Route::post('areas/{area}/toggle', [ServiceAreaController::class, 'toggle'])->name('areas.toggle');
+
+        Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
+        Route::post('fees', [FeeController::class, 'store'])->name('fees.store');
+        Route::delete('fees/{fee}', [FeeController::class, 'destroy'])->name('fees.destroy');
     });
 
     Route::middleware('role:rep')->prefix('rep')->name('rep.')->group(function () {

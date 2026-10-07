@@ -6,4 +6,6 @@ export type Flash = {
         type: 'success' | 'info' | 'error';
         message: string;
     } | null;
+    /** uuid of a row just created, tinted on the list (AD-06). */
+    highlight?: string;
 };

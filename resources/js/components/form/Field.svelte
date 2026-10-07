@@ -31,7 +31,7 @@
     }: Props = $props();
 </script>
 
-<div class={cn('flex flex-col gap-1.5', className)}>
+<div class={cn('flex min-w-0 flex-col gap-1.5', className)}>
     {#if label || labelAside}
         <div class="flex items-baseline justify-between gap-3">
             {#if label}

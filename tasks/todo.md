@@ -29,3 +29,15 @@
 - [x] `app:create-admin {email} {name}` prints a temporary password
 - [x] Pest: suspended can't sign in, first sign-in forces password change, role gates, create-admin, password change
 - [x] Visual check of shells and auth screens vs designs; build + tests; commit
+
+## Phase 2 · Admin management
+- [x] fee_schedules table + FeeSchedule model (current / scheduled), Money helper, launch fee seeder
+- [x] Actions: CreateContractor, UpdateContractor, SaveRep, ResendLoginDetails, SetSuspended, DeleteAccount
+- [x] Queued LoginDetails + reset-password notifications
+- [x] Contractors: list (search, summary, pagination), create/edit drawer & phone sheet, row menu & action sheet, in-page delete confirm with "Suspend instead"
+- [x] Service reps: list, drawer with 1–3 area picker showing who covers each area
+- [x] Service areas: add, rename inline, deactivate/reactivate
+- [x] Fee settings: current card, schedule form, cancel scheduled, history
+- [x] Admin nav counts + current fee shared on admin responses
+- [x] Pest: contractor CRUD/validation, account actions, rep areas, areas, fee timing
+- [ ] Contractor INSP. and area inspection counts (needs inspections — Phase 3/5)

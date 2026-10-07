@@ -8,8 +8,9 @@
         value?: string | number | null;
         size?: InputSize;
         invalid?: boolean;
-        /** Unit shown after the value (mm², A, Ω, ft). Switches to mono numerals. */
+        /** Unit shown after the value (mm², A, Ω, ft): mono 18 px reading style (01 Foundations). */
         unit?: string;
+        /** Mono numerals at the field's own size (phone, registration numbers). */
         mono?: boolean;
         class?: string;
     };
@@ -25,7 +26,6 @@
         ...rest
     }: Props = $props();
 
-    const isMono = $derived(mono || !!unit);
 </script>
 
 <div class={fieldBox(size, invalid, className)}>
@@ -34,7 +34,7 @@
         bind:value
         aria-invalid={invalid || undefined}
         aria-describedby={invalid ? `${id}-error` : undefined}
-        class={cn(bareInput, isMono && 'font-mono text-[18px] font-medium')}
+        class={cn(bareInput, (mono || unit) && 'font-mono font-medium', unit && 'text-[18px]')}
         {...rest}
     />
     {#if unit}

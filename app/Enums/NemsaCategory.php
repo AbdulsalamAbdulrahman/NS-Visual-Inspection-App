@@ -28,7 +28,7 @@ enum NemsaCategory: string
             self::CatA => 'A',
             self::CatB => 'B',
             self::CatC => 'C',
-            self::Corporate => 'CORP',
+            self::Corporate => 'CP',
         };
     }
 }

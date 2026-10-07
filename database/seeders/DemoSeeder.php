@@ -35,7 +35,7 @@ class DemoSeeder extends Seeder
         $this->contractor('Engr. Yusuf Bello', 'y.bello@bellopower.ng', '0803 412 7790', NemsaCategory::CatA, 'NEMSA/A/2023/0142', 'R.12873', 'Bello Power Systems Ltd');
         $this->contractor('Aisha Lawal', 'aisha.lawal@gmail.com', '0806 220 1145', NemsaCategory::CatB, 'NEMSA/B/2022/0388');
         $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSA/B/2021/0217', 'R.20456');
-        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'NEMSA/CORP/2020/0051', 'R.09931', 'Danladi Electrical Services Ltd');
+        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'NEMSA/CP/2022/0051', 'R.09931', 'Danladi Electrical Services Ltd');
         $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSA/C/2024/0610', status: UserStatus::Suspended);
 
         $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Kakuri', 'Sabon Tasha']);

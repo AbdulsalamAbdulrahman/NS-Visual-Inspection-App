@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { Flash } from '@/types/ui';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -24,5 +25,6 @@ declare module '@inertiajs/core' {
             nsd: { phone: string; email: string };
             [key: string]: unknown;
         };
+        flashDataType: Flash;
     }
 }

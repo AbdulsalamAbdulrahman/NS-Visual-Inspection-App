@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\Role;
 use App\Enums\UserStatus;
+use App\Notifications\QueuedResetPassword;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -106,6 +107,14 @@ class User extends Authenticatable
         return $this->belongsToMany(ServiceArea::class, 'rep_service_area')
             ->withTimestamps()
             ->orderBy('name');
+    }
+
+    /**
+     * @param  string  $token
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new QueuedResetPassword($token));
     }
 
     public function isAdmin(): bool

@@ -26,3 +26,13 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 - **Temporary passwords** look like `Kemt-4829-pqrs`: they meet the rules and avoid look-alike characters so they can be typed from an email.
 - **Profile / change password** are shared pages for all roles; the layout is chosen from the signed-in role. Reps get desktop chrome from `md` (tablet design SR-T1); contractor and admin at `lg`.
 - **Seeders:** `DatabaseSeeder` is production-safe (placeholder service areas only). `DemoSeeder` (design people; all demo accounts use the password in `DemoSeeder::PASSWORD`) refuses to run in production.
+
+## Phase 2
+- **Money display:** `₦15,000.00` (spec) everywhere amounts are shown, though some mockups show `₦15,000`. KPI tiles may still abbreviate (`₦1.31M`) as in AD-01.
+- **Corporate NEMSA numbers** use `CP` (`NEMSA/CP/2026/0212`) as in the designs. Registration numbers are normalised to upper case and must match `NEMSA/<letters>/<year>/<digits>`.
+- **Deleted accounts keep their email reserved** (unique across soft-deleted rows), so a deleted contractor can't be silently re-created; the form says so. Deleting also drops that user's sessions.
+- **Delete confirmation** offers "Suspend instead" on desktop (inline row, AD-06) and phone (in-sheet step, AM-06), per the spec; the desktop mockup didn't show it.
+- **Resend login details** issues a new temporary password and puts the account back to Invited (must change password); suspended accounts stay suspended.
+- **Fee scheduling:** one scheduled change at a time (the AD-10 card shows a single "Scheduled" line). A change effective today applies immediately. Only future changes can be cancelled (soft delete). The launch fee is seeded at ₦15,000 from the day the app is first seeded (`FeeScheduleSeeder`).
+- **Email is queued:** login details and password reset notifications implement `ShouldQueue` (database queue drained by the scheduler).
+- **Contractor INSP. and area inspection counts** show 0 until inspections exist; they're wired up in Phase 3/5.

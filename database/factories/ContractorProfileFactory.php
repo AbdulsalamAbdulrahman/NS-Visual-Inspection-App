@@ -32,7 +32,7 @@ class ContractorProfileFactory extends Factory
     {
         return $this->state([
             'nemsa_category' => NemsaCategory::Corporate,
-            'nemsa_reg_no' => sprintf('NEMSA/CORP/%d/%04d', fake()->numberBetween(2018, 2026), fake()->unique()->numberBetween(1, 9999)),
+            'nemsa_reg_no' => sprintf('NEMSA/CP/%d/%04d', fake()->numberBetween(2018, 2026), fake()->unique()->numberBetween(1, 9999)),
             'firm_name' => $firm,
         ]);
     }
