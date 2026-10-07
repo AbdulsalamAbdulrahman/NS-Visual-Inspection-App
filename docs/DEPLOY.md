@@ -86,9 +86,12 @@ chmod 600 shared/.env
 php -r "echo 'base64:'.base64_encode(random_bytes(32)), PHP_EOL;"   # → APP_KEY
 nano shared/.env      # APP_KEY, DB_PASSWORD, MAIL_PASSWORD, Monnify sandbox keys
 
-# First deploy (afterwards cron does this)
+# app/ must not exist yet: the script manages it as a symlink.
+# (An empty placeholder can go: rmdir app/public app)
+
+# First deploy (afterwards cron does this). Needs the database in shared/.env.
 git -C repo.git show deploy:deploy/server-pull.sh > /tmp/kens-pull.sh
-bash /tmp/kens-pull.sh
+PHP_BIN=/usr/local/php85/bin/php bash /tmp/kens-pull.sh
 
 # Serve the live release
 mv public_html public_html.default
@@ -102,19 +105,19 @@ Open https://kens.buildingelectcert.com.ng. You should see the sign-in page.
 DirectAdmin → Advanced Features → **Cron Jobs**, both "every minute" (`* * * * *`):
 
 ```
-/usr/local/bin/php /home/buildin1/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1
-/bin/bash /home/buildin1/domains/kens.buildingelectcert.com.ng/app/deploy/server-pull.sh >> /home/buildin1/domains/kens.buildingelectcert.com.ng/deploy.log 2>&1
+/usr/local/php85/bin/php /home/buildin1/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1
+PHP_BIN=/usr/local/php85/bin/php /bin/bash /home/buildin1/domains/kens.buildingelectcert.com.ng/app/deploy/server-pull.sh >> /home/buildin1/domains/kens.buildingelectcert.com.ng/deploy.log 2>&1
 ```
 
 The first runs the scheduler, which sends queued email. The second picks up new
-releases. Run `which php` in the terminal: if cron needs a different PHP, use its
-full path in the first line and add `PHP_BIN=/usr/local/php85/bin/php` before
-`/bin/bash` in the second.
+releases. Both use the full PHP 8.5 path: cron runs with a minimal environment
+where plain `php` may be another version (`which php` in the terminal shows
+`/usr/local/php85/bin/php` on da38).
 
 ### 6. First admin
 
 ```bash
-php ~/domains/kens.buildingelectcert.com.ng/app/artisan app:create-admin you@example.com "Your Name"
+/usr/local/php85/bin/php ~/domains/kens.buildingelectcert.com.ng/app/artisan app:create-admin you@example.com "Your Name"
 ```
 
 It prints a temporary password; you set your own at first sign-in.
