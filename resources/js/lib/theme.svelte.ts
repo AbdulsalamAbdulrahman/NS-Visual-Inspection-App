@@ -4,7 +4,10 @@ export type { Appearance, ResolvedAppearance };
 
 const STORAGE_KEY = 'appearance';
 
-const appearance = $state<{ value: Appearance }>({ value: 'system' });
+/** Light unless the person picks Dark or Auto (product decision, not the OS setting). */
+const DEFAULT_APPEARANCE: Appearance = 'light';
+
+const appearance = $state<{ value: Appearance }>({ value: DEFAULT_APPEARANCE });
 
 let mediaQuery: MediaQueryList | null = null;
 
@@ -33,10 +36,10 @@ function readStored(): Appearance {
             return stored;
         }
     } catch {
-        // Storage can be unavailable (private mode); fall back to auto.
+        // Storage can be unavailable (private mode); fall back to the default.
     }
 
-    return 'system';
+    return DEFAULT_APPEARANCE;
 }
 
 function apply(value: Appearance): void {

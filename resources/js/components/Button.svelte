@@ -20,6 +20,8 @@
         size?: ButtonSize;
         /** Renders an Inertia Link instead of a button. */
         href?: string;
+        /** With href: a plain link opening in a new tab (Google Maps, files). */
+        external?: boolean;
         method?: Method;
         block?: boolean;
         class?: ClassValue;
@@ -30,6 +32,7 @@
         variant = 'primary',
         size = 'lg',
         href,
+        external = false,
         method,
         block = false,
         class: className,
@@ -66,7 +69,11 @@
     );
 </script>
 
-{#if href}
+{#if href && external}
+    <a {href} target="_blank" rel="noopener noreferrer" class={classes}>
+        {@render children()}
+    </a>
+{:else if href}
     <Link {href} {method} as={method && method !== 'get' ? 'button' : 'a'} class={classes}>
         {@render children()}
     </Link>

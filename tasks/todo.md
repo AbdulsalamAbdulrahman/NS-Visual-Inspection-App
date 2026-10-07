@@ -66,3 +66,23 @@
 - [x] Pest with Http::fake: init, verify paid/pending/failed/underpaid, webhook signature, idempotent finalise, sequential tickets, fee taken at init
 - [x] MySQL concurrency test (Process pool on kens_testing) for duplicate-safe finalisation
 - [x] Decisions (redirect checkout over Web SDK; duplicate payment keeps first ticket), build, autofixer, visual check, commit
+
+## Phase 5 · Viewing
+- [x] InspectionFilters (search, areas, purpose, connection, date range) shared by admin list, rep list and CSV export
+- [x] InspectionRowResource (amount for admins only), InspectionReportResource (sections A–D, attachments, summary; payment for admins only)
+- [x] Admin: inspections list (AD-02 table / AM-02 cards, filter toolbar + AM-03 sheet), detail (AD-03 / AM-04), streamed CSV export
+- [x] Rep: list scoped to assigned areas (SR-D1 / SR-T1 / SR-M1, area chips with counts, SR-M2 empty state), detail (SR-M3)
+- [x] Contractor: read-only report for submitted inspections (CD-01); edit redirects there; home rows link to it
+- [x] Shared report components: InspectionReport, ReportPage, Lightbox (swipe), ListFilters
+- [x] Admin overview (AD-01 / AM-01): month picker, KPI tiles, submissions-by-area chart, recent submissions
+- [x] Admin payments (AD-09): monthly summary, status chips, search, CSV export
+- [x] Admin nav inspections count
+- [x] DemoSeeder: paid submissions, failed/abandoned attempts, placeholder signature and photos
+- [x] Pest: rep area isolation (list, detail, attachments, signature), contractor isolation, admin filters, CSV contents/order, payments, overview, nav count
+- [x] Light theme is the default (user decision); tests for the server-rendered theme
+- [x] Build, types, autofixer; contractor views checked in Chrome (admin/rep visual check deferred to production testing); commit
+
+## Deploy (pulled forward from Phase 8)
+- [ ] GitHub Actions: tests, build assets, publish a `deploy` branch
+- [ ] Server pull script run by cron (maintenance, composer, migrate, caches) with a lock and log
+- [ ] `.env.example` for production, `docs/DEPLOY.md` one-time setup

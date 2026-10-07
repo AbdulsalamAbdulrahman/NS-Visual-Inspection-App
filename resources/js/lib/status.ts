@@ -8,3 +8,13 @@ export const accountTone: Record<AccountStatus, Tone> = {
     invited: 'info',
     suspended: 'bad',
 };
+
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'abandoned';
+
+/** Payment status → pill tone (AD-09). */
+export const paymentTone: Record<PaymentStatus, Tone> = {
+    paid: 'ok',
+    failed: 'bad',
+    abandoned: 'imp',
+    pending: 'muted',
+};

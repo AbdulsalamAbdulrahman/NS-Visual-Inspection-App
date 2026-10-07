@@ -8,6 +8,9 @@ use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ContractorController;
 use App\Http\Controllers\Admin\FeeController;
+use App\Http\Controllers\Admin\InspectionController as AdminInspectionController;
+use App\Http\Controllers\Admin\OverviewController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\RepController;
 use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\AttachmentController;
@@ -15,6 +18,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:contractor')->group(function () {
         Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
         Route::post('inspections', [InspectionController::class, 'store'])->name('inspections.store');
+        Route::get('inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
         Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
 
@@ -57,7 +62,14 @@ Route::middleware('auth')->group(function () {
     Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::inertia('/', 'admin/Overview')->name('overview');
+        Route::get('/', OverviewController::class)->name('overview');
+
+        Route::get('inspections', [AdminInspectionController::class, 'index'])->name('inspections.index');
+        Route::get('inspections/export', [AdminInspectionController::class, 'export'])->name('inspections.export');
+        Route::get('inspections/{inspection}', [AdminInspectionController::class, 'show'])->name('inspections.show');
+
+        Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/export', [AdminPaymentController::class, 'export'])->name('payments.export');
         Route::inertia('more', 'admin/More')->name('more');
 
         Route::get('contractors', [ContractorController::class, 'index'])->name('contractors.index');
@@ -88,6 +100,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:rep')->prefix('rep')->name('rep.')->group(function () {
-        Route::inertia('inspections', 'rep/Inspections')->name('inspections.index');
+        Route::get('inspections', [RepInspectionController::class, 'index'])->name('inspections.index');
+        Route::get('inspections/{inspection}', [RepInspectionController::class, 'show'])->name('inspections.show');
     });
 });

@@ -12,7 +12,7 @@
     import Pagination, { type PageLinks, type PageMeta } from '@/components/Pagination.svelte';
     import SearchField from '@/components/SearchField.svelte';
     import { STEP_COUNT } from '@/lib/inspection/steps';
-    import { edit, store } from '@/routes/inspections';
+    import { edit, show, store } from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
     import AddCircle from '~icons/ms/add-circle';
     import ArrowForward from '~icons/ms/arrow-forward';
@@ -147,14 +147,14 @@
                 <ul class="flex flex-col rounded-2xl border border-line bg-sf lg:hidden">
                     {#each submitted.data as s (s.uuid)}
                         <li class="border-b border-line last:border-b-0">
-                            <div class="flex items-center gap-2.5 py-3 pr-2 pl-3.5">
-                                <div class="flex min-w-0 flex-1 flex-col gap-[3px]">
+                            <Link href={show.url(s.uuid)} class="flex items-center gap-2.5 py-3 pr-2 pl-3.5 text-ink no-underline">
+                                <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
                                     <span class="font-mono text-sm font-medium text-brand">{s.ticketNo}</span>
                                     <b class="truncate text-[15px]">{s.ownerName}</b>
                                     <span class="text-[13px] text-mut">{s.area} · {s.submittedAt}</span>
-                                </div>
+                                </span>
                                 <ChevronRight class="size-6 text-mut" />
-                            </div>
+                            </Link>
                         </li>
                     {/each}
                 </ul>
@@ -170,14 +170,14 @@
                         <span role="columnheader"><span class="sr-only">Print</span></span>
                     </div>
                     {#each submitted.data as s (s.uuid)}
-                        <div role="row" class="grid h-[52px] items-center gap-3 border-b border-line px-5 text-sm last:border-b-0 {cols}">
+                        <Link href={show.url(s.uuid)} role="row" class="grid h-[52px] items-center gap-3 border-b border-line px-5 text-sm text-ink no-underline last:border-b-0 hover:bg-sf2 {cols}">
                             <span role="cell" class="font-mono text-sm font-medium text-brand">{s.ticketNo}</span>
                             <b role="cell" class="truncate">{s.ownerName}</b>
                             <span role="cell" class="truncate text-mut">{s.address}</span>
                             <span role="cell">{s.area}</span>
                             <span role="cell" class="font-mono">{s.submittedAt}</span>
                             <span role="cell" class="flex justify-end text-mut"><Print class="size-[22px]" aria-hidden="true" /></span>
-                        </div>
+                        </Link>
                     {/each}
                 </div>
 

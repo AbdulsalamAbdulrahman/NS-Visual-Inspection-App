@@ -59,3 +59,17 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 - **Paid twice** (e.g. two tabs): the second payment is recorded as paid, the first ticket stands, and a warning is logged for NSD to refund manually.
 - **Fee snapshot**: the amount is taken from the fee in effect when Pay is pressed and stored on the payment; later fee changes don't affect it.
 - **QR code** is an SVG rendered server-side by chillerlan and sent as a data URI for an `<img>`; it encodes `https://kens.buildingelectcert.com.ng/verify/{ticket}` (configurable via `KENS_VERIFY_BASE_URL`).
+
+## Phase 5
+- **Lists show submitted inspections only.** Drafts never appear on admin or rep lists or details (admin detail 404s, rep detail 403s); the overview's "Drafts in progress" tile is the only place drafts are counted.
+- **Filters live in the query string** (`search`, `areas` as comma ids, `purpose`, `connection`, `from`, `to`) so filtered lists can be bookmarked and the CSV export uses exactly the same filters. The phone Filters badge counts everything except search; the AM-03 sheet applies only on "Show N results".
+- **Reps never see money.** No amount column, no payment block, and the area filter is intersected with their own areas (a foreign area id returns nothing). The visibleTo scope and InspectionPolicy both enforce this.
+- **CSV exports stream** with a UTF-8 BOM (so Excel shows ₦) and newest first. They use `lazy()`: `lazyById()` re-sorts by id and would skip rows when ordered by `submitted_at`. Payments export uses `lazyByIdDesc()`.
+- **Overview month** is a calendar month: inspections counted by `submitted_at`, revenue by `paid_at` (Africa/Lagos). The picker offers the last 12 months; future or malformed months fall back to the current month.
+- **Chart**: a single series drawn with plain HTML/CSS (no chart library), sorted by count. Bar colour is validated for contrast against the surface in both themes; dark mode uses its own step (`--bar: #36a832`) because the dark `--mid` failed the lightness band. Desktop columns have hover tooltips and a Chart/Table toggle (screen readers always get the table); phones show the top 9 with "All N areas".
+- **Payments summary** covers the current month; the chips are the design's All / Successful / Failed / Abandoned (pending attempts appear under All).
+- **Print / PDF buttons** stay hidden until Phase 6 adds the print route (`printUrl` is null until then).
+- **Light theme by default** (user decision, 7 Oct 2026). Dark and Auto are opt-in in the theme switcher; the server renders `data-theme="light"` when no choice is stored, so there is no flash.
+
+## Deployment
+- **Pull-based deploys.** The host blocks inbound SSH from the internet but allows outbound connections to GitHub, so GitHub Actions publishes a built `deploy` branch and a cron job on the server pulls it (read-only deploy key) and runs the release steps. DirectAdmin's Git webhook alone can't run Composer or migrations.

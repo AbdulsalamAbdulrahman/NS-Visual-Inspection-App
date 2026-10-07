@@ -33,6 +33,7 @@
     --on-pri: #ffffff;
     --acc: #7bb43b;
     --mid: #188815;
+    --bar: #188815;
     --soft: #e2eedd;
     --ok: #16723a;
     --ok-bg: #dff1e2;
@@ -63,6 +64,7 @@
     --on-pri: #062012;
     --acc: #7bb43b;
     --mid: #3fb83a;
+    --bar: #36a832;
     --soft: #1a2f21;
     --ok: #74d38f;
     --ok-bg: #133120;
@@ -92,6 +94,7 @@
         --on-pri: #062012;
         --acc: #7bb43b;
         --mid: #3fb83a;
+        --bar: #36a832;
         --soft: #1a2f21;
         --ok: #74d38f;
         --ok-bg: #133120;
@@ -124,6 +127,7 @@
     --color-on-pri: var(--on-pri);
     --color-acc: var(--acc);
     --color-mid: var(--mid);
+    --color-bar: var(--bar);
     --color-soft: var(--soft);
     --color-ok: var(--ok);
     --color-ok-bg: var(--ok-bg);

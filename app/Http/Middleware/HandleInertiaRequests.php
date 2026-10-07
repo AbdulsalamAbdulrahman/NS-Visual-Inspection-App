@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Enums\Role;
 use App\Http\Resources\AuthUserResource;
 use App\Models\FeeSchedule;
+use App\Models\Inspection;
 use App\Models\ServiceArea;
 use App\Models\User;
 use App\Support\Money;
@@ -67,6 +68,7 @@ class HandleInertiaRequests extends Middleware
         $fee = FeeSchedule::currentAmountKobo();
 
         return [
+            'inspections' => Inspection::query()->submitted()->count(),
             'contractors' => User::query()->role(Role::Contractor)->count(),
             'reps' => User::query()->role(Role::Rep)->count(),
             'areas' => ServiceArea::query()->count(),

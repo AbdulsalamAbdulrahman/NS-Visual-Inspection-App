@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @if (in_array($appearance ?? 'system', ['light', 'dark'], true)) data-theme="{{ $appearance }}" @endif>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @if (in_array($appearance ?? 'light', ['light', 'dark'], true)) data-theme="{{ $appearance }}" @endif>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="theme-color" content="#09502E">
 
-        {{-- Resolve "auto" before first paint so dark users never see a light flash. --}}
+        {{-- Only for people who chose Auto: resolve it before first paint so there's no flash. --}}
         <script>
             (function () {
                 var d = document.documentElement;

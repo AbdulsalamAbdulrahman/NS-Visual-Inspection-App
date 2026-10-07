@@ -138,7 +138,7 @@ test('a submitted inspection cannot be edited', function () {
     $inspection = Inspection::factory()->forContractor($this->contractor)->submitted()->create(['owner_name' => 'Original']);
 
     $this->actingAs($this->contractor)->putJson(route('inspections.draft', $inspection->uuid), ['owner_name' => 'Changed'])->assertForbidden();
-    $this->get(route('inspections.edit', $inspection))->assertRedirect(route('inspections.index'));
+    $this->get(route('inspections.edit', $inspection))->assertRedirect(route('inspections.show', $inspection));
 
     expect($inspection->fresh()->owner_name)->toBe('Original');
 });
