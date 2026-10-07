@@ -1,5 +1,7 @@
 import type { Attachment, CircuitCondition } from './types';
 
+export type ReviewStatus = 'pending' | 'changes_requested' | 'approved';
+
 /** InspectionReportResource (read-only report for every role). */
 export type Report = {
     uuid: string;
@@ -77,6 +79,26 @@ export type Report = {
     };
     attachments: Attachment[];
     summary: { warnings: number; issues: number };
+    review: {
+        status: ReviewStatus | null;
+        label: string | null;
+        note: string | null;
+        reviewedAt: string | null;
+        approvedAt: string | null;
+        /** Admins only. */
+        history?: {
+            id: number;
+            action:
+                | 'submitted'
+                | 'changes_requested'
+                | 'resubmitted'
+                | 'approved';
+            label: string;
+            note: string | null;
+            by: string | null;
+            at: string;
+        }[];
+    };
     /** Admins only. */
     payment?: {
         reference: string;
@@ -98,6 +120,8 @@ export type InspectionRow = {
     submittedAt: string | null;
     purpose: string | null;
     connection: string | null;
+    review: ReviewStatus | null;
+    reviewLabel: string | null;
     /** Admins only. */
     amount?: string | null;
 };
@@ -109,7 +133,15 @@ export type ListFilters = {
     connection: string | null;
     from: string | null;
     to: string | null;
+    review: ReviewStatus | null;
     count: number;
+};
+
+/** Review status → pill tone and label (status is never colour alone). */
+export const REVIEW_TONE: Record<ReviewStatus, 'ok' | 'info' | 'imp'> = {
+    pending: 'info',
+    changes_requested: 'imp',
+    approved: 'ok',
 };
 
 export type FilterOptions = {

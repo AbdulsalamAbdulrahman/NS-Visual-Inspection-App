@@ -15,9 +15,11 @@
         inspector: Inspector;
         missing: MissingItem[];
         onedit: (step: number) => void;
+        /** What the fix list blocks: paying (drafts) or resubmitting (sent back by NSD). */
+        gate?: 'payment' | 'resubmitting';
     };
 
-    let { draft, options, areas, inspector, missing, onedit }: Props = $props();
+    let { draft, options, areas, inspector, missing, onedit, gate = 'payment' }: Props = $props();
 
     const label = (list: { value: string; label: string }[], value: string | null): string =>
         list.find((o) => o.value === value)?.label ?? '—';
@@ -88,7 +90,7 @@
 {#if missing.length > 0}
     <div class="flex flex-col gap-2 rounded-[14px] bg-bad-bg p-3.5" role="alert">
         <b class="flex items-center gap-2 text-base text-bad">
-            <ErrorIcon class="size-6" />{missing.length} item{missing.length === 1 ? '' : 's'} to fix before payment
+            <ErrorIcon class="size-6" />{missing.length} item{missing.length === 1 ? '' : 's'} to fix before {gate}
         </b>
         <ul class="flex flex-col gap-1">
             {#each fixRows as item (item.key)}

@@ -11,6 +11,8 @@
     import MobileHeader from '@/components/MobileHeader.svelte';
     import Pagination, { type PageLinks, type PageMeta } from '@/components/Pagination.svelte';
     import SearchField from '@/components/SearchField.svelte';
+    import StatusPill from '@/components/StatusPill.svelte';
+    import { REVIEW_TONE, type ReviewStatus } from '@/lib/inspection/report';
     import { STEP_COUNT } from '@/lib/inspection/steps';
     import { edit, show, store } from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
@@ -18,6 +20,7 @@
     import ArrowForward from '~icons/ms/arrow-forward';
     import AssignmentAdd from '~icons/ms/assignment-add';
     import ChevronRight from '~icons/ms/chevron-right';
+    import EditNote from '~icons/ms/edit-note';
     import Print from '~icons/ms/print';
 
     type Card = {
@@ -31,19 +34,24 @@
         stepLabel: string;
         savedLabel: string | null;
         submittedAt: string | null;
+        review: ReviewStatus | null;
+        reviewLabel: string | null;
+        reviewNote: string | null;
         amount: string | null;
     };
 
     type Props = {
         /** Not paginated: a contractor has a handful of drafts at most. */
         drafts: Card[];
+        /** Sent back by NSD; shown first because they block the certificate. */
+        returned: Card[];
         submitted: { data: Card[]; meta: PageMeta; links: PageLinks };
         submittedTotal: number;
         filters: { search: string };
         fee: string | null;
     };
 
-    let { drafts, submitted, submittedTotal, filters, fee }: Props = $props();
+    let { drafts, returned, submitted, submittedTotal, filters, fee }: Props = $props();
 
     const user = $derived(page.props.auth.user!);
     let starting = $state(false);
@@ -56,8 +64,13 @@
         router.post(store.url(), { uuid: crypto.randomUUID() }, { onFinish: () => (starting = false) });
     }
 
-    const steps = $derived(['Fill sections A–D on site', fee ? `Pay the ${fee} inspection fee` : 'Pay the inspection fee', 'Get your ticket number']);
-    const cols = 'grid-cols-[200px_minmax(0,1.2fr)_minmax(0,1.6fr)_130px_130px_48px]';
+    const steps = $derived([
+        'Fill sections A–D on site',
+        fee ? `Pay the ${fee} inspection fee` : 'Pay the inspection fee',
+        'NSD reviews the report',
+        'Print the certificate',
+    ]);
+    const cols = 'grid-cols-[190px_minmax(0,1.2fr)_minmax(0,1.5fr)_120px_120px_150px_40px]';
 </script>
 
 <svelte:head>
@@ -104,6 +117,32 @@
             </ol>
         </EmptyState>
     {:else}
+        {#if returned.length > 0}
+            <section class="flex flex-col gap-3" aria-labelledby="returned-heading">
+                <h2 id="returned-heading" class="eyebrow px-1 text-imp">Needs changes · {returned.length}</h2>
+                <ul class="grid gap-3 lg:grid-cols-2 lg:gap-4">
+                    {#each returned as r (r.uuid)}
+                        <li class="flex flex-col gap-2.5 rounded-2xl border-[1.5px] border-imp bg-sf p-3.5 lg:p-[18px]">
+                            <div class="flex justify-between gap-2">
+                                <div class="flex min-w-0 flex-col gap-0.5">
+                                    <span class="font-mono text-sm font-medium text-brand">{r.ticketNo}</span>
+                                    <b class="truncate text-base lg:text-[17px]">{r.ownerName}</b>
+                                </div>
+                                <StatusPill tone="imp" label="Changes requested" class="self-start" />
+                            </div>
+                            {#if r.reviewNote}
+                                <p class="line-clamp-3 border-l-[3px] border-imp pl-3 text-sm whitespace-pre-line">{r.reviewNote}</p>
+                            {/if}
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-sm text-mut">No extra payment needed</span>
+                                <Button href={edit.url(r.uuid)} size="sm" class="lg:h-10 lg:rounded-[10px] lg:text-sm"><EditNote />Fix and resubmit</Button>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+            </section>
+        {/if}
+
         {#if drafts.length > 0}
             <section class="flex flex-col gap-3" aria-labelledby="drafts-heading">
                 <h2 id="drafts-heading" class="eyebrow px-1">Drafts<span class="lg:hidden"> · {drafts.length}</span></h2>
@@ -149,7 +188,10 @@
                         <li class="border-b border-line last:border-b-0">
                             <Link href={show.url(s.uuid)} class="flex items-center gap-2.5 py-3 pr-2 pl-3.5 text-ink no-underline">
                                 <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                                    <span class="font-mono text-sm font-medium text-brand">{s.ticketNo}</span>
+                                    <span class="flex items-center gap-2">
+                                        <span class="font-mono text-sm font-medium text-brand">{s.ticketNo}</span>
+                                        {#if s.review}<StatusPill tone={REVIEW_TONE[s.review]} label={s.reviewLabel ?? ''} />{/if}
+                                    </span>
                                     <b class="truncate text-[15px]">{s.ownerName}</b>
                                     <span class="text-[13px] text-mut">{s.area} · {s.submittedAt}</span>
                                 </span>
@@ -167,6 +209,7 @@
                         <span role="columnheader">ADDRESS</span>
                         <span role="columnheader">AREA</span>
                         <span role="columnheader">DATE</span>
+                        <span role="columnheader">STATUS</span>
                         <span role="columnheader"><span class="sr-only">Print</span></span>
                     </div>
                     {#each submitted.data as s (s.uuid)}
@@ -176,6 +219,7 @@
                             <span role="cell" class="truncate text-mut">{s.address}</span>
                             <span role="cell">{s.area}</span>
                             <span role="cell" class="font-mono">{s.submittedAt}</span>
+                            <span role="cell">{#if s.review}<StatusPill tone={REVIEW_TONE[s.review]} label={s.reviewLabel ?? ''} />{/if}</span>
                             <span role="cell" class="flex justify-end text-mut"><Print class="size-[22px]" aria-hidden="true" /></span>
                         </Link>
                     {/each}

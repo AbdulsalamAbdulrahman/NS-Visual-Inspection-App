@@ -7,12 +7,15 @@ namespace Database\Seeders;
 use App\Actions\Payments\GenerateTicket;
 use App\Enums\NemsaCategory;
 use App\Enums\PaymentStatus;
+use App\Enums\ReviewAction;
+use App\Enums\ReviewStatus;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Models\ServiceArea;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +53,66 @@ class DemoSeeder extends Seeder
 
         $this->submissions();
         $this->placeholderFiles();
+        $this->reviews();
+    }
+
+    /**
+     * A demo certificate signatory, then most older submissions approved and
+     * a couple sent back, so every review state has something to show. Writes
+     * the state directly (no emails). Only runs once.
+     */
+    private function reviews(): void
+    {
+        $disk = Storage::disk('local');
+
+        if (Setting::signatory() === null) {
+            $disk->put('settings/nsd-signature-demo.png', $this->signaturePng());
+            Setting::put(Setting::SIGNATORY_NAME, 'Engr. Hauwa Abdullahi');
+            Setting::put(Setting::SIGNATORY_TITLE, 'Head, New Service Department');
+            Setting::put(Setting::SIGNATORY_SIGNATURE, 'settings/nsd-signature-demo.png');
+        }
+
+        if (Inspection::query()->where('review_status', ReviewStatus::Approved)->exists()) {
+            return;
+        }
+
+        $admin = User::query()->where('role', Role::Admin)->first();
+        $signatory = Setting::signatory();
+        $pending = Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->orderBy('submitted_at')->get();
+
+        foreach ($pending as $i => $inspection) {
+            $reviewedAt = $inspection->submitted_at?->addHours(fake()->numberBetween(2, 30));
+
+            if ($reviewedAt === null || $reviewedAt->isFuture() || $i >= (int) ($pending->count() * 0.7)) {
+                continue; // The newest stay in the queue.
+            }
+
+            if ($i % 11 === 5) {
+                $note = 'Earth resistance reading is above 2 Ω. Improve the electrode, re-test and attach a photo of the meter.';
+                $inspection->forceFill([
+                    'review_status' => ReviewStatus::ChangesRequested,
+                    'reviewed_by' => $admin?->id,
+                    'reviewed_at' => $reviewedAt,
+                    'review_note' => $note,
+                ])->save();
+                $inspection->reviews()->create(['user_id' => $admin?->id, 'action' => ReviewAction::ChangesRequested, 'note' => $note]);
+
+                continue;
+            }
+
+            $path = $inspection->storageDirectory().'/nsd-signature.png';
+            $disk->put($path, (string) $disk->get((string) $signatory['signature_path']));
+            $inspection->forceFill([
+                'review_status' => ReviewStatus::Approved,
+                'reviewed_by' => $admin?->id,
+                'reviewed_at' => $reviewedAt,
+                'approved_at' => $reviewedAt,
+                'signatory_name' => $signatory['name'],
+                'signatory_title' => $signatory['title'],
+                'signatory_signature_path' => $path,
+            ])->save();
+            $inspection->reviews()->create(['user_id' => $admin?->id, 'action' => ReviewAction::Approved]);
+        }
     }
 
     /**

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { APP_TITLE } from '@/lib/brand';
     import type { Snippet } from 'svelte';
     import Logo from '@/components/Logo.svelte';
 
@@ -49,11 +50,11 @@
         </div>
 
         <div class="relative mb-[220px] hidden max-w-[560px] flex-col gap-4 lg:flex">
-            <div class="text-[56px] leading-[1.02] font-extrabold tracking-[-0.03em]">
-                Visual Site Inspection
+            <div class="text-[48px] leading-[1.04] font-extrabold tracking-[-0.03em]">
+                {APP_TITLE}
             </div>
             <div class="text-[19px] leading-normal opacity-90">
-                Contractor inspection reports, payments and tickets for new service connections.
+                Contractor inspection reports, NSD review and certificates for new service connections.
             </div>
         </div>
     </div>

@@ -43,6 +43,8 @@
         if (merged.connection) query.connection = merged.connection;
         if (merged.from) query.from = merged.from;
         if (merged.to) query.to = merged.to;
+        // Review chips live outside this toolbar; keep their choice.
+        if (merged.review) query.review = merged.review;
 
         router.get(url, query, { preserveState: true, preserveScroll: true, replace: true, only });
     }

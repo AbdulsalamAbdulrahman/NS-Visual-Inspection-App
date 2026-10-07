@@ -8,6 +8,7 @@
     import { index as home } from '@/routes/inspections';
     import Check from '~icons/ms/check';
     import Description from '~icons/ms/description';
+    import HourglassTop from '~icons/ms/hourglass-top';
     import Print from '~icons/ms/print';
 
     type Props = {
@@ -56,6 +57,10 @@
 {/snippet}
 
 {#snippet actions()}
+    <p class="flex items-start gap-2 rounded-xl bg-info-bg px-3.5 py-3 text-sm text-ink">
+        <HourglassTop class="size-5 flex-none text-info" />
+        <span><b>Next: NSD review.</b> You'll get an email when the certificate is issued, or if anything needs changing.</span>
+    </p>
     <div class="grid grid-cols-2 gap-2.5 lg:flex lg:gap-3">
         {#if ticket.reportUrl}
             <Button variant="outline" href={ticket.reportUrl} class="text-base lg:h-[52px]"><Description />View report</Button>

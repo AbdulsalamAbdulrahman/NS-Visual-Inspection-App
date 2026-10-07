@@ -60,7 +60,7 @@ class InitPayment
                 paymentReference: $payment->payment_reference,
                 customerName: $contractor->name,
                 customerEmail: $contractor->email,
-                description: Str::limit("Site inspection fee · {$inspection->owner_name} · {$inspection->form74_no}", 120),
+                description: Str::limit("Building electrical inspection fee · {$inspection->owner_name} · {$inspection->form74_no}", 120),
                 redirectUrl: route('payments.show', $payment),
             );
         } catch (MonnifyException $e) {

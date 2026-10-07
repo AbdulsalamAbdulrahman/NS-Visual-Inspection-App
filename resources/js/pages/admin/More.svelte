@@ -14,6 +14,7 @@
     import Payments from '~icons/ms/payments';
     import Person from '~icons/ms/person';
     import Tune from '~icons/ms/tune';
+    import WorkspacePremium from '~icons/ms/workspace-premium';
 
     type Item = { label: string; href: string; icon: Component; meta?: string | number };
 
@@ -27,6 +28,7 @@
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, meta: nav.areas },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
         { label: 'Fee settings', href: '/admin/fees', icon: Tune, meta: nav.fee },
+        { label: 'Certificate signatory', href: '/admin/certificate', icon: WorkspacePremium },
     ]);
 </script>
 

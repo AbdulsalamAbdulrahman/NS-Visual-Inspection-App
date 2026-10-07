@@ -42,14 +42,14 @@ class InspectionSubmitted extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Inspection submitted · {$inspection->ticket_no}")
             ->greeting("Hello {$notifiable->firstName()},")
-            ->line('Your payment was confirmed and the Visual Site Inspection Report has been submitted to the New Service Department.')
+            ->line('Your payment was confirmed and the inspection report has been submitted to the New Service Department for review.')
             ->line("**Ticket:** {$inspection->ticket_no}")
             ->line("**Owner:** {$inspection->owner_name}")
             ->line("**Address:** {$inspection->property_address}")
             ->line('**Amount paid:** '.Money::format($this->payment->amount_paid_kobo ?? $this->payment->amount_kobo))
             ->line("**Payment reference:** {$this->payment->transaction_reference}")
             ->action('View report', route('inspections.ticket', $inspection))
-            ->line('Submitted reports can no longer be edited.')
+            ->line('We\'ll email you when the certificate is issued, or if NSD needs you to change anything.')
             ->salutation('— New Service Department, Kaduna Electric');
     }
 }

@@ -39,6 +39,9 @@ class InspectionCardResource extends JsonResource
                 default => 'saved '.$updated->format('j M'),
             },
             'submittedAt' => $this->submitted_at?->format('d M Y'),
+            'review' => $this->review_status?->value,
+            'reviewLabel' => $this->review_status?->label(),
+            'reviewNote' => $this->review_note,
             'amount' => null,
         ];
     }

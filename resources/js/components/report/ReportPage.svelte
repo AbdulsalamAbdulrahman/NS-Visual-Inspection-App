@@ -3,15 +3,16 @@
     import type { Snippet } from 'svelte';
     import BottomBar from '@/components/BottomBar.svelte';
     import Button from '@/components/Button.svelte';
-    import type { Report } from '@/lib/inspection/report';
+    import { REVIEW_TONE, type Report } from '@/lib/inspection/report';
     import InspectionReport from './InspectionReport.svelte';
+    import ReviewBanner from './ReviewBanner.svelte';
     import ArrowBack from '~icons/ms/arrow-back';
     import ChevronRight from '~icons/ms/chevron-right';
-    import Download from '~icons/ms/download';
-    import Lock from '~icons/ms/lock';
+    import Description from '~icons/ms/description';
     import MapIcon from '~icons/ms/map';
     import Print from '~icons/ms/print';
     import Share from '~icons/ms/share';
+    import WorkspacePremium from '~icons/ms/workspace-premium';
 
     type Props = {
         report: Report;
@@ -19,19 +20,22 @@
         backLabel: string;
         /** Phone header sub-line (owner · area, or "Submitted … · Paid …"). */
         subtitle: string;
-        printUrl: string | null;
-        /** Contractor view shows the "can't be edited" note (CD-01). */
-        lockedNote?: boolean;
-        /** Status pill on desktop ("Paid · submitted" for admins). */
-        statusPill?: string | null;
-        /** Where the desktop chrome starts (rep shell switches at md). */
+        /** Two-page A4 report (any submitted inspection). */
+        printUrl: string;
+        /** One-page certificate, only once NSD has approved. */
+        certificateUrl: string | null;
+        /** Contractor view (CD-01): share button, "you" wording. */
+        contractorView?: boolean;
+        /** Replaces the default review banner (admin review panel, contractor actions). */
         children?: Snippet;
     };
 
-    let { report, backHref, backLabel, subtitle, printUrl, lockedNote = false, statusPill = null, children }: Props = $props();
+    let { report, backHref, backLabel, subtitle, printUrl, certificateUrl, contractorView = false, children }: Props = $props();
+
+    const pillTone = { ok: 'bg-ok-bg text-ok', info: 'bg-info-bg text-info', imp: 'bg-imp-bg text-imp' } as const;
 
     async function share(): Promise<void> {
-        const url = printUrl ?? window.location.href;
+        const url = certificateUrl ?? printUrl;
 
         if (navigator.share) {
             await navigator.share({ title: `Inspection report ${report.ticketNo}`, url }).catch(() => {});
@@ -41,7 +45,7 @@
     }
 
     const pills = $derived(
-        [statusPill, report.a.purpose, [report.a.connection, report.a.voltage].filter(Boolean).join(' · '), report.a.area].filter(Boolean) as string[],
+        [report.a.purpose, [report.a.connection, report.a.voltage].filter(Boolean).join(' · '), report.a.area].filter(Boolean) as string[],
     );
 </script>
 
@@ -58,7 +62,7 @@
         <h1 class="font-mono text-base font-semibold text-brand">{report.ticketNo}</h1>
         <span class="truncate text-[13px] text-mut">{subtitle}</span>
     </div>
-    {#if lockedNote}
+    {#if contractorView}
         <button type="button" class="mt-3 flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Share report" onclick={share}>
             <Share class="size-6" />
         </button>
@@ -76,36 +80,42 @@
         <div class="flex flex-col gap-1.5">
             <span class="font-mono text-2xl font-semibold text-brand">{report.ticketNo}</span>
             <div class="flex flex-wrap gap-2 text-[13px] font-bold">
-                {#each pills as pill, i (pill)}
-                    <span class={['rounded-full px-2.5 py-1', i === 0 && statusPill ? 'bg-ok-bg text-ok' : 'bg-sf2']}>{pill}</span>
+                {#if report.review.status}
+                    <span class={['rounded-full px-2.5 py-1', pillTone[REVIEW_TONE[report.review.status]]]}>{report.review.label}</span>
+                {/if}
+                {#each pills as pill (pill)}
+                    <span class="rounded-full bg-sf2 px-2.5 py-1">{pill}</span>
                 {/each}
             </div>
         </div>
-        {#if printUrl}
-            <Button variant="outline" size="sm" class="ml-auto h-11 border-[1.5px] bg-sf" href="{printUrl}?pdf=1"><Download />PDF</Button>
-            <Button size="sm" class="h-11" href={printUrl}><Print />Print report</Button>
+        {#if certificateUrl}
+            <Button variant="outline" size="sm" class="ml-auto h-11 border-[1.5px] bg-sf" href={printUrl}><Description />Full report</Button>
+            <Button size="sm" class="h-11" href={certificateUrl}><WorkspacePremium />Certificate</Button>
+        {:else}
+            <Button size="sm" class="ml-auto h-11" href={printUrl}><Print />Print report</Button>
         {/if}
     </div>
 
-    {#if lockedNote}
-        <div class="flex items-center gap-2 rounded-xl bg-sf2 px-3.5 py-2.5 text-sm text-mut">
-            <Lock class="size-[18px]" />Submitted reports can't be edited.
-        </div>
+    {#if children}
+        {@render children()}
+    {:else}
+        <ReviewBanner {report} audience={contractorView ? 'contractor' : 'staff'} />
     {/if}
-
-    {@render children?.()}
 
     <InspectionReport {report} />
 </div>
 
 <!-- Phone action bar -->
 <BottomBar class="lg:hidden">
-    <div class={['grid gap-2.5', report.a.gps && !lockedNote ? 'grid-cols-2' : 'grid-cols-1']}>
-        {#if report.a.gps && !lockedNote}
-            <Button variant="outline" href={report.a.gps.mapsUrl} external class="text-[15px]"><MapIcon />Google Maps</Button>
-        {/if}
-        {#if printUrl}
-            <Button href={printUrl} class="text-[15px]"><Print />{lockedNote ? 'Print report' : 'Print'}</Button>
+    <div class="grid grid-cols-2 gap-2.5">
+        {#if certificateUrl}
+            <Button variant="outline" href={printUrl} class="text-[15px]"><Description />Full report</Button>
+            <Button href={certificateUrl} class="text-[15px]"><WorkspacePremium />Certificate</Button>
+        {:else}
+            {#if report.a.gps && !contractorView}
+                <Button variant="outline" href={report.a.gps.mapsUrl} external class="text-[15px]"><MapIcon />Google Maps</Button>
+            {/if}
+            <Button href={printUrl} class={['text-[15px]', (!report.a.gps || contractorView) && 'col-span-2']}><Print />Print report</Button>
         {/if}
     </div>
 </BottomBar>

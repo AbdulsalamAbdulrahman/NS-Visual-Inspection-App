@@ -6,15 +6,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ConnectionType;
 use App\Enums\PropertyPurpose;
+use App\Enums\ReviewStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InspectionReportResource;
 use App\Http\Resources\InspectionRowResource;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
+use App\Models\Setting;
 use App\Support\InspectionFilters;
 use App\Support\Money;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use RuntimeException;
@@ -35,9 +37,15 @@ class InspectionController extends Controller
             ->paginate(25)
             ->withQueryString();
 
+        $reviewCounts = Inspection::query()->submitted()
+            ->selectRaw('review_status, count(*) as total')
+            ->groupBy('review_status')
+            ->pluck('total', 'review_status');
+
         return Inertia::render('admin/Inspections', [
             'inspections' => InspectionRowResource::collection($inspections),
             'totalSubmitted' => Inspection::query()->submitted()->count(),
+            'reviewCounts' => collect(ReviewStatus::cases())->mapWithKeys(fn (ReviewStatus $s): array => [$s->value => (int) ($reviewCounts[$s->value] ?? 0)]),
             'filters' => $filters->toArray(),
             'filterOptions' => self::filterOptions(),
         ]);
@@ -47,11 +55,14 @@ class InspectionController extends Controller
     {
         abort_unless($inspection->isSubmitted(), 404);
 
-        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile']);
+        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile', 'reviews.user:id,name']);
 
         return Inertia::render('admin/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
-            'printUrl' => Route::has('inspections.print') ? route('inspections.print', $inspection) : null,
+            'printUrl' => route('inspections.print', $inspection),
+            'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
+            'canReview' => Gate::allows('review', $inspection),
+            'signatoryReady' => Setting::signatory() !== null,
         ]);
     }
 
@@ -76,6 +87,7 @@ class InspectionController extends Controller
             fputcsv($out, [
                 'Ticket', 'Submitted', 'Owner', 'Address', 'Form 74 no.', 'Service area', 'Purpose', 'Connection',
                 'Voltage', 'Contractor', 'NEMSA reg. no.', 'Amount paid', 'Monnify reference', 'GPS latitude', 'GPS longitude',
+                'Review status', 'Approved',
             ]);
 
             // lazy() keeps the submitted_at order; lazyById() would re-sort by id and skip rows.
@@ -97,6 +109,8 @@ class InspectionController extends Controller
                     $payment?->transaction_reference,
                     $i->gps_lat,
                     $i->gps_lng,
+                    $i->review_status?->label(),
+                    $i->approved_at?->format('Y-m-d H:i'),
                 ]);
             }
 

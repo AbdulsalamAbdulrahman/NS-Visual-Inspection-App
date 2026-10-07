@@ -11,7 +11,9 @@
     import { overview } from '@/routes/admin';
     import { index as inspections, show } from '@/routes/admin/inspections';
     import CalendarMonth from '~icons/ms/calendar-month';
+    import ArrowForward from '~icons/ms/arrow-forward';
     import ExpandMore from '~icons/ms/expand-more';
+    import HourglassTop from '~icons/ms/hourglass-top';
 
     type Props = {
         month: {
@@ -31,6 +33,7 @@
             contractorsTotal: number;
             contractorsSuspended: number;
             drafts: number;
+            pendingReview: number;
         };
         areas: { name: string; count: number }[];
         recent: InspectionRow[];
@@ -119,6 +122,17 @@
         <h1 class="text-[28px] font-extrabold">Overview</h1>
         {@render monthPicker('ml-auto h-[42px] w-52')}
     </div>
+
+    {#if kpis.pendingReview > 0}
+        <Link
+            href={inspections.url({ query: { review: 'pending' } })}
+            class="flex items-center gap-3 rounded-2xl border-[1.5px] border-info bg-info-bg px-4 py-3.5 text-ink no-underline hover:brightness-[0.98]"
+        >
+            <HourglassTop class="size-6 flex-none text-info" />
+            <span class="flex-1 text-[15px]"><b>{kpis.pendingReview} report{kpis.pendingReview === 1 ? '' : 's'}</b> waiting for NSD review</span>
+            <span class="flex items-center gap-1 text-sm font-bold text-brand">Review<ArrowForward class="size-5" /></span>
+        </Link>
+    {/if}
 
     <!-- KPI tiles (AD-01 / AM-01) -->
     <div class="grid grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-4">

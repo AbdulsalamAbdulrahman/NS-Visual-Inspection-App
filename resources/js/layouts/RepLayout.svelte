@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { APP_TITLE } from '@/lib/brand';
     import { page } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import Avatar from '@/components/Avatar.svelte';
@@ -20,7 +21,7 @@
         <Logo size={40} />
         <div class="flex flex-col">
             <b class="text-base">Kaduna Electric</b>
-            <span class="text-xs text-mut">Site Inspection · Service rep</span>
+            <span class="text-xs text-mut">{APP_TITLE} · Service rep</span>
         </div>
         <UserMenu
             {user}

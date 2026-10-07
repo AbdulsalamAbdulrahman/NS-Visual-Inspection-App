@@ -1,7 +1,7 @@
-# KENS: Kaduna Electric Visual Site Inspection
+# KENS: Kaduna Electric Building Electrical Inspection & Certification
 
 ## Project overview
-Web app for Kaduna Electric's New Service Department. Contractors fill the Visual Site Inspection Report on site (mostly on phones), pay a fee via Monnify, and get a ticket (KE-NSD-YYYY-000123). Admins see and manage everything; service reps view and print submissions in their 1–3 assigned service areas only. Full spec: docs/SPEC.md. UI designs: docs/design/ (source of truth for layout, copy and states).
+Web app for Kaduna Electric's New Service Department. Contractors fill the building electrical inspection report on site (mostly on phones), pay a fee via Monnify, and get a ticket (KE-NSD-YYYY-000123). NSD admins review each paid report and either approve it (issuing a certificate whose number is the ticket) or send it back for changes. Admins see and manage everything; service reps view and print submissions in their 1–3 assigned service areas only. Full spec: docs/SPEC.md. UI designs: docs/design/ (source of truth for layout, copy and states).
 
 ## Tech stack
 Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, Fortify (registration off), MariaDB 11.4 (mysql driver), Pest, chillerlan/php-qrcode, signature_pad, browser-image-compression, exifr, idb, unplugin-icons (Material Symbols Rounded), self-hosted Public Sans + IBM Plex Mono via @fontsource.
@@ -25,7 +25,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | 3 | Inspection form | Done |
 | 4 | Payment and ticket | Done |
 | 5 | Viewing | Done |
-| 6 | Print and verify | Not started |
+| 6 | Review, certificate, print and verify | Done |
 | 7 | Offline (PWA) | Not started |
 | 8 | Production readiness | Not started |
 

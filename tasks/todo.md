@@ -89,3 +89,21 @@
 - [x] `deploy/env.production.example`, `docs/DEPLOY.md` one-time setup
 - [x] PHPStan clean (fixed: paidOn crash when Monnify omits the date, typed request data, Monnify return shape) and `vp check` clean
 - [ ] Server one-time setup (deploy key, clone, shared/.env, cron, first admin) — with the user
+
+## Phase 6 · Review, certificate, print and verify
+Client decisions (7 Oct 2026): app renamed "Building Electrical Inspection & Certification" (short name KENS stays); certificate issued only after NSD approval; signed by the contractor + Head of NSD; "Print certificate" and "Print full report" are separate actions. Certificate design follows the client's sample layout with Kaduna Electric branding — no coat of arms, NEMSA marks or federal wording.
+- [x] Rename: layouts, auth shell, emails, Monnify description, CLAUDE.md
+- [x] ReviewStatus enum (pending, changes_requested, approved) + review columns, approver snapshot, certificate signatory settings table
+- [x] Actions: ApproveInspection (snapshot signatory), RequestChanges (reason, reopens for edits), ResubmitInspection (no new payment, back to pending)
+- [x] Policy: review (admin), update while changes requested, certificate (approved + view), print (submitted + view)
+- [x] Notifications: approved (certificate link), changes requested (reason) to the contractor
+- [x] Admin: review panel on detail (approve / request changes), review filter + "Pending review" on list, nav count, overview tile
+- [x] Contractor: review status on home + report, changes-requested banner, edit + resubmit without paying
+- [x] Rep: review status visible; certificate only when approved
+- [x] Settings page: NSD signatory name, title, signature image (private disk)
+- [x] Full report print `/inspections/{uuid}/print` (PR-01/PR-02, no payment data) + PR-03 phone preview
+- [x] Certificate `/inspections/{uuid}/certificate` (A4, one page, QR panel, two signatures, liability clause)
+- [x] Public `/verify/{ticket}` (rate-limited; masked owner; review status; no other personal data)
+- [x] Pest: review rules and transitions, resubmit without payment, signatory snapshot, print/certificate access by role/area/status, verify masking + rate limit, rename
+- [x] Build, types, PHPStan, autofixer, decisions, CLAUDE.md status; commit
+- [ ] Visual check of certificate / print / review screens (needs a signed-in session or production)

@@ -24,22 +24,43 @@ class InspectionPolicy
         };
     }
 
-    /** Only the owning contractor, only while it's a draft. */
+    /** Only the owning contractor, while it's a draft or sent back for changes. */
     public function update(User $user, Inspection $inspection): bool
     {
-        return $user->isContractor()
-            && $inspection->contractor_id === $user->id
-            && $inspection->isDraft();
+        return $this->owns($user, $inspection) && $inspection->isEditable();
     }
 
+    /** Paying submits a draft; a report sent back for changes is resubmitted without paying again. */
     public function pay(User $user, Inspection $inspection): bool
     {
-        return $this->update($user, $inspection);
+        return $this->owns($user, $inspection) && $inspection->isDraft();
     }
 
-    /** Printing needs a ticket, i.e. a submitted inspection. */
+    public function resubmit(User $user, Inspection $inspection): bool
+    {
+        return $this->owns($user, $inspection) && $inspection->needsChanges();
+    }
+
+    /** NSD admins approve or send back reports waiting in the review queue. */
+    public function review(User $user, Inspection $inspection): bool
+    {
+        return $user->isAdmin() && $inspection->isAwaitingReview();
+    }
+
+    /** The full report prints once it has a ticket, i.e. once it's submitted. */
     public function print(User $user, Inspection $inspection): bool
     {
         return $inspection->isSubmitted() && $this->view($user, $inspection);
+    }
+
+    /** A certificate exists only after NSD approval. */
+    public function certificate(User $user, Inspection $inspection): bool
+    {
+        return $inspection->isApproved() && $this->view($user, $inspection);
+    }
+
+    private function owns(User $user, Inspection $inspection): bool
+    {
+        return $user->isContractor() && $inspection->contractor_id === $user->id;
     }
 }

@@ -38,8 +38,8 @@ class LoginDetails extends Notification implements ShouldQueue
             ->subject($this->resent ? 'Your new KENS login details' : 'Your KENS login details')
             ->greeting("Hello {$notifiable->firstName()},")
             ->line($this->resent
-                ? 'The Kaduna Electric New Service Department has issued you new login details for the Visual Site Inspection app.'
-                : 'The Kaduna Electric New Service Department has created your account for the Visual Site Inspection app.')
+                ? 'The Kaduna Electric New Service Department has issued you new login details for the Building Electrical Inspection & Certification app.'
+                : 'The Kaduna Electric New Service Department has created your account for the Building Electrical Inspection & Certification app.')
             ->line("**Email:** {$notifiable->email}")
             ->line("**Temporary password:** `{$this->temporaryPassword}`")
             ->action('Sign in', route('login'))

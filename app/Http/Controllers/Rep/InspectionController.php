@@ -13,7 +13,6 @@ use App\Models\ServiceArea;
 use App\Support\InspectionFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -60,7 +59,8 @@ class InspectionController extends Controller
 
         return Inertia::render('rep/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
-            'printUrl' => Route::has('inspections.print') ? route('inspections.print', $inspection) : null,
+            'printUrl' => route('inspections.print', $inspection),
+            'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
         ]);
     }
 }

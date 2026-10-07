@@ -5,6 +5,7 @@
     import Logo from '@/components/Logo.svelte';
     import Toaster from '@/components/Toaster.svelte';
     import UserMenu from '@/components/UserMenu.svelte';
+    import { APP_TITLE } from '@/lib/brand';
     import { currentPath } from '@/lib/currentUrl.svelte';
     import Assignment from '~icons/ms/assignment';
     import Badge from '~icons/ms/badge';
@@ -15,6 +16,7 @@
     import SpaceDashboard from '~icons/ms/space-dashboard';
     import Tune from '~icons/ms/tune';
     import UnfoldMore from '~icons/ms/unfold-more';
+    import WorkspacePremium from '~icons/ms/workspace-premium';
 
     let { children }: { children: Snippet } = $props();
 
@@ -32,6 +34,8 @@
         (page.props.adminNav as Partial<Record<string, number>> | undefined) ?? {},
     );
     const current = currentPath();
+    /** Reports waiting for NSD review: shown instead of the total so the queue stands out. */
+    const pendingReview = $derived(counts.pendingReview ?? 0);
 
     const sidebar: NavItem[] = [
         { label: 'Overview', href: '/admin', icon: SpaceDashboard, exact: true },
@@ -41,6 +45,7 @@
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, countKey: 'areas' },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
         { label: 'Fee settings', href: '/admin/fees', icon: Tune },
+        { label: 'Certificate', href: '/admin/certificate', icon: WorkspacePremium },
     ];
 
     // Phone bottom tabs (AM-01). Everything else lives under "More" (AM-08).
@@ -71,9 +76,9 @@
     >
         <div class="flex items-center gap-2.5 px-2 pb-5">
             <Logo size={40} />
-            <div class="flex flex-col">
+            <div class="flex min-w-0 flex-col">
                 <b class="text-[15px]">Kaduna Electric</b>
-                <span class="text-xs text-mut">Site Inspection · Admin</span>
+                <span class="text-xs leading-snug text-mut">{APP_TITLE} · Admin</span>
             </div>
         </div>
 
@@ -93,7 +98,9 @@
                 >
                     <item.icon class="size-[21px] flex-none" />
                     <span class="flex-1">{item.label}</span>
-                    {#if count !== undefined}
+                    {#if item.countKey === 'inspections' && pendingReview > 0}
+                        <span class="rounded-full bg-acc px-2 py-0.5 font-mono text-xs font-semibold text-[#062012]" title="{pendingReview} waiting for review">{pendingReview} to review</span>
+                    {:else if count !== undefined}
                         <span class="font-mono text-xs font-medium text-mut">{count}</span>
                     {/if}
                 </Link>
@@ -140,11 +147,16 @@
                 >
                     <span
                         class={[
-                            'flex h-[30px] items-center justify-center rounded-full',
+                            'relative flex h-[30px] items-center justify-center rounded-full',
                             active && 'w-14 bg-soft',
                         ]}
                     >
                         <item.icon class="size-[22px]" />
+                        {#if item.countKey === 'inspections' && pendingReview > 0}
+                            <span class="absolute -top-1 left-[calc(50%+4px)] min-w-[18px] rounded-full bg-acc px-1 text-center font-mono text-[11px] leading-[18px] font-semibold text-[#062012]">
+                                {pendingReview}<span class="sr-only"> to review</span>
+                            </span>
+                        {/if}
                     </span>
                     {item.label}
                 </Link>

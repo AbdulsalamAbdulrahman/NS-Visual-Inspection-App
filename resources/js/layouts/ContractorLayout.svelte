@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { APP_TITLE } from '@/lib/brand';
     import { Link, page } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import Avatar from '@/components/Avatar.svelte';
@@ -27,7 +28,7 @@
         <Logo size={40} />
         <div class="flex flex-col">
             <b class="text-base">Kaduna Electric</b>
-            <span class="text-xs text-mut">Visual Site Inspection</span>
+            <span class="text-xs text-mut">{APP_TITLE}</span>
         </div>
         <nav class="ml-10 flex gap-1 text-[15px] font-semibold" aria-label="Main">
             {#each nav as item (item.href)}

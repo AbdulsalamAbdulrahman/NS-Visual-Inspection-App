@@ -6,6 +6,8 @@ namespace App\Actions\Payments;
 
 use App\Enums\InspectionStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\ReviewAction;
+use App\Enums\ReviewStatus;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Notifications\InspectionSubmitted;
@@ -69,6 +71,7 @@ class FinalizePaidInspection
 
             $inspection->forceFill([
                 'status' => InspectionStatus::Submitted,
+                'review_status' => ReviewStatus::Pending,
                 'ticket_no' => $this->tickets->handle(),
                 'submitted_at' => now(),
                 'current_step' => Inspection::STEPS,
@@ -79,6 +82,8 @@ class FinalizePaidInspection
                 'inspector_coren_no' => $licence?->coren_no,
                 'inspector_firm_name' => $licence?->firm_name,
             ])->save();
+
+            $inspection->reviews()->create(['user_id' => $contractor->id, 'action' => ReviewAction::Submitted]);
 
             // Queued; only sent once this transaction has committed.
             $contractor->notify(new InspectionSubmitted($inspection, $locked));

@@ -3,12 +3,13 @@
 </script>
 
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
+    import { Link, page, router } from '@inertiajs/svelte';
     import Button from '@/components/Button.svelte';
     import EmptyState from '@/components/EmptyState.svelte';
     import Pagination, { type PageLinks, type PageMeta } from '@/components/Pagination.svelte';
     import ListFilters from '@/components/report/ListFilters.svelte';
-    import type { FilterOptions, InspectionRow, ListFilters as Filters } from '@/lib/inspection/report';
+    import StatusPill from '@/components/StatusPill.svelte';
+    import { REVIEW_TONE, type FilterOptions, type InspectionRow, type ListFilters as Filters, type ReviewStatus } from '@/lib/inspection/report';
     import { exportMethod as exportCsv, index, show } from '@/routes/admin/inspections';
     import Assignment from '~icons/ms/assignment';
     import ChevronRight from '~icons/ms/chevron-right';
@@ -17,21 +18,59 @@
     type Props = {
         inspections: { data: InspectionRow[]; meta: PageMeta; links: PageLinks };
         totalSubmitted: number;
+        reviewCounts: Record<ReviewStatus, number>;
         filters: Filters;
         filterOptions: FilterOptions;
     };
 
-    let { inspections, totalSubmitted, filters, filterOptions }: Props = $props();
+    let { inspections, totalSubmitted, reviewCounts, filters, filterOptions }: Props = $props();
+
+    const reviewChips: { value: ReviewStatus | null; label: string }[] = [
+        { value: null, label: 'All' },
+        { value: 'pending', label: 'Under review' },
+        { value: 'changes_requested', label: 'Changes requested' },
+        { value: 'approved', label: 'Approved' },
+    ];
+
+    function pickReview(review: ReviewStatus | null): void {
+        const url = new URL(window.location.href);
+
+        if (review) {
+            url.searchParams.set('review', review);
+        } else {
+            url.searchParams.delete('review');
+        }
+
+        url.searchParams.delete('page');
+        router.get(url.pathname + url.search, {}, { preserveState: true, preserveScroll: true, replace: true, only: ['inspections', 'filters', 'reviewCounts'] });
+    }
 
     // Export uses the same query string as the list.
     const exportUrl = $derived(exportCsv.url() + (page.url.includes('?') ? page.url.slice(page.url.indexOf('?')) : ''));
-    const filtered = $derived(filters.count > 0 || !!filters.search);
-    const cols = 'grid-cols-[190px_minmax(0,1.1fr)_minmax(0,1.4fr)_110px_minmax(0,1.1fr)_110px_110px]';
+    const filtered = $derived(filters.count > 0 || !!filters.search || !!filters.review);
+    const cols = 'grid-cols-[180px_minmax(0,1.1fr)_minmax(0,1.3fr)_100px_minmax(0,1fr)_100px_150px_100px]';
 </script>
 
 <svelte:head>
     <title>Inspections · KENS</title>
 </svelte:head>
+
+{#snippet chips()}
+    <div class="flex gap-2 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Filter by review status">
+        {#each reviewChips as chip (chip.label)}
+            {@const active = (filters.review ?? null) === chip.value}
+            {@const count = chip.value ? reviewCounts[chip.value] : totalSubmitted}
+            <button
+                type="button"
+                aria-pressed={active}
+                class={['flex h-10 flex-none items-center gap-1.5 rounded-full px-3.5 text-sm', active ? 'bg-pri font-bold text-on-pri' : 'border border-line bg-sf font-semibold']}
+                onclick={() => pickReview(chip.value)}
+            >
+                {chip.label}<span class={['font-mono text-xs font-medium', active ? 'opacity-80' : 'text-mut']}>{count}</span>
+            </button>
+        {/each}
+    </div>
+{/snippet}
 
 <!-- Phone header (AM-02) -->
 <header class="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-sf px-4 pt-[calc(4px+env(safe-area-inset-top))] pb-3.5 lg:hidden">
@@ -43,6 +82,7 @@
         <a href={exportUrl} class="flex size-11 items-center justify-center rounded-xl bg-sf2 text-ink" aria-label="Export CSV"><Download class="size-6" /></a>
     </div>
     <ListFilters {filters} options={filterOptions} url={index.url()} only={['inspections', 'filters']} resultCount={inspections.meta.total} />
+    {@render chips()}
 </header>
 
 <div class="flex flex-col gap-[18px] px-4 py-3 lg:px-10 lg:py-8">
@@ -53,7 +93,8 @@
         </div>
         <Button size="sm" href={exportUrl} external class="ml-auto h-11"><Download />Export CSV</Button>
     </div>
-    <div class="hidden lg:block">
+    <div class="hidden flex-col gap-3 lg:flex">
+        {@render chips()}
         <ListFilters {filters} options={filterOptions} url={index.url()} only={['inspections', 'filters']} resultCount={inspections.meta.total} />
     </div>
 
@@ -73,6 +114,7 @@
                 <span role="columnheader">AREA</span>
                 <span role="columnheader">CONTRACTOR</span>
                 <span role="columnheader" aria-sort="descending">DATE ↓</span>
+                <span role="columnheader">REVIEW</span>
                 <span role="columnheader" class="text-right">AMOUNT</span>
             </div>
             {#each inspections.data as r (r.uuid)}
@@ -83,6 +125,7 @@
                     <span role="cell">{r.area}</span>
                     <span role="cell" class="truncate">{r.contractor}</span>
                     <span role="cell" class="font-mono">{r.submittedAt}</span>
+                    <span role="cell">{#if r.review}<StatusPill tone={REVIEW_TONE[r.review]} label={r.reviewLabel ?? ''} />{/if}</span>
                     <span role="cell" class="text-right font-mono">{r.amount ?? '—'}</span>
                 </Link>
             {/each}
@@ -93,7 +136,10 @@
                 <li>
                     <Link href={show.url(r.uuid)} class="flex items-center gap-2 rounded-2xl border border-line bg-sf py-3 pr-2 pl-3.5 text-ink no-underline">
                         <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                            <span class="font-mono text-sm font-medium text-brand">{r.ticketNo}</span>
+                            <span class="flex items-center gap-2">
+                                <span class="font-mono text-sm font-medium text-brand">{r.ticketNo}</span>
+                                {#if r.review}<StatusPill tone={REVIEW_TONE[r.review]} label={r.reviewLabel ?? ''} />{/if}
+                            </span>
                             <b class="truncate text-base">{r.ownerName}</b>
                             <span class="truncate text-[13px] text-mut">{r.area} · {r.contractor}</span>
                             <span class="font-mono text-[13px] font-medium text-mut">{r.submittedAt}{r.amount ? ` · ${r.amount.replace(/\.00$/, '')}` : ''}</span>

@@ -9,8 +9,9 @@
     import MobileHeader from '@/components/MobileHeader.svelte';
     import Pagination, { type PageLinks, type PageMeta } from '@/components/Pagination.svelte';
     import ListFilters from '@/components/report/ListFilters.svelte';
+    import StatusPill from '@/components/StatusPill.svelte';
     import UserMenu from '@/components/UserMenu.svelte';
-    import type { FilterOptions, InspectionRow, ListFilters as Filters } from '@/lib/inspection/report';
+    import { REVIEW_TONE, type FilterOptions, type InspectionRow, type ListFilters as Filters } from '@/lib/inspection/report';
     import { index, show } from '@/routes/rep/inspections';
     import ChevronRight from '~icons/ms/chevron-right';
     import Inbox from '~icons/ms/inbox';
@@ -48,7 +49,7 @@
     }
 
     const chip = 'flex h-10 flex-none items-center gap-1.5 rounded-full px-3.5 text-sm md:h-11 md:px-4 md:text-[15px] lg:h-10 lg:text-sm';
-    const cols = 'grid-cols-[190px_minmax(0,1.1fr)_minmax(0,1.4fr)_120px_minmax(0,1.1fr)_120px_48px]';
+    const cols = 'grid-cols-[180px_minmax(0,1.1fr)_minmax(0,1.3fr)_110px_minmax(0,1fr)_110px_150px_40px]';
 </script>
 
 <svelte:head>
@@ -119,6 +120,7 @@
                 <span role="columnheader">AREA</span>
                 <span role="columnheader">CONTRACTOR</span>
                 <span role="columnheader" aria-sort="descending">DATE ↓</span>
+                <span role="columnheader">REVIEW</span>
                 <span role="columnheader"><span class="sr-only">Open</span></span>
             </div>
             {#each inspections.data as r (r.uuid)}
@@ -129,6 +131,7 @@
                     <span role="cell">{r.area}</span>
                     <span role="cell" class="truncate">{r.contractor}</span>
                     <span role="cell" class="font-mono">{r.submittedAt}</span>
+                    <span role="cell">{#if r.review}<StatusPill tone={REVIEW_TONE[r.review]} label={r.reviewLabel ?? ''} />{/if}</span>
                     <span role="cell" class="flex justify-end text-mut"><Print class="size-[22px]" aria-hidden="true" /></span>
                 </Link>
             {/each}
@@ -140,7 +143,10 @@
                 <li class="md:border-b md:border-line md:last:border-b-0">
                     <Link href={show.url(r.uuid)} class="flex items-center gap-2 rounded-2xl border border-line bg-sf py-3 pr-2 pl-3.5 text-ink no-underline md:rounded-none md:border-0 md:py-3.5 md:pl-5">
                         <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                            <span class="font-mono text-sm font-medium text-brand">{r.ticketNo}</span>
+                            <span class="flex items-center gap-2">
+                                <span class="font-mono text-sm font-medium text-brand">{r.ticketNo}</span>
+                                {#if r.review}<StatusPill tone={REVIEW_TONE[r.review]} label={r.reviewLabel ?? ''} />{/if}
+                            </span>
                             <b class="truncate text-base">{r.ownerName}</b>
                             <span class="truncate text-[13px] text-mut md:hidden">{r.area} · {r.submittedAt}</span>
                             <span class="hidden truncate text-sm text-mut md:inline">{r.address} · {r.contractor}</span>
