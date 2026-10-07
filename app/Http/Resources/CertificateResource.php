@@ -42,6 +42,7 @@ class CertificateResource extends JsonResource
             'inspectionDate' => $this->inspection_date?->format('jS F, Y'),
             'submittedAt' => $this->submitted_at?->format('jS F, Y'),
             'approvedAt' => $this->approved_at?->format('jS F, Y'),
+            'approvedAtShort' => $this->approved_at?->format('d M Y'),
             'contractor' => [
                 'name' => $this->inspector_name ?? $this->contractor->name,
                 'firm' => $this->inspector_firm_name ?? $profile?->firm_name,

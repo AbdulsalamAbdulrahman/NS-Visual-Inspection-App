@@ -25,6 +25,7 @@
         inspectionDate: string | null;
         submittedAt: string | null;
         approvedAt: string | null;
+        approvedAtShort: string | null;
         contractor: { name: string | null; firm: string | null; category: string | null; regNo: string | null; corenNo: string | null; signatureUrl: string | null };
         signatory: { name: string | null; title: string | null; signatureUrl: string | null };
         verifyUrl: string;
@@ -57,6 +58,15 @@
 <svelte:head>
     <title>Certificate {c.certificateNo}</title>
 </svelte:head>
+
+{#snippet infoBox(label: string, value: string | null)}
+    <div class="rounded-[10px] border border-[#B9D59A] bg-[#E8F2E1] p-1.5">
+        <div class="flex flex-col items-center gap-0.5 rounded-md bg-white px-1.5 py-2.5">
+            <span class="text-[9px] font-extrabold tracking-[0.1em] text-ink">{label}</span>
+            <span class="font-mono text-[12.5px] font-semibold whitespace-nowrap text-[#09502E]">{value ?? '—'}</span>
+        </div>
+    </div>
+{/snippet}
 
 {#snippet ribbon(text: string)}
     <div class="ribbon mx-auto px-9 py-1.5 text-center text-[11px] font-extrabold tracking-[0.14em] text-white">{text}</div>
@@ -91,23 +101,18 @@
                 <div class="flex justify-end"><KeSeal size={88} /></div>
             </header>
 
-            <!-- Certificate number · title -->
-            <div class="relative grid grid-cols-[176px_1fr_16px] items-center gap-3">
-                <div class="rounded-[10px] border border-[#B9D59A] bg-[#E8F2E1] p-1.5">
-                    <div class="flex flex-col items-center gap-0.5 rounded-md bg-white px-2 py-2">
-                        <span class="text-[9px] font-extrabold tracking-[0.1em] text-ink">CERTIFICATE NO.</span>
-                        <span class="font-mono text-[13.5px] font-semibold text-[#09502E]">{c.certificateNo}</span>
-                    </div>
-                </div>
+            <!-- Number · title · issue date: symmetric, so the title shares the header's centre line -->
+            <div class="relative grid grid-cols-[160px_1fr_160px] items-center gap-3">
+                {@render infoBox('CERTIFICATE NO.', c.certificateNo)}
                 <div class="flex flex-col items-center gap-2 text-center">
-                    <h1 class="text-[18px] leading-[1.25] font-extrabold tracking-[0.01em] whitespace-nowrap text-ink">
-                        CERTIFICATE OF BUILDING ELECTRICAL<br />INSPECTION AND COMPLIANCE
+                    <h1 class="text-[17px] leading-[1.28] font-extrabold tracking-[0.01em] text-ink">
+                        CERTIFICATE OF BUILDING<br />ELECTRICAL INSPECTION<br />AND COMPLIANCE
                     </h1>
                     <div class="flex w-56 items-center gap-2">
                         <span class="h-px flex-1 bg-[#C9A84F]"></span><span class="size-1.5 rotate-45 bg-[#C9A84F]"></span><span class="h-px flex-1 bg-[#C9A84F]"></span>
                     </div>
                 </div>
-                <span aria-hidden="true"></span>
+                {@render infoBox('DATE OF ISSUE', c.approvedAtShort)}
             </div>
 
             <!-- Statement -->
