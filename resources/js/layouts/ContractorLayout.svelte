@@ -5,6 +5,8 @@
     import Logo from '@/components/Logo.svelte';
     import Toaster from '@/components/Toaster.svelte';
     import { currentPath } from '@/lib/currentUrl.svelte';
+    import inspections from '@/routes/inspections';
+    import { show as profile } from '@/routes/profile';
 
     let { children }: { children: Snippet } = $props();
 
@@ -12,8 +14,8 @@
     const current = currentPath();
 
     const nav = [
-        { label: 'My inspections', href: '/inspections' },
-        { label: 'Profile', href: '/profile' },
+        { label: 'My inspections', href: inspections.index.url() },
+        { label: 'Profile', href: profile.url() },
     ];
 </script>
 
@@ -42,7 +44,7 @@
                 </Link>
             {/each}
         </nav>
-        <Link href="/profile" class="ml-auto flex items-center gap-2.5 text-ink no-underline">
+        <Link href={profile()} class="ml-auto flex items-center gap-2.5 text-ink no-underline">
             <span class="flex flex-col items-end">
                 <b class="text-sm">{user.name}</b>
                 <span class="text-xs text-mut">{user.subtitle}</span>

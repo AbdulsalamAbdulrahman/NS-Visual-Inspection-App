@@ -9,6 +9,7 @@
     import Button from '@/components/Button.svelte';
     import EmptyState from '@/components/EmptyState.svelte';
     import MobileHeader from '@/components/MobileHeader.svelte';
+    import { show as profile } from '@/routes/profile';
     import AddCircle from '~icons/ms/add-circle';
     import AssignmentAdd from '~icons/ms/assignment-add';
 
@@ -27,7 +28,7 @@
     class="lg:hidden"
 >
     {#snippet trailing()}
-        <Link href="/profile" aria-label="Profile" class="rounded-full">
+        <Link href={profile()} aria-label="Profile" class="rounded-full">
             <Avatar initials={user.initials} />
         </Link>
     {/snippet}

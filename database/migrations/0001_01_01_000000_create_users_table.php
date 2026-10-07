@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Enums\Role;
+use App\Enums\UserStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +17,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 32)->nullable();
+            $table->enum('role', array_column(Role::cases(), 'value'))->index();
+            $table->enum('status', array_column(UserStatus::cases(), 'value'))->default(UserStatus::Invited->value);
+            $table->boolean('must_change_password')->default(true);
+            $table->timestamp('last_active_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['role', 'status']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

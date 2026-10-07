@@ -55,6 +55,7 @@
         if (item.href === '/admin/more') {
             return (
                 current.isActive('/admin/more') ||
+                current.isActive('/profile') ||
                 sidebar.slice(3).some((s) => current.isActive(s.href))
             );
         }

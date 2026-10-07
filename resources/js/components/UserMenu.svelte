@@ -3,6 +3,9 @@
     import { DropdownMenu } from 'bits-ui';
     import type { Snippet } from 'svelte';
     import { appearanceLabels, themeState } from '@/lib/theme.svelte';
+    import { logout } from '@/routes';
+    import { edit as editPassword } from '@/routes/password';
+    import { show as profile } from '@/routes/profile';
     import Contrast from '~icons/ms/contrast';
     import Key from '~icons/ms/key';
     import Logout from '~icons/ms/logout';
@@ -66,11 +69,11 @@
             </div>
             <div class="flex flex-col p-1.5 text-[15px] font-semibold">
                 {#if showProfile}
-                    <DropdownMenu.Item class={itemClass} onSelect={() => router.visit('/profile')}>
+                    <DropdownMenu.Item class={itemClass} onSelect={() => router.visit(profile.url())}>
                         <Person />Profile
                     </DropdownMenu.Item>
                 {/if}
-                <DropdownMenu.Item class={itemClass} onSelect={() => router.visit('/profile/password')}>
+                <DropdownMenu.Item class={itemClass} onSelect={() => router.visit(editPassword.url())}>
                     <Key />Change password
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
@@ -82,7 +85,7 @@
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                     class={[itemClass, 'text-bad']}
-                    onSelect={() => router.post('/logout')}
+                    onSelect={() => router.post(logout.url())}
                 >
                     <Logout />Sign out
                 </DropdownMenu.Item>

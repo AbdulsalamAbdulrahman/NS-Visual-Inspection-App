@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+enum UserStatus: string
+{
+    /** Created by an admin; temporary password emailed, not yet changed. */
+    case Invited = 'invited';
+    case Active = 'active';
+    case Suspended = 'suspended';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Invited => 'Invited',
+            self::Active => 'Active',
+            self::Suspended => 'Suspended',
+        };
+    }
+}

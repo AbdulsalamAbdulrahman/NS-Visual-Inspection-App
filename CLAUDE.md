@@ -20,7 +20,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | # | Module | Status |
 |---|--------|--------|
 | 0 | Setup | Done |
-| 1 | Auth and accounts | Not started |
+| 1 | Auth and accounts | Done |
 | 2 | Admin management | Not started |
 | 3 | Inspection form | Not started |
 | 4 | Payment and ticket | Not started |
@@ -47,7 +47,7 @@ User (hasOne ContractorProfile; belongsToMany ServiceArea for reps; hasMany Insp
 ## Environment notes
 MONNIFY_BASE_URL, MONNIFY_API_KEY, MONNIFY_SECRET_KEY, MONNIFY_CONTRACT_CODE, NSD_PHONE, NSD_EMAIL, MAIL_* (transactional SMTP), DEPLOY_SSH_HOST. Production path: /home/buildin1/domains/kens.buildingelectcert.com.ng/app (docroot app/public). Server Composer: php -d memory_limit=-1 ~/bin/composer.
 
-Local dev: PHP 8.4 + MySQL 9 (Homebrew). Databases `kens` (app) and `kens_testing` (row-locking tests), user `kens`. Default test suite runs on SQLite in-memory.
+Local dev: PHP 8.4 + MySQL 9 (Homebrew). Databases `kens` (app) and `kens_testing` (row-locking tests), user `kens`. Default test suite runs on SQLite in-memory. Demo data: `php artisan migrate:fresh --seed --seeder=DemoSeeder` (demo password in `DemoSeeder::PASSWORD`).
 
 ## Workflow
 - Plan in tasks/todo.md for anything with 3+ steps; decisions in tasks/decisions.md; lessons from corrections in tasks/lessons.md.

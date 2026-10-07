@@ -11,6 +11,7 @@
     import { Link } from '@inertiajs/svelte';
     import type { Method } from '@inertiajs/core';
     import type { Snippet } from 'svelte';
+    import type { ClassValue } from 'clsx';
     import type { HTMLButtonAttributes } from 'svelte/elements';
     import { cn } from '@/lib/utils';
 
@@ -21,7 +22,7 @@
         href?: string;
         method?: Method;
         block?: boolean;
-        class?: string;
+        class?: ClassValue;
         children: Snippet;
     };
 

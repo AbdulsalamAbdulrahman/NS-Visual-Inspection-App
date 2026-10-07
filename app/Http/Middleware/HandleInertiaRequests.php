@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\AuthUserResource;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,12 +42,32 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user()?->only(['name', 'email']),
+                'user' => fn () => $this->authUser($request),
             ],
             'nsd' => [
                 'phone' => config('kens.nsd.phone'),
                 'email' => config('kens.nsd.email'),
             ],
         ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function authUser(Request $request): ?array
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return null;
+        }
+
+        $user->loadMissing(match (true) {
+            $user->isContractor() => ['contractorProfile'],
+            $user->isRep() => ['serviceAreas'],
+            default => [],
+        });
+
+        return AuthUserResource::make($user)->resolve($request);
     }
 }
