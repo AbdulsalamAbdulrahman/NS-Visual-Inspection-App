@@ -80,7 +80,7 @@ class FeeController extends Controller
             'amount' => Money::format($fee->amount_kobo),
             'effectiveFrom' => $fee->effective_from->format('d M Y'),
             'changedOn' => $fee->created_at?->format('d M Y'),
-            'changedBy' => $fee->creator?->name ?? 'System',
+            'changedBy' => $fee->creator->name ?? 'System',
             'reason' => $fee->reason,
             'isScheduled' => $fee->isScheduled(),
         ];

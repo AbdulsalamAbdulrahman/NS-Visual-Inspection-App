@@ -10,7 +10,7 @@ use App\Models\Inspection;
 use App\Models\Payment;
 use App\Notifications\InspectionSubmitted;
 use App\Support\Money;
-use Illuminate\Support\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -90,12 +90,12 @@ class FinalizePaidInspection
     /**
      * @param  array<string, mixed>  $transaction
      */
-    private function paidOn(array $transaction): Carbon
+    private function paidOn(array $transaction): CarbonImmutable
     {
         $raw = $transaction['paidOn'] ?? null;
 
         try {
-            return is_string($raw) && $raw !== '' ? Carbon::parse($raw)->setTimezone(config('app.timezone')) : now();
+            return is_string($raw) && $raw !== '' ? CarbonImmutable::parse($raw)->setTimezone(config('app.timezone')) : now();
         } catch (\Throwable) {
             return now();
         }

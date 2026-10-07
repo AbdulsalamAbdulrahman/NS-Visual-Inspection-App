@@ -44,6 +44,23 @@ class RepRequest extends FormRequest
     }
 
     /**
+     * Validated input in the shape SaveRep expects.
+     *
+     * @return array{name: string, email: string, phone: string|null, service_area_ids: list<int>}
+     */
+    public function repData(): array
+    {
+        $input = $this->safe();
+
+        return [
+            'name' => $input->string('name')->toString(),
+            'email' => $input->string('email')->toString(),
+            'phone' => $input->filled('phone') ? $input->string('phone')->toString() : null,
+            'service_area_ids' => array_values(array_map(intval(...), $input->array('service_area_ids'))),
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public function messages(): array

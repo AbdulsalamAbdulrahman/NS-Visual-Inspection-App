@@ -22,7 +22,7 @@ class PaymentFactory extends Factory
     {
         return [
             'inspection_id' => Inspection::factory()->complete(),
-            'contractor_id' => fn (array $attributes) => Inspection::query()->find($attributes['inspection_id'])?->contractor_id,
+            'contractor_id' => fn (array $attributes) => Inspection::query()->whereKey($attributes['inspection_id'])->value('contractor_id'),
             'payment_reference' => 'KENS-'.now()->format('Ymd').'-'.Str::upper(Str::random(8)),
             'amount_kobo' => 1_500_000,
             'status' => PaymentStatus::Pending,

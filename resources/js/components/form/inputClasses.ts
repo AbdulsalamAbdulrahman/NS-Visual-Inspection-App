@@ -7,7 +7,11 @@ export type InputSize = 'lg' | 'md';
  * 52 px on desktop admin forms. Focus thickens the border to the primary
  * colour; errors use a 2 px red border.
  */
-export function fieldBox(size: InputSize, invalid: boolean, extra?: string): string {
+export function fieldBox(
+    size: InputSize,
+    invalid: boolean,
+    extra?: string,
+): string {
     return cn(
         'flex w-full items-center rounded-xl border-[1.5px] bg-sf transition-colors',
         'focus-within:border-2 focus-within:border-pri',

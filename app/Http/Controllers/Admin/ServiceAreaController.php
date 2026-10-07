@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\InspectionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceAreaRequest;
 use App\Models\ServiceArea;
@@ -23,8 +24,8 @@ class ServiceAreaController extends Controller
         $areas = ServiceArea::query()
             ->with(['reps' => fn ($q) => $q->select('users.id', 'users.name')->orderBy('users.name')])
             ->withCount([
-                'inspections as inspections_total' => fn (Builder $q) => $q->submitted(),
-                'inspections as inspections_this_month' => fn (Builder $q) => $q->submitted()
+                'inspections as inspections_total' => fn (Builder $q) => $q->where('status', InspectionStatus::Submitted),
+                'inspections as inspections_this_month' => fn (Builder $q) => $q->where('status', InspectionStatus::Submitted)
                     ->where('submitted_at', '>=', now()->startOfMonth()),
             ])
             ->orderByDesc('is_active')

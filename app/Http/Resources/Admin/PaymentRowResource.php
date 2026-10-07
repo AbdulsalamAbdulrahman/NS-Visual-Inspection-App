@@ -24,9 +24,9 @@ class PaymentRowResource extends JsonResource
         return [
             'id' => $this->id,
             'reference' => $this->transaction_reference ?? $this->payment_reference,
-            'ticketNo' => $this->inspection?->ticket_no,
-            'inspectionUuid' => $this->inspection?->ticket_no ? $this->inspection->uuid : null,
-            'contractor' => $this->contractor?->name,
+            'ticketNo' => $this->inspection->ticket_no,
+            'inspectionUuid' => $this->inspection->ticket_no ? $this->inspection->uuid : null,
+            'contractor' => $this->contractor->name,
             'amount' => Money::format($this->amount_paid_kobo ?? $this->amount_kobo),
             'channel' => $this->channelLabel(),
             'status' => $this->status->value,

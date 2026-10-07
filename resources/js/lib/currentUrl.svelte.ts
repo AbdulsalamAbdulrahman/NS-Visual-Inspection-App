@@ -10,7 +10,9 @@ export function currentPath() {
         },
         /** Exact match, or a sub-path of `href` when `exact` is false. */
         isActive(href: string, exact = false): boolean {
-            return exact ? path === href : path === href || path.startsWith(`${href}/`);
+            return exact
+                ? path === href
+                : path === href || path.startsWith(`${href}/`);
         },
     };
 }

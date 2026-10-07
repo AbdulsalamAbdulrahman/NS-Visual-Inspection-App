@@ -45,7 +45,9 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 User (hasOne ContractorProfile; belongsToMany ServiceArea for reps; hasMany Inspection as contractor) · Inspection (belongsTo User contractor, ServiceArea; hasMany InspectionCircuit, InspectionAttachment, Payment) · Payment · FeeSchedule · TicketCounter · ServiceArea.
 
 ## Environment notes
-MONNIFY_BASE_URL, MONNIFY_API_KEY, MONNIFY_SECRET_KEY, MONNIFY_CONTRACT_CODE, NSD_PHONE, NSD_EMAIL, MAIL_* (transactional SMTP), DEPLOY_SSH_HOST. Production path: /home/buildin1/domains/kens.buildingelectcert.com.ng/app (docroot app/public). Server Composer: php -d memory_limit=-1 ~/bin/composer.
+MONNIFY_BASE_URL, MONNIFY_API_KEY, MONNIFY_SECRET_KEY, MONNIFY_CONTRACT_CODE, MONNIFY_VERIFY_SIGNATURE, NSD_PHONE, NSD_EMAIL, KENS_VERIFY_BASE_URL, MAIL_* (transactional SMTP); production template in deploy/env.production.example. Production path: /home/buildin1/domains/kens.buildingelectcert.com.ng/app (symlink to the live release; public_html → app/public). Server Composer: php -d memory_limit=-1 ~/bin/composer.
+
+Deploys: push to `main` → GitHub Actions runs every check and publishes a built `deploy` branch → server cron runs deploy/server-pull.sh (pull with a read-only deploy key; the host blocks inbound SSH). Details and first-time setup: docs/DEPLOY.md.
 
 Local dev: PHP 8.4 + MySQL 9 (Homebrew). Databases `kens` (app) and `kens_testing` (row-locking tests), user `kens`. Default test suite runs on SQLite in-memory. Demo data: `php artisan migrate:fresh --seed --seeder=DemoSeeder` (demo password in `DemoSeeder::PASSWORD`).
 

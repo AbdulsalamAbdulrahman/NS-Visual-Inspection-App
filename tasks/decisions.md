@@ -73,3 +73,7 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 
 ## Deployment
 - **Pull-based deploys.** The host blocks inbound SSH from the internet but allows outbound connections to GitHub, so GitHub Actions publishes a built `deploy` branch and a cron job on the server pulls it (read-only deploy key) and runs the release steps. DirectAdmin's Git webhook alone can't run Composer or migrations.
+- **The `deploy` branch holds built output only**: app code plus `public/build`, without tests, docs, JS/CSS sources or dev config. Its history continues release by release (no force pushes), so every release is a visible commit. `vendor/` is installed on the server from `composer.lock` (`--no-dev`).
+- **Release folders + one symlink switch** instead of updating files in place: Composer, migrations and `artisan optimize` run inside the new release, and `app` is switched only when all succeed, so a failed release never replaces the live one and there's no maintenance window. The last 3 releases are kept for `--rollback` (code only; migrations aren't reversed, so they must stay backwards compatible with the previous release).
+- **A failed commit isn't retried every minute**: it's recorded and skipped until the next push or `--force`. Rollback holds back the branch head the same way.
+- **CI runs on PHP 8.5 and MariaDB 11.4** to match production; the row-locking tests that were MySQL-only locally now run in CI too.

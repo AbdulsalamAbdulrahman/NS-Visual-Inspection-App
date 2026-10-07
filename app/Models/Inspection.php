@@ -14,6 +14,7 @@ use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
+use Carbon\CarbonImmutable;
 use Database\Factories\InspectionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,7 +24,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
 
 /**
  * A Visual Site Inspection Report. Editable by its contractor while a draft;
@@ -45,8 +45,8 @@ use Illuminate\Support\Carbon;
  * @property float|null $gps_lat
  * @property float|null $gps_lng
  * @property float|null $gps_accuracy_m
- * @property Carbon|null $gps_captured_at
- * @property Carbon|null $inspection_date
+ * @property CarbonImmutable|null $gps_captured_at
+ * @property CarbonImmutable|null $inspection_date
  * @property float|null $earth_electrode_ft
  * @property float|null $earth_conductor_mm2
  * @property float|null $earth_resistance_ohm
@@ -74,20 +74,21 @@ use Illuminate\Support\Carbon;
  * @property WiringMethod|null $wiring_method
  * @property string|null $wiring_method_other
  * @property string|null $cable_insulation
- * @property Carbon|null $declaration_accepted_at
+ * @property CarbonImmutable|null $declaration_accepted_at
  * @property string|null $signature_path
  * @property string|null $inspector_name
  * @property NemsaCategory|null $inspector_nemsa_category
  * @property string|null $inspector_nemsa_reg_no
  * @property string|null $inspector_coren_no
  * @property string|null $inspector_firm_name
- * @property Carbon|null $submitted_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property CarbonImmutable|null $submitted_at
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
  * @property-read User $contractor
  * @property-read ServiceArea|null $serviceArea
  * @property-read Collection<int, InspectionCircuit> $circuits
  * @property-read Collection<int, InspectionAttachment> $attachments
+ * @property-read Payment|null $paidPayment
  */
 class Inspection extends Model
 {

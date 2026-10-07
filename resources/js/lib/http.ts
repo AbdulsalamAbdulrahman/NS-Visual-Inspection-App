@@ -12,9 +12,13 @@ export class HttpError extends Error {
 
     /** First validation message per field, if this was a 422. */
     get errors(): Record<string, string> {
-        const errors = (this.body as { errors?: Record<string, string[]> } | null)?.errors ?? {};
+        const errors =
+            (this.body as { errors?: Record<string, string[]> } | null)
+                ?.errors ?? {};
 
-        return Object.fromEntries(Object.entries(errors).map(([k, v]) => [k, v[0]]));
+        return Object.fromEntries(
+            Object.entries(errors).map(([k, v]) => [k, v[0]]),
+        );
     }
 }
 
@@ -24,7 +28,11 @@ export function xsrfToken(): string {
     return match ? decodeURIComponent(match[1]) : '';
 }
 
-export async function sendJson<T>(method: 'PUT' | 'POST' | 'DELETE', url: string, body?: unknown): Promise<T> {
+export async function sendJson<T>(
+    method: 'PUT' | 'POST' | 'DELETE',
+    url: string,
+    body?: unknown,
+): Promise<T> {
     const response = await fetch(url, {
         method,
         credentials: 'same-origin',
@@ -37,7 +45,10 @@ export async function sendJson<T>(method: 'PUT' | 'POST' | 'DELETE', url: string
         body: body === undefined ? undefined : JSON.stringify(body),
     });
 
-    const data = response.status === 204 ? null : await response.json().catch(() => null);
+    const data =
+        response.status === 204
+            ? null
+            : await response.json().catch(() => null);
 
     if (!response.ok) {
         throw new HttpError(response.status, data);
@@ -47,7 +58,11 @@ export async function sendJson<T>(method: 'PUT' | 'POST' | 'DELETE', url: string
 }
 
 /** Multipart upload with progress (fetch can't report upload progress). */
-export function upload<T>(url: string, form: FormData, onProgress: (fraction: number) => void): Promise<T> {
+export function upload<T>(
+    url: string,
+    form: FormData,
+    onProgress: (fraction: number) => void,
+): Promise<T> {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', url);
@@ -55,7 +70,8 @@ export function upload<T>(url: string, form: FormData, onProgress: (fraction: nu
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-XSRF-TOKEN', xsrfToken());
-        xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+        xhr.upload.onprogress = (e) =>
+            e.lengthComputable && onProgress(e.loaded / e.total);
         xhr.onload = () => {
             const data = (() => {
                 try {

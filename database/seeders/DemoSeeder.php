@@ -73,13 +73,22 @@ class DemoSeeder extends Seeder
         });
     }
 
+    private function color(int|false $color): int
+    {
+        if ($color === false) {
+            throw new RuntimeException('Could not allocate a GD colour.');
+        }
+
+        return $color;
+    }
+
     private function signaturePng(): string
     {
         $image = imagecreatetruecolor(480, 160);
         imagesavealpha($image, true);
-        imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
+        imagefill($image, 0, 0, $this->color(imagecolorallocatealpha($image, 0, 0, 0, 127)));
         imagesetthickness($image, 4);
-        $ink = imagecolorallocate($image, 20, 40, 90);
+        $ink = $this->color(imagecolorallocate($image, 20, 40, 90));
 
         $points = [[30, 110], [80, 50], [110, 120], [160, 60], [200, 115], [250, 70], [290, 100], [340, 55], [400, 105], [450, 80]];
         for ($i = 1; $i < count($points); $i++) {
@@ -95,9 +104,9 @@ class DemoSeeder extends Seeder
     private function placeholderJpeg(string $label): string
     {
         $image = imagecreatetruecolor(1200, 900);
-        imagefill($image, 0, 0, imagecolorallocate($image, 9, 80, 46));
-        imagefilledrectangle($image, 0, 600, 1200, 680, imagecolorallocate($image, 123, 180, 59));
-        imagestring($image, 5, 40, 40, 'KENS demo - '.pathinfo($label, PATHINFO_FILENAME), imagecolorallocate($image, 255, 255, 255));
+        imagefill($image, 0, 0, $this->color(imagecolorallocate($image, 9, 80, 46)));
+        imagefilledrectangle($image, 0, 600, 1200, 680, $this->color(imagecolorallocate($image, 123, 180, 59)));
+        imagestring($image, 5, 40, 40, 'KENS demo - '.pathinfo($label, PATHINFO_FILENAME), $this->color(imagecolorallocate($image, 255, 255, 255)));
 
         ob_start();
         imagejpeg($image, null, 80);

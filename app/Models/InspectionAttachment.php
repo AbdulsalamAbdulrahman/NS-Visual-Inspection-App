@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\AttachmentType;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * A file on the private disk, only served through AttachmentController.
@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property int $size_bytes
  * @property float|null $exif_lat
  * @property float|null $exif_lng
- * @property Carbon|null $taken_at
+ * @property CarbonImmutable|null $taken_at
  * @property-read Inspection $inspection
  */
 class InspectionAttachment extends Model

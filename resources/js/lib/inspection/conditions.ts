@@ -11,7 +11,15 @@ import PriorityHigh from '~icons/ms/priority-high';
  */
 export const CONDITIONS: Record<
     CircuitCondition,
-    { label: string; short: string; count: string; icon: Component; fg: string; bg: string; border: string }
+    {
+        label: string;
+        short: string;
+        count: string;
+        icon: Component;
+        fg: string;
+        bg: string;
+        border: string;
+    }
 > = {
     satisfactory: {
         label: 'Satisfactory',

@@ -62,3 +62,19 @@ test('a second payment for an already submitted inspection keeps the first ticke
         ->and(TicketCounter::query()->find(2026)->last_number)->toBe(1)
         ->and($b->fresh()->isPaid())->toBeTrue();
 });
+
+test('a paid transaction without paidOn or with a bad date still issues the ticket', function (?string $paidOn) {
+    $payment = Payment::factory()->create();
+    $tx = MonnifyFake::transaction($payment->payment_reference);
+
+    if ($paidOn === null) {
+        unset($tx['paidOn']);
+    } else {
+        $tx['paidOn'] = $paidOn;
+    }
+
+    $inspection = app(FinalizePaidInspection::class)->handle($payment, $tx);
+
+    expect($inspection->ticket_no)->toBe('KE-NSD-2026-000001')
+        ->and($payment->fresh()->paid_at->toDateTimeString())->toBe('2026-10-07 11:30:00');
+})->with(['missing' => [null], 'unparseable' => ['not a date']]);

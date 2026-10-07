@@ -1,6 +1,10 @@
 export type Option<T extends string = string> = { value: T; label: string };
 
-export type CircuitCondition = 'satisfactory' | 'improvement_required' | 'urgent_attention_required' | 'non_compliant';
+export type CircuitCondition =
+    | 'satisfactory'
+    | 'improvement_required'
+    | 'urgent_attention_required'
+    | 'non_compliant';
 
 export type Circuit = {
     uuid: string;

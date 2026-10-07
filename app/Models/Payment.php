@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PaymentStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * One Monnify checkout attempt for an inspection fee.
@@ -23,9 +23,9 @@ use Illuminate\Support\Carbon;
  * @property int|null $amount_paid_kobo
  * @property string|null $channel
  * @property PaymentStatus $status
- * @property Carbon|null $paid_at
+ * @property CarbonImmutable|null $paid_at
  * @property array<string, mixed>|null $gateway_payload
- * @property Carbon|null $created_at
+ * @property CarbonImmutable|null $created_at
  * @property-read Inspection $inspection
  * @property-read User $contractor
  */

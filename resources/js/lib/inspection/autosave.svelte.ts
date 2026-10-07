@@ -3,13 +3,26 @@ import type { Draft } from './types';
 
 export type SaveStatus = 'saved' | 'pending' | 'saving' | 'offline' | 'error';
 
-type SaveResponse = { uuid: string; saved_at: string; signature_url: string | null };
+type SaveResponse = {
+    uuid: string;
+    saved_at: string;
+    signature_url: string | null;
+};
 
 /** Fields sent on every save; attachments and display-only keys are excluded. */
-const SKIP = new Set(['uuid', 'status', 'attachments', 'signature_url', 'inspection_date', 'updated_at']);
+const SKIP = new Set([
+    'uuid',
+    'status',
+    'attachments',
+    'signature_url',
+    'inspection_date',
+    'updated_at',
+]);
 
 export function draftPayload(draft: Draft): Record<string, unknown> {
-    return Object.fromEntries(Object.entries(draft).filter(([key]) => !SKIP.has(key)));
+    return Object.fromEntries(
+        Object.entries(draft).filter(([key]) => !SKIP.has(key)),
+    );
 }
 
 /**
@@ -31,7 +44,12 @@ export class Autosave {
     #lastSent = '';
     #onSaved: (response: SaveResponse) => void;
 
-    constructor(uuid: string, savedAt: string | null, onSaved: (response: SaveResponse) => void, delay = 2000) {
+    constructor(
+        uuid: string,
+        savedAt: string | null,
+        onSaved: (response: SaveResponse) => void,
+        delay = 2000,
+    ) {
         this.#uuid = uuid;
         this.#delay = delay;
         this.#onSaved = onSaved;
@@ -50,7 +68,11 @@ export class Autosave {
     /** Call on every change; saves after a pause in editing. */
     schedule(payload: Record<string, unknown>): void {
         // A new signature is sent once; it doesn't count towards "changed" afterwards.
-        if (this.#key(payload) === this.#lastSent && !('signature' in payload) && !this.#next) {
+        if (
+            this.#key(payload) === this.#lastSent &&
+            !('signature' in payload) &&
+            !this.#next
+        ) {
             return;
         }
 
@@ -85,7 +107,11 @@ export class Autosave {
         this.status = 'saving';
         this.#inflight = (async () => {
             try {
-                const response = await sendJson<SaveResponse>('PUT', `/inspections/${this.#uuid}/draft`, payload);
+                const response = await sendJson<SaveResponse>(
+                    'PUT',
+                    `/inspections/${this.#uuid}/draft`,
+                    payload,
+                );
                 this.#lastSent = this.#key(payload);
                 this.savedAt = new Date(response.saved_at);
                 this.errors = {};
@@ -98,7 +124,10 @@ export class Autosave {
                 } else {
                     // Network trouble: keep it and try again when back online.
                     this.#next ??= payload;
-                    this.status = error instanceof HttpError && error.status === 0 ? 'offline' : 'error';
+                    this.status =
+                        error instanceof HttpError && error.status === 0
+                            ? 'offline'
+                            : 'error';
                 }
             } finally {
                 this.#inflight = null;

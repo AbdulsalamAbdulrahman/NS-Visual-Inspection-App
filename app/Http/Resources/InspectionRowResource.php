@@ -30,7 +30,7 @@ class InspectionRowResource extends JsonResource
             'ownerName' => $this->owner_name,
             'address' => $this->property_address ? (string) str($this->property_address)->squish() : null,
             'area' => $this->serviceArea?->name,
-            'contractor' => $this->inspector_name ?? $this->contractor?->name,
+            'contractor' => $this->inspector_name ?? $this->contractor->name,
             'submittedAt' => $this->submitted_at?->format('d M Y'),
             'purpose' => $this->purpose?->label(),
             'connection' => $this->connection_type?->label(),

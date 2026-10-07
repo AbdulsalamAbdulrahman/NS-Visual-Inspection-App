@@ -83,6 +83,9 @@
 - [x] Build, types, autofixer; contractor views checked in Chrome (admin/rep visual check deferred to production testing); commit
 
 ## Deploy (pulled forward from Phase 8)
-- [ ] GitHub Actions: tests, build assets, publish a `deploy` branch
-- [ ] Server pull script run by cron (maintenance, composer, migrate, caches) with a lock and log
-- [ ] `.env.example` for production, `docs/DEPLOY.md` one-time setup
+- [x] GitHub Actions: lint, PHPStan, svelte-check, Pest (+ MariaDB 11.4 row-locking tests), build assets, publish a `deploy` branch
+- [x] Server pull script run by cron: release folders, composer, migrate, caches, atomic switch, lock, log, --force / --rollback (dry-run tested locally)
+- [x] Scheduler drains the database queue every minute (pulled forward from Phase 8)
+- [x] `deploy/env.production.example`, `docs/DEPLOY.md` one-time setup
+- [x] PHPStan clean (fixed: paidOn crash when Monnify omits the date, typed request data, Monnify return shape) and `vp check` clean
+- [ ] Server one-time setup (deploy key, clone, shared/.env, cron, first admin) — with the user

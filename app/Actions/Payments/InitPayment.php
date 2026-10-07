@@ -71,7 +71,7 @@ class InitPayment
 
         $payment->update([
             'transaction_reference' => $checkout['transactionReference'],
-            'gateway_payload' => ['init' => $checkout],
+            'gateway_payload' => ['init' => $checkout['raw']],
         ]);
 
         return ['payment' => $payment, 'checkoutUrl' => $checkout['checkoutUrl']];

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -57,6 +58,11 @@ class PaymentController extends Controller
 
         return response()->streamDownload(function () use ($query): void {
             $out = fopen('php://output', 'w');
+
+            if ($out === false) {
+                throw new RuntimeException('Could not open the CSV output stream.');
+            }
+
             fwrite($out, "\u{FEFF}");
             fputcsv($out, ['Monnify reference', 'Our reference', 'Ticket', 'Contractor', 'Amount', 'Amount paid', 'Channel', 'Status', 'Started', 'Paid at']);
 
@@ -64,8 +70,8 @@ class PaymentController extends Controller
                 fputcsv($out, [
                     $p->transaction_reference,
                     $p->payment_reference,
-                    $p->inspection?->ticket_no,
-                    $p->contractor?->name,
+                    $p->inspection->ticket_no,
+                    $p->contractor->name,
                     Money::format($p->amount_kobo),
                     $p->amount_paid_kobo !== null ? Money::format($p->amount_paid_kobo) : null,
                     $p->channelLabel(),

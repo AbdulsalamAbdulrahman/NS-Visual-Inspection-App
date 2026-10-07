@@ -59,7 +59,7 @@ class RepController extends Controller
 
     public function store(RepRequest $request, SaveRep $save): RedirectResponse
     {
-        $rep = $save->handle($request->validated());
+        $rep = $save->handle($request->repData());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Login details sent to {$rep->email}"]);
         Inertia::flash('highlight', $rep->uuid);
@@ -71,7 +71,7 @@ class RepController extends Controller
     {
         abort_unless($rep->isRep(), 404);
 
-        $save->handle($request->validated(), $rep);
+        $save->handle($request->repData(), $rep);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "{$rep->name} updated."]);
 

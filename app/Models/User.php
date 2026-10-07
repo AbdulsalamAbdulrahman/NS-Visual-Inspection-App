@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Notifications\QueuedResetPassword;
+use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -29,12 +29,12 @@ use Illuminate\Support\Carbon;
  * @property Role $role
  * @property UserStatus $status
  * @property bool $must_change_password
- * @property Carbon|null $last_active_at
+ * @property CarbonImmutable|null $last_active_at
  * @property string $password
  * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ * @property CarbonImmutable|null $deleted_at
  * @property-read ContractorProfile|null $contractorProfile
  * @property-read Collection<int, ServiceArea> $serviceAreas
  */

@@ -17,14 +17,24 @@ export type Report = {
         voltage: string | null;
         inspectionDate: string | null;
         contractor: string | null;
-        gps: { lat: number; lng: number; accuracy: number | null; capturedAt: string | null; mapsUrl: string } | null;
+        gps: {
+            lat: number;
+            lng: number;
+            accuracy: number | null;
+            capturedAt: string | null;
+            mapsUrl: string;
+        } | null;
     };
     b1: {
         electrodeFt: number | null;
         conductorMm2: number | null;
         resistanceOhm: number | null;
         pit: boolean | null;
-        warnings: { electrode: boolean; conductor: boolean; resistance: boolean };
+        warnings: {
+            electrode: boolean;
+            conductor: boolean;
+            resistance: boolean;
+        };
     };
     b2: {
         cbRatedA: number | null;
@@ -33,7 +43,12 @@ export type Report = {
         fuseStandard: boolean | null;
         poles: number | null;
     };
-    b3: { label: string; ref: string | null; value: string; tone: 'ok' | 'bad' | 'muted' }[];
+    b3: {
+        label: string;
+        ref: string | null;
+        value: string;
+        tone: 'ok' | 'bad' | 'muted';
+    }[];
     b4: {
         n: string;
         description: string | null;
@@ -63,7 +78,13 @@ export type Report = {
     attachments: Attachment[];
     summary: { warnings: number; issues: number };
     /** Admins only. */
-    payment?: { reference: string; ourReference: string; amount: string; channel: string | null; paidAt: string | null } | null;
+    payment?: {
+        reference: string;
+        ourReference: string;
+        amount: string;
+        channel: string | null;
+        paidAt: string | null;
+    } | null;
 };
 
 /** Row in admin / rep inspection lists. */

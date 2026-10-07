@@ -20,7 +20,10 @@ export function googleMapsUrl(lat: number, lng: number): string {
 export function clock(date: Date | string): string {
     const d = typeof date === 'string' ? new Date(date) : date;
 
-    return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 }
 
 /** 1234567 → "1.2 MB" */
@@ -38,5 +41,7 @@ export function fileSize(bytes: number): string {
 
 /** 16 → "16", 2.5 → "2.5", null → "—" */
 export function num(value: number | null | undefined): string {
-    return value === null || value === undefined ? '—' : String(Number(value.toFixed(2)));
+    return value === null || value === undefined
+        ? '—'
+        : String(Number(value.toFixed(2)));
 }

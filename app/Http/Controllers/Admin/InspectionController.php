@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -66,6 +67,11 @@ class InspectionController extends Controller
 
         return response()->streamDownload(function () use ($query): void {
             $out = fopen('php://output', 'w');
+
+            if ($out === false) {
+                throw new RuntimeException('Could not open the CSV output stream.');
+            }
+
             fwrite($out, "\u{FEFF}"); // UTF-8 BOM so Excel shows ₦ correctly.
             fputcsv($out, [
                 'Ticket', 'Submitted', 'Owner', 'Address', 'Form 74 no.', 'Service area', 'Purpose', 'Connection',
@@ -99,6 +105,7 @@ class InspectionController extends Controller
     }
 
     /**
+     * @param  array<int, int>|null  $areaIds  limit the area options (reps); null = all areas
      * @return array<string, mixed>
      */
     public static function filterOptions(?array $areaIds = null): array

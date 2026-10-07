@@ -30,7 +30,7 @@ class MonnifyClient
     /**
      * Start a checkout. Amount is sent in naira (Monnify's unit).
      *
-     * @return array{transactionReference: string, paymentReference: string, checkoutUrl: string}&array<string, mixed>
+     * @return array{transactionReference: string, paymentReference: string, checkoutUrl: string, raw: array<string, mixed>}
      */
     public function initTransaction(
         int $amountKobo,
@@ -54,11 +54,19 @@ class MonnifyClient
 
         $data = $this->responseBody($body, 'initialise the payment');
 
-        if (! isset($data['checkoutUrl'], $data['transactionReference'])) {
+        $checkoutUrl = $data['checkoutUrl'] ?? null;
+        $transactionReference = $data['transactionReference'] ?? null;
+
+        if (! is_string($checkoutUrl) || ! is_string($transactionReference)) {
             throw new MonnifyException('Monnify did not return a checkout URL.');
         }
 
-        return $data;
+        return [
+            'transactionReference' => $transactionReference,
+            'paymentReference' => is_string($data['paymentReference'] ?? null) ? $data['paymentReference'] : $paymentReference,
+            'checkoutUrl' => $checkoutUrl,
+            'raw' => $data,
+        ];
     }
 
     /**

@@ -62,7 +62,7 @@ class InspectionReportResource extends JsonResource
                 'connection' => $this->connection_type?->label(),
                 'voltage' => $this->voltage_level?->label(),
                 'inspectionDate' => $this->inspection_date?->format('d M Y'),
-                'contractor' => $this->inspector_name ?? $this->contractor?->name,
+                'contractor' => $this->inspector_name ?? $this->contractor->name,
                 'gps' => $this->gps_lat !== null && $this->gps_lng !== null ? [
                     'lat' => $this->gps_lat,
                     'lng' => $this->gps_lng,
@@ -105,11 +105,11 @@ class InspectionReportResource extends JsonResource
             ],
 
             'd' => [
-                'name' => $this->inspector_name ?? $this->contractor?->name,
-                'category' => ($this->inspector_nemsa_category ?? $this->contractor?->contractorProfile?->nemsa_category)?->label(),
-                'regNo' => $this->inspector_nemsa_reg_no ?? $this->contractor?->contractorProfile?->nemsa_reg_no,
-                'corenNo' => $this->inspector_coren_no ?? $this->contractor?->contractorProfile?->coren_no,
-                'firmName' => $this->inspector_firm_name ?? $this->contractor?->contractorProfile?->firm_name,
+                'name' => $this->inspector_name ?? $this->contractor->name,
+                'category' => ($this->inspector_nemsa_category ?? $this->contractor->contractorProfile?->nemsa_category)?->label(),
+                'regNo' => $this->inspector_nemsa_reg_no ?? $this->contractor->contractorProfile?->nemsa_reg_no,
+                'corenNo' => $this->inspector_coren_no ?? $this->contractor->contractorProfile?->coren_no,
+                'firmName' => $this->inspector_firm_name ?? $this->contractor->contractorProfile?->firm_name,
                 'declaredAt' => $this->declaration_accepted_at?->format('d M Y'),
                 'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
             ],

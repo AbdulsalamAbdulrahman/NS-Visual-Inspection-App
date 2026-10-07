@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Database\Factories\FeeScheduleFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 
 /**
  * The inspection fee in effect is the latest schedule whose effective_from
@@ -19,10 +20,10 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property int $amount_kobo
- * @property Carbon $effective_from
+ * @property CarbonImmutable $effective_from
  * @property string|null $reason
  * @property int|null $created_by
- * @property Carbon|null $created_at
+ * @property CarbonImmutable|null $created_at
  * @property-read User|null $creator
  */
 class FeeSchedule extends Model
@@ -59,7 +60,7 @@ class FeeSchedule extends Model
     /**
      * The schedule in effect on the given day (today by default).
      */
-    public static function current(?Carbon $on = null): ?self
+    public static function current(?CarbonInterface $on = null): ?self
     {
         return static::query()
             ->whereDate('effective_from', '<=', ($on ?? today())->toDateString())

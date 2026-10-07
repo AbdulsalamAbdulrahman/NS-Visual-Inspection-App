@@ -1,10 +1,14 @@
 name: tests
 
+# Runs on pull requests and feature branches. Pushes to main run the same
+# checks through deploy.yml (workflow_call) before anything is released.
 on:
-  push:
-    branches:
-      - main
   pull_request:
+  push:
+    branches-ignore:
+      - main
+      - deploy
+  workflow_call:
 
 permissions:
   contents: read
@@ -12,6 +16,22 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    # Production runs MariaDB 11.4; the row-locking tests in tests/Concurrency
+    # need a real server (the rest of the suite uses SQLite in memory).
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_DATABASE: kens_testing
+          MARIADB_USER: kens
+          MARIADB_PASSWORD: kens
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
 
     steps:
       - name: Checkout code
@@ -22,7 +42,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
+          extensions: gd, pdo_mysql, pdo_sqlite, intl, bcmath
           tools: composer:v2
           coverage: none
 
@@ -30,9 +51,37 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
+          cache: npm
 
-      - name: Setup Application
-        run: composer setup
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist
+          npm ci
 
-      - name: Run CI Checks
-        run: composer ci:check
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          {
+            echo "DB_HOST=127.0.0.1"
+            echo "DB_USERNAME=kens"
+            echo "DB_PASSWORD=kens"
+            echo "DB_TESTING_DATABASE=kens_testing"
+          } >> .env
+
+      # Also generates the Wayfinder route helpers the type check needs.
+      - name: Build assets
+        run: npm run build
+
+      - name: Lint and format
+        run: |
+          npm run check
+          vendor/bin/pint --test
+
+      - name: Static analysis
+        run: |
+          npm run types:check
+          vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      - name: Tests
+        run: php artisan test

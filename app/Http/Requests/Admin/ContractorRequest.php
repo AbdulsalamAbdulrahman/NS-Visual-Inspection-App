@@ -56,6 +56,26 @@ class ContractorRequest extends FormRequest
     }
 
     /**
+     * Validated input in the shape CreateContractor / UpdateContractor expect.
+     *
+     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null}
+     */
+    public function contractorData(): array
+    {
+        $input = $this->safe();
+
+        return [
+            'name' => $input->string('name')->toString(),
+            'email' => $input->string('email')->toString(),
+            'phone' => $input->filled('phone') ? $input->string('phone')->toString() : null,
+            'nemsa_category' => $input->string('nemsa_category')->toString(),
+            'nemsa_reg_no' => $input->string('nemsa_reg_no')->toString(),
+            'coren_no' => $input->filled('coren_no') ? $input->string('coren_no')->toString() : null,
+            'firm_name' => $input->filled('firm_name') ? $input->string('firm_name')->toString() : null,
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public function messages(): array

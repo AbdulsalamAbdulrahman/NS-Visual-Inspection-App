@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\InspectionReportResource;
 use App\Http\Resources\InspectionRowResource;
 use App\Models\Inspection;
+use App\Models\ServiceArea;
 use App\Support\InspectionFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -26,7 +27,7 @@ class InspectionController extends Controller
     {
         $rep = $request->user()->loadMissing('serviceAreas');
         $filters = InspectionFilters::fromRequest($request);
-        $myAreaIds = $rep->serviceAreas->pluck('id')->all();
+        $myAreaIds = $rep->serviceAreas->map(fn (ServiceArea $area): int => $area->id)->values()->all();
 
         $base = Inspection::query()->visibleTo($rep);
 

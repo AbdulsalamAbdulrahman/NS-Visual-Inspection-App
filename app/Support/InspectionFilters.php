@@ -7,9 +7,9 @@ namespace App\Support;
 use App\Enums\ConnectionType;
 use App\Enums\PropertyPurpose;
 use App\Models\Inspection;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * Search + filters for submitted-inspection lists (admin list and CSV, rep
@@ -26,16 +26,16 @@ final class InspectionFilters
         public readonly array $areaIds,
         public readonly ?PropertyPurpose $purpose,
         public readonly ?ConnectionType $connection,
-        public readonly ?Carbon $from,
-        public readonly ?Carbon $to,
+        public readonly ?CarbonImmutable $from,
+        public readonly ?CarbonImmutable $to,
     ) {}
 
     public static function fromRequest(Request $request): self
     {
-        $date = function (string $key) use ($request): ?Carbon {
+        $date = function (string $key) use ($request): ?CarbonImmutable {
             $value = $request->string($key)->toString();
 
-            return preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? Carbon::createFromFormat('Y-m-d', $value)->startOfDay() : null;
+            return preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? CarbonImmutable::createFromFormat('Y-m-d', $value)?->startOfDay() : null;
         };
 
         $areas = array_values(array_filter(array_map('intval', explode(',', $request->string('areas')->toString()))));

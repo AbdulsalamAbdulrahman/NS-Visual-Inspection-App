@@ -66,7 +66,7 @@ class ContractorController extends Controller
 
     public function store(ContractorRequest $request, CreateContractor $create): RedirectResponse
     {
-        $contractor = $create->handle($request->validated());
+        $contractor = $create->handle($request->contractorData());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Login details sent to {$contractor->email}"]);
         Inertia::flash('highlight', $contractor->uuid);
@@ -78,7 +78,7 @@ class ContractorController extends Controller
     {
         abort_unless($contractor->isContractor(), 404);
 
-        $update->handle($contractor, $request->validated());
+        $update->handle($contractor, $request->contractorData());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "{$contractor->name} updated."]);
 

@@ -13,13 +13,26 @@ export type PhotoMeta = {
  */
 export async function readPhotoMeta(file: File): Promise<PhotoMeta> {
     try {
-        const data = await exifr.parse(file, { gps: true, pick: ['DateTimeOriginal', 'CreateDate', 'latitude', 'longitude'] });
-        const taken: Date | undefined = data?.DateTimeOriginal ?? data?.CreateDate;
+        const data = await exifr.parse(file, {
+            gps: true,
+            pick: ['DateTimeOriginal', 'CreateDate', 'latitude', 'longitude'],
+        });
+        const taken: Date | undefined =
+            data?.DateTimeOriginal ?? data?.CreateDate;
 
         return {
-            exif_lat: typeof data?.latitude === 'number' ? Number(data.latitude.toFixed(7)) : null,
-            exif_lng: typeof data?.longitude === 'number' ? Number(data.longitude.toFixed(7)) : null,
-            taken_at: taken instanceof Date && !Number.isNaN(taken.getTime()) ? taken.toISOString() : null,
+            exif_lat:
+                typeof data?.latitude === 'number'
+                    ? Number(data.latitude.toFixed(7))
+                    : null,
+            exif_lng:
+                typeof data?.longitude === 'number'
+                    ? Number(data.longitude.toFixed(7))
+                    : null,
+            taken_at:
+                taken instanceof Date && !Number.isNaN(taken.getTime())
+                    ? taken.toISOString()
+                    : null,
         };
     } catch {
         return { exif_lat: null, exif_lng: null, taken_at: null };
@@ -40,7 +53,11 @@ export async function compressImage(file: File): Promise<File> {
         useWebWorker: true,
     });
 
-    const name = file.name.replace(/\.(heic|heif|png|webp|jpe?g)$/i, '') + '.jpg';
+    const name =
+        file.name.replace(/\.(heic|heif|png|webp|jpe?g)$/i, '') + '.jpg';
 
-    return new File([compressed], name, { type: 'image/jpeg', lastModified: file.lastModified });
+    return new File([compressed], name, {
+        type: 'image/jpeg',
+        lastModified: file.lastModified,
+    });
 }

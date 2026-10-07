@@ -71,7 +71,7 @@ class SaveDraft
     }
 
     /**
-     * @param  list<array<string, mixed>>  $circuits
+     * @param  array<int, array<string, mixed>>  $circuits
      */
     private function replaceCircuits(Inspection $inspection, array $circuits): void
     {

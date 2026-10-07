@@ -76,6 +76,8 @@ export default defineConfig({
             'resources/js/components/ui/*',
             'resources/js/routes/**',
             'resources/js/wayfinder/**',
+            'docs/**',
+            'tasks/**',
         ],
         options: {
             denyWarnings: true,
@@ -92,6 +94,12 @@ export default defineConfig({
         ignorePatterns: [
             '.github/**',
             'composer.json',
+            'docs/**',
+            'tasks/**',
+            'CLAUDE.md',
+            '.claude/**',
+            '.mcp.json',
+            'boost.json',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],
