@@ -3,7 +3,7 @@
     import { DropdownMenu } from 'bits-ui';
     import type { Snippet } from 'svelte';
     import { appearanceLabels, themeState } from '@/lib/theme.svelte';
-    import { logout } from '@/routes';
+    import { signOut } from '@/lib/offline/signout';
     import { edit as editPassword } from '@/routes/password';
     import { show as profile } from '@/routes/profile';
     import Contrast from '~icons/ms/contrast';
@@ -85,7 +85,7 @@
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                     class={[itemClass, 'text-bad']}
-                    onSelect={() => router.post(logout.url())}
+                    onSelect={() => signOut()}
                 >
                     <Logout />Sign out
                 </DropdownMenu.Item>

@@ -1,11 +1,13 @@
 <script lang="ts">
     import { APP_TITLE } from '@/lib/brand';
     import { Link, page } from '@inertiajs/svelte';
-    import type { Snippet } from 'svelte';
+    import { onMount, type Snippet } from 'svelte';
     import Avatar from '@/components/Avatar.svelte';
     import Logo from '@/components/Logo.svelte';
     import Toaster from '@/components/Toaster.svelte';
     import { currentPath } from '@/lib/currentUrl.svelte';
+    import { claimDevice } from '@/lib/offline/signout';
+    import { offlineSync } from '@/lib/offline/sync.svelte';
     import inspections from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
 
@@ -13,6 +15,11 @@
 
     const user = $derived(page.props.auth.user!);
     const current = currentPath();
+
+    // Send anything done offline (drafts, then queued files) once there's network.
+    onMount(() => {
+        void claimDevice(user.uuid).then(() => offlineSync.init(user.uuid));
+    });
 
     const nav = [
         { label: 'My inspections', href: inspections.index.url() },

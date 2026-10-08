@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page, router } from '@inertiajs/svelte';
-    import { onDestroy, tick } from 'svelte';
+    import { onDestroy, onMount, tick } from 'svelte';
     import Button from '@/components/Button.svelte';
     import CircuitsStep from '@/components/inspection/CircuitsStep.svelte';
     import PayPanel from '@/components/inspection/PayPanel.svelte';
@@ -17,7 +17,9 @@
     import { Autosave, draftPayload } from '@/lib/inspection/autosave.svelte';
     import { missingItems } from '@/lib/inspection/checklist';
     import { STEP_COUNT, STEPS, backLabel, nextLabel } from '@/lib/inspection/steps';
-    import type { Draft, FormOptions, Inspector } from '@/lib/inspection/types';
+    import type { Attachment, Draft, FormOptions, Inspector } from '@/lib/inspection/types';
+    import { getLocalDraft, markDraftSynced, offlineSupported, putLocalDraft, saveBootstrap, type FormBootstrap } from '@/lib/offline/db';
+    import { ATTACHMENT_UPLOADED, offlineSync, type AttachmentUploadedDetail } from '@/lib/offline/sync.svelte';
     import { index as home, pay as payPage, resubmit as resubmitRoute } from '@/routes/inspections';
     import { store as payStore } from '@/routes/inspections/pay';
     import ArrowBack from '~icons/ms/arrow-back';
@@ -41,9 +43,10 @@
         fee: { amount: string; effectiveFrom: string } | null;
         /** Sent back by NSD: the last step resubmits (already paid) instead of paying. */
         changesRequested: { note: string | null; ticketNo: string | null; requestedAt: string | null } | null;
+        blankDraft: Draft;
     };
 
-    let { inspection, step: initialStep, areas, options, inspector, fee, changesRequested }: Props = $props();
+    let { inspection, step: initialStep, areas, options, inspector, fee, changesRequested, blankDraft }: Props = $props();
 
     // The form owns its working copy; the server is updated in the background.
     // svelte-ignore state_referenced_locally
@@ -57,12 +60,20 @@
     let online = $state(typeof navigator === 'undefined' ? true : navigator.onLine);
     let leaving = $state(false);
 
+    const userId = $derived(page.props.auth.user!.uuid);
+    /** Started on this phone and not yet on the server (no server timestamp). */
     // svelte-ignore state_referenced_locally
-    const saver = new Autosave(inspection.uuid, inspection.updated_at, (response) => {
+    let localOnly = !inspection.updated_at;
+
+    // svelte-ignore state_referenced_locally
+    const saver = new Autosave(inspection.uuid, inspection.updated_at, (response, sentAt) => {
         if (signature !== undefined) {
             draft.signature_url = response.signature_url;
             signature = undefined;
         }
+
+        localOnly = false;
+        void markDraftSynced(draft.uuid, sentAt);
     });
     // svelte-ignore state_referenced_locally
     saver.prime(draftPayload($state.snapshot(inspection) as Draft));
@@ -118,10 +129,85 @@
             payload.signature = signature;
         }
 
-        saver.schedule(payload);
+        // Every change is kept on the phone first, then saved to the server.
+        if (saver.schedule(payload)) {
+            keepOnPhone(signature);
+        }
     });
 
-    onDestroy(() => saver.destroy());
+    /** Copy of the draft on this phone, so it survives no network, reloads and closing the tab. */
+    function keepOnPhone(pendingSignature: string | null | undefined, dirty = true, updatedAt = Date.now()): void {
+        if (!offlineSupported()) {
+            return;
+        }
+
+        void putLocalDraft({
+            uuid: draft.uuid,
+            userId,
+            draft: $state.snapshot(draft) as Draft,
+            step,
+            updatedAt,
+            dirty,
+            signature: pendingSignature,
+            localOnly,
+        });
+    }
+
+    function onUploaded(event: Event): void {
+        const { inspectionUuid, attachment } = (event as CustomEvent<AttachmentUploadedDetail>).detail;
+
+        if (inspectionUuid === draft.uuid && !draft.attachments.some((a: Attachment) => a.uuid === attachment.uuid)) {
+            draft.attachments.push(attachment);
+        }
+    }
+
+    onMount(() => {
+        offlineSync.init(userId);
+        offlineSync.setOpenDraft(draft.uuid);
+        window.addEventListener(ATTACHMENT_UPLOADED, onUploaded);
+
+        if (offlineSupported()) {
+            // What the form needs to open offline (same for every draft).
+            void saveBootstrap(userId, $state.snapshot({ areas, options, inspector, fee, blankDraft }) as Omit<FormBootstrap, 'savedAt'>);
+            void restoreFromPhone();
+        }
+
+        return () => window.removeEventListener(ATTACHMENT_UPLOADED, onUploaded);
+    });
+
+    /**
+     * The newer copy wins (last write wins): an unsynced edit on this phone, or
+     * a phone copy newer than a page served from the offline cache.
+     */
+    async function restoreFromPhone(): Promise<void> {
+        const local = await getLocalDraft(draft.uuid, userId);
+        const serverTime = inspection.updated_at ? Date.parse(inspection.updated_at) : 0;
+
+        if (local && local.updatedAt > serverTime) {
+            localOnly = local.localOnly;
+
+            // Unsynced changes: make sure the next save sends them.
+            if (local.dirty) {
+                saver.prime({});
+            }
+
+            // Attachments always come from the server (queued files show separately).
+            draft = { ...local.draft, attachments: draft.attachments };
+            step = local.step;
+
+            if (local.signature !== undefined) {
+                signature = local.signature;
+            }
+        } else {
+            keepOnPhone(undefined, false, serverTime);
+        }
+    }
+
+    onDestroy(() => {
+        saver.destroy();
+        offlineSync.setOpenDraft(null);
+        void offlineSync.run();
+    });
 
     async function goTo(target: number): Promise<void> {
         step = Math.min(Math.max(target, 1), STEP_COUNT);

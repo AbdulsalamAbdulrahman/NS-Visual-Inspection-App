@@ -12,6 +12,7 @@ use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\InspectionStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
 use App\Enums\ReviewStatus;
@@ -112,6 +113,8 @@ class InspectionController extends Controller
 
         return Inertia::render('contractor/InspectionForm', [
             'inspection' => DraftResource::make($inspection),
+            // Empty draft in the same shape, kept on the phone to start new inspections offline.
+            'blankDraft' => DraftResource::make(new Inspection(['current_step' => 1])->forceFill(['status' => InspectionStatus::Draft])),
             'step' => min(max($request->integer('step', $inspection->current_step), 1), Inspection::STEPS),
             'areas' => ServiceArea::query()
                 ->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $inspection->service_area_id))

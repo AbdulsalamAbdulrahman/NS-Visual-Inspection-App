@@ -23,7 +23,11 @@ class DraftResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $fields = Arr::only($this->resource->attributesToArray(), Inspection::DRAFT_FIELDS);
+        // Every field is present (null when empty), so a blank draft has the same shape.
+        $fields = [
+            ...array_fill_keys(Inspection::DRAFT_FIELDS, null),
+            ...Arr::only($this->resource->attributesToArray(), Inspection::DRAFT_FIELDS),
+        ];
 
         return [
             'uuid' => $this->uuid,

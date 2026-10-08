@@ -28,3 +28,8 @@ declare module '@inertiajs/core' {
         flashDataType: Flash;
     }
 }
+
+declare global {
+    /** Set per build in vite.config.ts; versions the service worker. */
+    const __BUILD_ID__: string;
+}

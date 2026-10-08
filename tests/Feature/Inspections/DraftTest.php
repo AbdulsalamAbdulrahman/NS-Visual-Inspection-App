@@ -162,3 +162,33 @@ test('the home page lists drafts and submitted inspections separately', function
             ->has('submitted.data', 1)
             ->where('submittedTotal', 1));
 });
+
+test('the form sends a blank draft template for starting inspections offline', function () {
+    $inspection = Inspection::factory()->forContractor($this->contractor)->create();
+
+    $this->actingAs($this->contractor)->get(route('inspections.edit', $inspection))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('blankDraft.uuid', null)
+            ->where('blankDraft.status', 'draft')
+            ->where('blankDraft.current_step', 1)
+            ->where('blankDraft.circuits', [])
+            ->where('blankDraft.attachments', [])
+            // Same keys as a real draft, so the phone can fill it in offline.
+            ->where('blankDraft', fn ($blank) => collect(Inspection::DRAFT_FIELDS)
+                ->reject(fn (string $f) => $f === 'current_step')
+                ->every(fn (string $f) => $blank->has($f) && $blank[$f] === null)));
+});
+
+test('a draft started offline is created by its first sync with the phone uuid', function () {
+    $uuid = (string) Str::uuid();
+
+    $this->actingAs($this->contractor)
+        ->putJson(route('inspections.draft', $uuid), ['form74_no' => 'F74/KD/2026/55501', 'current_step' => 2])
+        ->assertOk()
+        ->assertJsonPath('uuid', $uuid);
+
+    $inspection = Inspection::query()->where('uuid', $uuid)->firstOrFail();
+    expect($inspection->contractor_id)->toBe($this->contractor->id)
+        ->and($inspection->form74_no)->toBe('F74/KD/2026/55501')
+        ->and($inspection->current_step)->toBe(2);
+});

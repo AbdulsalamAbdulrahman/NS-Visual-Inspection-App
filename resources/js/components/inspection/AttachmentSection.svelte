@@ -3,10 +3,14 @@
     import { HttpError, sendJson, upload } from '@/lib/http';
     import { compressImage, readPhotoMeta } from '@/lib/inspection/photos';
     import type { Attachment, AttachmentType } from '@/lib/inspection/types';
+    import type { QueuedUpload } from '@/lib/offline/db';
+    import { offlineSync } from '@/lib/offline/sync.svelte';
+    import { onDestroy } from 'svelte';
     import CheckCircle from '~icons/ms/check-circle';
     import Close from '~icons/ms/close';
     import ErrorIcon from '~icons/ms/error';
     import PhotoCamera from '~icons/ms/photo-camera';
+    import PhoneAndroid from '~icons/ms/phone-android';
     import PhotoLibrary from '~icons/ms/photo-library';
     import UploadFile from '~icons/ms/upload-file';
 
@@ -32,9 +36,33 @@
 
     let pending = $state<Pending[]>([]);
     let removing = $state<string | null>(null);
+    let removeError = $state<string | null>(null);
 
     const mine = $derived(attachments.filter((a) => a.type === type));
-    const full = $derived(mine.length + pending.filter((p) => !p.failed).length >= max);
+    /** Files kept on the phone until there's network (uploaded by offlineSync). */
+    const queued = $derived(offlineSync.queuedFor(inspectionUuid, type));
+    const full = $derived(mine.length + queued.length + pending.filter((p) => !p.failed).length >= max);
+
+    // Thumbnails for queued photos; created once per item, revoked on leave.
+    const previews = new Map<string, string>();
+    function previewOf(item: QueuedUpload): string | null {
+        if (!item.file.type.startsWith('image/')) {
+            return null;
+        }
+
+        if (!previews.has(item.id)) {
+            previews.set(item.id, URL.createObjectURL(item.file));
+        }
+
+        return previews.get(item.id) ?? null;
+    }
+    onDestroy(() => previews.forEach((url) => URL.revokeObjectURL(url)));
+
+    /** No network: keep the (compressed) file on the phone and upload it later. */
+    async function keepForLater(item: Pending, file: File, meta: Record<string, string | number | null>): Promise<void> {
+        await offlineSync.enqueue({ id: item.id, inspectionUuid, type, name: file.name, file, meta });
+        discard(item.id);
+    }
     const headingId = $derived(`att-${type}`);
 
     async function add(files: FileList | null): Promise<void> {
@@ -66,6 +94,12 @@
                 : { exif_lat: null, exif_lng: null, taken_at: null };
             const file = await compressImage(item.file);
 
+            if (!navigator.onLine) {
+                await keepForLater(item, file, meta);
+
+                return;
+            }
+
             const form = new FormData();
             form.append('type', type);
             form.append('file', file, file.name);
@@ -83,6 +117,14 @@
             discard(item.id);
         } catch (err) {
             const e = entry();
+
+            // Lost the connection mid-upload: queue it instead of failing.
+            if (err instanceof HttpError && err.status === 0 && e) {
+                const meta = item.file.type.startsWith('image/') ? await readPhotoMeta(item.file) : { exif_lat: null, exif_lng: null, taken_at: null };
+                await keepForLater(e, await compressImage(item.file), meta);
+
+                return;
+            }
 
             if (e) {
                 e.failed =
@@ -113,10 +155,13 @@
 
     async function remove(attachment: Attachment): Promise<void> {
         removing = attachment.uuid;
+        removeError = null;
 
         try {
             await sendJson('DELETE', `/inspections/${inspectionUuid}/attachments/${attachment.uuid}`);
             onremoved(attachment.uuid);
+        } catch (err) {
+            removeError = err instanceof HttpError && err.status === 0 ? 'Removing a file needs network. Try again when you’re online.' : 'Couldn’t remove the file.';
         } finally {
             removing = null;
         }
@@ -151,6 +196,27 @@
                         aria-label="Remove {a.name}"
                         disabled={removing === a.uuid}
                         onclick={() => remove(a)}
+                    >
+                        <Close class="size-4" />
+                    </button>
+                </li>
+            {/each}
+            {#each queued as q (q.id)}
+                {@const preview = previewOf(q)}
+                <li class="relative aspect-square overflow-hidden rounded-xl bg-sf2">
+                    {#if preview}<img src={preview} alt={q.name} class="size-full object-cover" />{/if}
+                    <div class="absolute inset-0 flex flex-col justify-end gap-1 bg-[rgba(9,17,13,.55)] p-1.5 text-white">
+                        {#if q.error}
+                            <span class="text-xs font-bold">{q.error}</span>
+                        {:else}
+                            <span class="flex items-center gap-1 text-xs font-bold"><PhoneAndroid class="size-4" />Waiting for network</span>
+                        {/if}
+                    </div>
+                    <button
+                        type="button"
+                        class="absolute top-1 right-1 flex size-8 items-center justify-center rounded-full bg-black/60 text-white"
+                        aria-label="Remove {q.name}"
+                        onclick={() => offlineSync.discard(q.id)}
                     >
                         <Close class="size-4" />
                     </button>
@@ -211,6 +277,18 @@
                 </button>
             </div>
         {/each}
+        {#each queued as q (q.id)}
+            <div class="flex items-center gap-3 rounded-[14px] border border-line bg-sf py-2.5 pr-1.5 pl-3">
+                <span class="flex h-[52px] w-11 flex-none items-center justify-center rounded-lg bg-info-bg text-info"><PhoneAndroid class="size-6" /></span>
+                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <b class="truncate text-[15px]">{q.name}</b>
+                    <span class={['text-[13px] font-semibold', q.error ? 'text-bad' : 'text-info']}>{q.error ?? 'On this phone · uploads when you’re online'}</span>
+                </div>
+                <button type="button" class="flex size-11 items-center justify-center rounded-xl text-mut hover:bg-sf2" aria-label="Remove {q.name}" onclick={() => offlineSync.discard(q.id)}>
+                    <Close class="size-6" />
+                </button>
+            </div>
+        {/each}
         {#each pending as p (p.id)}
             <div class="flex items-center gap-3 rounded-[14px] border border-line bg-sf py-2.5 pr-3 pl-3">
                 <span class="flex h-[52px] w-11 flex-none items-center justify-center rounded-lg bg-sf2 font-mono text-[11px] font-bold text-mut">
@@ -243,6 +321,9 @@
         {/if}
     {/if}
 
+    {#if removeError}
+        <span class="flex items-center gap-1 px-1 text-sm font-semibold text-bad" role="alert"><ErrorIcon class="size-[18px]" />{removeError}</span>
+    {/if}
     {#if error}
         <span class="flex items-center gap-1 px-1 text-sm font-semibold text-bad"><ErrorIcon class="size-[18px]" />{error}</span>
     {/if}

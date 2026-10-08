@@ -13,13 +13,18 @@
     import SearchField from '@/components/SearchField.svelte';
     import StatusPill from '@/components/StatusPill.svelte';
     import { REVIEW_TONE, type ReviewStatus } from '@/lib/inspection/report';
-    import { STEP_COUNT } from '@/lib/inspection/steps';
+    import { STEP_COUNT, STEPS } from '@/lib/inspection/steps';
+    import { getBootstrap, getLocalDraft, listLocalDrafts, offlineSupported, putLocalDraft, type LocalDraft } from '@/lib/offline/db';
+    import { offlineSync } from '@/lib/offline/sync.svelte';
+    import { onMount } from 'svelte';
     import { edit, show, store } from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
     import AddCircle from '~icons/ms/add-circle';
     import ArrowForward from '~icons/ms/arrow-forward';
     import AssignmentAdd from '~icons/ms/assignment-add';
     import ChevronRight from '~icons/ms/chevron-right';
+    import CloudOff from '~icons/ms/cloud-off';
+    import PhoneAndroid from '~icons/ms/phone-android';
     import EditNote from '~icons/ms/edit-note';
     import Print from '~icons/ms/print';
 
@@ -55,13 +60,142 @@
 
     const user = $derived(page.props.auth.user!);
     let starting = $state(false);
+    let online = $state(typeof navigator === 'undefined' ? true : navigator.onLine);
+    let offlineNotice = $state<string | null>(null);
 
-    const empty = $derived(drafts.length === 0 && submittedTotal === 0);
+    // ── Offline (Phase 7): drafts kept on this phone ─────────────────────────
+    let localDrafts = $state<LocalDraft[]>([]);
+
+    async function loadLocal(): Promise<void> {
+        localDrafts = offlineSupported() ? await listLocalDrafts(user.uuid) : [];
+    }
+
+    onMount(() => void loadLocal());
+
+    // Re-read after a background sync has sent things.
+    $effect(() => {
+        if (!offlineSync.running) {
+            void loadLocal();
+        }
+    });
+
+    const serverDraftIds = $derived(new Set(drafts.map((d) => d.uuid)));
+    const unsynced = $derived(new Set(localDrafts.filter((l) => l.dirty).map((l) => l.uuid)));
+    /** Started on this phone and not on the server yet. */
+    const phoneOnly = $derived<Card[]>(
+        localDrafts
+            .filter((l) => l.localOnly && !serverDraftIds.has(l.uuid))
+            .map((l) => ({
+                uuid: l.uuid,
+                status: 'draft',
+                ticketNo: null,
+                ownerName: l.draft.owner_name,
+                address: l.draft.property_address,
+                area: null,
+                step: l.step,
+                stepLabel: STEPS[l.step - 1]?.short ?? '',
+                savedLabel: 'on this phone',
+                submittedAt: null,
+                review: null,
+                reviewLabel: null,
+                reviewNote: null,
+                amount: null,
+            })),
+    );
+    const allDrafts = $derived([...phoneOnly, ...drafts]);
+
+    /** Open a draft from the copy on this phone (no server round trip). */
+    async function openFromPhone(uuid: string): Promise<boolean> {
+        const [local, bootstrap] = await Promise.all([getLocalDraft(uuid, user.uuid), getBootstrap(user.uuid)]);
+
+        if (!local || !bootstrap) {
+            return false;
+        }
+
+        const { savedAt: _savedAt, ...formProps } = bootstrap;
+
+        router.push({
+            url: edit.url(uuid),
+            component: 'contractor/InspectionForm',
+            props: (current) => ({ ...current, ...formProps, inspection: local.draft, step: local.step, changesRequested: null }),
+        });
+
+        return true;
+    }
+
+    async function resume(uuid: string): Promise<void> {
+        offlineNotice = null;
+        const local = localDrafts.find((l) => l.uuid === uuid);
+
+        // Only on this phone, or no network: open the phone copy straight away.
+        if ((local?.localOnly || !navigator.onLine) && (await openFromPhone(uuid))) {
+            return;
+        }
+
+        router.visit(edit.url(uuid), {
+            // The connection failed even though the phone says it's online (weak signal).
+            onNetworkError: () => {
+                void openFromPhone(uuid).then((opened) => {
+                    if (!opened) {
+                        offlineNotice = "This draft hasn't been opened on this phone yet. Connect to open it.";
+                    }
+                });
+
+                return false;
+            },
+        });
+    }
+
+    /** No network: a new draft with a phone-made id; the server creates it on the first sync. */
+    async function startOnPhone(): Promise<void> {
+        const bootstrap = await getBootstrap(user.uuid);
+
+        if (!bootstrap) {
+            offlineNotice = 'Open any inspection once while online; after that this phone can start new ones without network.';
+
+            return;
+        }
+
+        const uuid = crypto.randomUUID();
+        const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        await putLocalDraft({
+            uuid,
+            userId: user.uuid,
+            draft: { ...bootstrap.blankDraft, uuid, status: 'draft', current_step: 1, inspection_date: today, updated_at: null, circuits: [], attachments: [] },
+            step: 1,
+            updatedAt: Date.now(),
+            dirty: true,
+            localOnly: true,
+        });
+        await openFromPhone(uuid);
+    }
+
+    const empty = $derived(allDrafts.length === 0 && submittedTotal === 0);
     const where = (c: Card): string => [c.address, c.area].filter(Boolean).join(' · ') || 'No address yet';
 
     function start(): void {
         starting = true;
-        router.post(store.url(), { uuid: crypto.randomUUID() }, { onFinish: () => (starting = false) });
+        offlineNotice = null;
+
+        if (!navigator.onLine) {
+            void startOnPhone().finally(() => (starting = false));
+
+            return;
+        }
+
+        router.post(
+            store.url(),
+            { uuid: crypto.randomUUID() },
+            {
+                onFinish: () => (starting = false),
+                onNetworkError: () => {
+                    void startOnPhone();
+
+                    return false;
+                },
+            },
+        );
     }
 
     const steps = $derived([
@@ -72,6 +206,8 @@
     ]);
     const cols = 'grid-cols-[190px_minmax(0,1.2fr)_minmax(0,1.5fr)_120px_120px_150px_40px]';
 </script>
+
+<svelte:window ononline={() => (online = true)} onoffline={() => (online = false)} />
 
 <svelte:head>
     <title>My inspections · KENS</title>
@@ -93,13 +229,31 @@
         <div class="flex flex-col gap-1">
             <h1 class="text-[32px] font-extrabold tracking-[-0.02em]">My inspections</h1>
             <span class="text-[15px] text-mut">
-                {empty ? 'No inspections yet' : `${submittedTotal} submitted · ${drafts.length} draft${drafts.length === 1 ? '' : 's'}`}
+                {empty ? 'No inspections yet' : `${submittedTotal} submitted · ${allDrafts.length} draft${allDrafts.length === 1 ? '' : 's'}`}
             </span>
         </div>
         <Button size="md" class="ml-auto font-extrabold" onclick={start} disabled={starting}>
             <AddCircle />Start new inspection
         </Button>
     </div>
+
+    {#if !online || offlineSync.queued.length > 0 || offlineSync.needsSignIn || unsynced.size > 0 || offlineNotice}
+        <div class="flex flex-col gap-1.5 rounded-[14px] bg-info-bg px-4 py-3 text-sm" role="status">
+            {#if !online}
+                <span class="flex items-start gap-2"><CloudOff class="size-5 flex-none text-info" /><span><b>No network.</b> Drafts are kept on this phone and sync when you're back online. Paying needs network.</span></span>
+            {:else if offlineSync.needsSignIn}
+                <span class="flex items-start gap-2"><PhoneAndroid class="size-5 flex-none text-bad" /><span><b>Sign in again to sync</b> the work saved on this phone.</span></span>
+            {:else if unsynced.size > 0 || offlineSync.queued.length > 0}
+                <span class="flex items-start gap-2"><PhoneAndroid class="size-5 flex-none text-info" /><span>Syncing work saved on this phone…</span></span>
+            {/if}
+            {#if offlineSync.queued.length > 0}
+                <span class="pl-7 text-mut">{offlineSync.queued.length} file{offlineSync.queued.length === 1 ? '' : 's'} waiting to upload.</span>
+            {/if}
+            {#if offlineNotice}
+                <span class="pl-7 font-semibold text-ink">{offlineNotice}</span>
+            {/if}
+        </div>
+    {/if}
 
     {#if empty}
         <EmptyState
@@ -143,11 +297,11 @@
             </section>
         {/if}
 
-        {#if drafts.length > 0}
+        {#if allDrafts.length > 0}
             <section class="flex flex-col gap-3" aria-labelledby="drafts-heading">
-                <h2 id="drafts-heading" class="eyebrow px-1">Drafts<span class="lg:hidden"> · {drafts.length}</span></h2>
+                <h2 id="drafts-heading" class="eyebrow px-1">Drafts<span class="lg:hidden"> · {allDrafts.length}</span></h2>
                 <ul class="grid gap-3 lg:grid-cols-3 lg:gap-4">
-                    {#each drafts as d, i (d.uuid)}
+                    {#each allDrafts as d, i (d.uuid)}
                         <li class="flex flex-col gap-2.5 rounded-2xl border border-line bg-sf p-3.5 lg:gap-3 lg:p-[18px]">
                             <div class="flex justify-between gap-2">
                                 <div class="flex min-w-0 flex-col gap-0.5">
@@ -160,8 +314,11 @@
                                 <div class="h-full rounded-full bg-mid" style:width="{Math.round((d.step / STEP_COUNT) * 100)}%"></div>
                             </div>
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-sm text-mut">{d.stepLabel}{d.savedLabel ? ` · ${d.savedLabel}` : ''}</span>
-                                <Button href={edit.url(d.uuid)} size="sm" variant={i === 0 ? 'primary' : 'soft'} class="lg:h-10 lg:rounded-[10px] lg:text-sm">
+                                <span class="flex min-w-0 items-center gap-1.5 text-sm text-mut">
+                                    {#if unsynced.has(d.uuid)}<PhoneAndroid class="size-4 flex-none text-info" aria-label="Not synced yet" />{/if}
+                                    <span class="truncate">{d.stepLabel}{d.savedLabel ? ` · ${d.savedLabel}` : ''}</span>
+                                </span>
+                                <Button size="sm" variant={i === 0 ? 'primary' : 'soft'} class="lg:h-10 lg:rounded-[10px] lg:text-sm" onclick={() => resume(d.uuid)}>
                                     Resume{#if i === 0}<ArrowForward />{/if}
                                 </Button>
                             </div>

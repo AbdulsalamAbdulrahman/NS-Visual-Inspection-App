@@ -107,3 +107,18 @@ Client decisions (7 Oct 2026): app renamed "Building Electrical Inspection & Cer
 - [x] Pest: review rules and transitions, resubmit without payment, signatory snapshot, print/certificate access by role/area/status, verify masking + rate limit, rename
 - [x] Build, types, PHPStan, autofixer, decisions, CLAUDE.md status; commit
 - [ ] Visual check of certificate / print / review screens (needs a signed-in session or production)
+
+## Phase 7 · Offline (PWA)
+Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`. Only the contractor's own pages are ever cached; everything is cleared at sign-out.
+- [x] `public/sw.js`: precache the built app from `/build/manifest.json` (versioned per build); cache-first for `/build`, fonts and images; network-first with cached fallback for contractor pages (`/inspections`, `/inspections/{uuid}/edit`, Inertia JSON and HTML); offline navigation falls back to the cached home
+- [x] `manifest.webmanifest` + icons + register the worker in production builds only
+- [x] `lib/offline/db.ts`: IndexedDB stores for local drafts (payload, step, dirty flag, pending signature), the upload queue (compressed file + EXIF) and the form bootstrap (areas, options, inspector, fee); everything keyed to the signed-in user
+- [x] Autosave writes to IndexedDB on every change, marks clean after the server save; "Sign in to sync" when the session has expired (401/419)
+- [x] Form prefers a newer unsynced local copy over the server copy when it opens
+- [x] Start a new inspection offline: phone-generated uuid, client-side Inertia visit with the cached bootstrap; synced by the PUT upsert when back online
+- [x] Home: local-only and unsynced drafts appear (with "On device"), Resume works offline from the local copy
+- [x] Attachment queue: offline (or failed by network) files wait in IndexedDB and upload in order once the draft exists on the server; the form picks them up when they land
+- [x] Background sync on reconnect and on app start: dirty drafts first, then uploads
+- [x] Sign-out warns about unsynced work, then clears IndexedDB and the page caches
+- [x] Decisions, build, checks, test offline in Chrome (server stopped = no network), commit
+- [ ] Not yet exercised by hand: the sign-out warning with unsynced work, and a real phone in airplane mode (needs HTTPS — test on production)

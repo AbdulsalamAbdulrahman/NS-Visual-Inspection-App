@@ -38,6 +38,10 @@ if (isSvelteCheck) {
 }
 
 export default defineConfig({
+    // Versions the service worker (/sw.js?v=…) so every build installs a fresh app shell.
+    define: {
+        __BUILD_ID__: JSON.stringify(Date.now().toString(36)),
+    },
     plugins: lazyPlugins(() => [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.ts'],

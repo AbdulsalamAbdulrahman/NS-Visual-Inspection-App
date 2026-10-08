@@ -14,3 +14,14 @@ void createInertiaApp({
 });
 
 initializeTheme();
+
+// Offline drafts (Phase 7): the service worker only runs on built assets, never on the Vite dev server.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker
+            .register(`/sw.js?v=${__BUILD_ID__}`)
+            .catch(() => {
+                // Not fatal: the app works online without it.
+            });
+    });
+}

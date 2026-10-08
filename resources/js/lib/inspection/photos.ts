@@ -1,5 +1,7 @@
 import imageCompression from 'browser-image-compression';
 import exifr from 'exifr';
+// The compression worker loads this script; bundle it instead of the default CDN copy so it works offline.
+import compressionWorkerUrl from 'browser-image-compression/dist/browser-image-compression.js?url';
 
 export type PhotoMeta = {
     exif_lat: number | null;
@@ -51,6 +53,7 @@ export async function compressImage(file: File): Promise<File> {
         initialQuality: 0.82,
         fileType: 'image/jpeg',
         useWebWorker: true,
+        libURL: new URL(compressionWorkerUrl, window.location.origin).href,
     });
 
     const name =

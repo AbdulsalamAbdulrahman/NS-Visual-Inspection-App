@@ -33,6 +33,7 @@ export async function sendJson<T>(
     url: string,
     body?: unknown,
 ): Promise<T> {
+    // A failed connection (no network, server unreachable) reads as status 0, like the XHR upload.
     const response = await fetch(url, {
         method,
         credentials: 'same-origin',
@@ -43,6 +44,8 @@ export async function sendJson<T>(
             'X-XSRF-TOKEN': xsrfToken(),
         },
         body: body === undefined ? undefined : JSON.stringify(body),
+    }).catch(() => {
+        throw new HttpError(0, null);
     });
 
     const data =

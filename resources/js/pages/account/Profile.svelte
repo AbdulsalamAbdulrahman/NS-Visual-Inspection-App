@@ -3,13 +3,15 @@
 </script>
 
 <script lang="ts">
-    import { Link, router } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import Avatar from '@/components/Avatar.svelte';
     import Button from '@/components/Button.svelte';
     import MobileHeader from '@/components/MobileHeader.svelte';
     import ThemeSwitcher from '@/components/ThemeSwitcher.svelte';
     import { shellClasses } from '@/lib/breakpoints';
-    import { home, logout } from '@/routes';
+    import { home } from '@/routes';
+    import { unsyncedCount } from '@/lib/offline/db';
+    import { signOut } from '@/lib/offline/signout';
     import admin from '@/routes/admin';
     import { edit as editPassword } from '@/routes/password';
     import BadgeIcon from '~icons/ms/badge';
@@ -38,6 +40,21 @@
     let { profile }: { profile: Profile } = $props();
 
     const shell = $derived(shellClasses(profile.role));
+
+    /** Drafts or files on this phone the server hasn't got: signing out deletes them. */
+    let unsynced = $state(0);
+
+    async function requestSignOut(): Promise<void> {
+        const count = profile.role === 'contractor' ? await unsyncedCount(page.props.auth.user!.uuid).catch(() => 0) : 0;
+
+        if (count > 0 && unsynced === 0) {
+            unsynced = count;
+
+            return;
+        }
+
+        signOut();
+    }
 
     const licenceRows = $derived(
         profile.licence
@@ -128,7 +145,20 @@
         </div>
     </div>
 
-    <Button variant="danger" block onclick={() => router.post(logout.url())}>
-        <Logout />Sign out
-    </Button>
+    {#if unsynced > 0}
+        <div class="flex flex-col gap-2.5 rounded-2xl border border-bad bg-bad-bg p-4" role="alert">
+            <b class="text-base text-bad">{unsynced} item{unsynced === 1 ? '' : 's'} on this phone haven't synced yet</b>
+            <span class="text-sm">
+                Signing out deletes them from this phone. Connect to the internet and open My inspections to sync first.
+            </span>
+            <div class="grid grid-cols-2 gap-2.5">
+                <Button variant="outline" class="bg-sf" onclick={() => (unsynced = 0)}>Cancel</Button>
+                <Button variant="danger" class="bg-sf" onclick={() => signOut()}>Sign out anyway</Button>
+            </div>
+        </div>
+    {:else}
+        <Button variant="danger" block onclick={requestSignOut}>
+            <Logout />Sign out
+        </Button>
+    {/if}
 </div>

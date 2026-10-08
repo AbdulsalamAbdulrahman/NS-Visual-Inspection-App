@@ -5,7 +5,7 @@
 <script lang="ts">
     import { Link, page, router } from '@inertiajs/svelte';
     import type { Component } from 'svelte';
-    import { logout } from '@/routes';
+    import { signOut } from '@/lib/offline/signout';
     import { show as profile } from '@/routes/profile';
     import BadgeIcon from '~icons/ms/badge';
     import ChevronRight from '~icons/ms/chevron-right';
@@ -70,7 +70,7 @@
         <button
             type="button"
             class="flex h-[60px] items-center gap-3.5 pr-3 pl-4 text-left text-bad hover:bg-bad-bg"
-            onclick={() => router.post(logout.url())}
+            onclick={() => signOut()}
         >
             <Logout class="size-[22px]" />
             <b class="flex-1 text-base">Sign out</b>
