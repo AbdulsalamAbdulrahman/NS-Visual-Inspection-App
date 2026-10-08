@@ -40,11 +40,13 @@ class ServiceAreaController extends Controller
                 'inspectionsThisMonth' => (int) ($area->inspections_this_month ?? 0),
             ]);
 
-        return Inertia::render('admin/Areas', ['areas' => $areas]);
+        return Inertia::render('admin/Areas', ['areas' => $areas, 'editable' => self::editable()]);
     }
 
     public function store(ServiceAreaRequest $request): RedirectResponse
     {
+        abort_unless(self::editable(), 403);
+
         $area = ServiceArea::query()->create(['name' => $request->validated('name'), 'is_active' => true]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "{$area->name} added."]);
@@ -54,6 +56,8 @@ class ServiceAreaController extends Controller
 
     public function update(ServiceAreaRequest $request, ServiceArea $area): RedirectResponse
     {
+        abort_unless(self::editable(), 403);
+
         $area->update(['name' => $request->validated('name')]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => "Renamed to {$area->name}."]);
@@ -63,6 +67,8 @@ class ServiceAreaController extends Controller
 
     public function toggle(ServiceArea $area): RedirectResponse
     {
+        abort_unless(self::editable(), 403);
+
         $area->update(['is_active' => ! $area->is_active]);
 
         Inertia::flash('toast', [
@@ -71,5 +77,11 @@ class ServiceAreaController extends Controller
         ]);
 
         return back();
+    }
+
+    /** Areas come from the official seeded list; editing is switched off for now (config/kens.php). */
+    private static function editable(): bool
+    {
+        return (bool) config('kens.areas_editable');
     }
 }

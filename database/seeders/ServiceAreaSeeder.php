@@ -8,14 +8,18 @@ use App\Models\ServiceArea;
 use Illuminate\Database\Seeder;
 
 /**
- * Placeholder areas until Kaduna Electric sends the real list; admins can
- * rename, add and deactivate them in the UI.
+ * Kaduna Electric's area offices (official list from NSD, Oct 2026), shown
+ * without the "AO" suffix. Admins can rename, add and deactivate them in the UI.
+ * Safe to re-run: only missing areas are added.
  */
 class ServiceAreaSeeder extends Seeder
 {
     public const AREAS = [
-        'Barnawa', 'Kawo', 'Doka', 'Rigasa', 'Tudun Wada', 'Sabon Tasha', 'Kakuri',
-        'Zaria', 'Kafanchan', 'Saminaka', 'Sokoto', 'Gusau', 'Birnin Kebbi',
+        'Barnawa', 'Doka', 'Gonin Gora', 'Jaji', 'Kafanchan', 'Kawo',
+        'Kebbi Central', 'Kebbi East', 'Kebbi North', 'Makera', 'Mando',
+        'Millennium City', 'Rigasa', 'Sabon Gari', 'Samaru',
+        'Sokoto Central', 'Sokoto East', 'Sokoto South', 'Tudun Wada',
+        'Zamfara Central', 'Zamfara North', 'Zamfara West', 'Zaria City',
     ];
 
     public function run(): void
