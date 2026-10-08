@@ -30,4 +30,17 @@ return [
 
     'verify_base_url' => env('KENS_VERIFY_BASE_URL', 'https://kens.buildingelectcert.com.ng'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Service area editing
+    |--------------------------------------------------------------------------
+    |
+    | Off for now: the area offices come from ServiceAreaSeeder (Kaduna
+    | Electric's official list) and admins can only view them. Set
+    | KENS_AREAS_EDITABLE=true to bring back add, rename and deactivate.
+    |
+    */
+
+    'areas_editable' => (bool) env('KENS_AREAS_EDITABLE', false),
+
 ];

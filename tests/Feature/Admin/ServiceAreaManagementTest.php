@@ -11,7 +11,25 @@ beforeEach(function () {
     $this->admin = User::factory()->admin()->create();
 });
 
-test('admins can add, rename and deactivate areas', function () {
+test('area editing is off by default: the list is read-only', function () {
+    $area = ServiceArea::factory()->create(['name' => 'Kawo']);
+
+    $this->actingAs($this->admin)
+        ->get(route('admin.areas.index'))
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('editable', false)->has('areas', 1));
+
+    $this->post(route('admin.areas.store'), ['name' => 'Somewhere'])->assertForbidden();
+    $this->put(route('admin.areas.update', $area), ['name' => 'Renamed'])->assertForbidden();
+    $this->post(route('admin.areas.toggle', $area))->assertForbidden();
+
+    expect(ServiceArea::query()->count())->toBe(1)
+        ->and($area->fresh()->name)->toBe('Kawo')
+        ->and($area->fresh()->is_active)->toBeTrue();
+});
+
+test('admins can add, rename and deactivate areas when editing is on', function () {
+    config(['kens.areas_editable' => true]);
+
     $this->actingAs($this->admin)->post(route('admin.areas.store'), ['name' => '  Tudun   Wada ']);
     $area = ServiceArea::query()->where('name', 'Tudun Wada')->firstOrFail();
 
@@ -26,6 +44,7 @@ test('admins can add, rename and deactivate areas', function () {
 });
 
 test('area names are unique', function () {
+    config(['kens.areas_editable' => true]);
     ServiceArea::factory()->create(['name' => 'Kawo']);
 
     $this->actingAs($this->admin)->post(route('admin.areas.store'), ['name' => 'Kawo'])

@@ -112,3 +112,7 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 - **Security headers** on every page: nosniff, SAMEORIGIN framing, strict-origin referrer, and a permissions policy that keeps geolocation and camera for the app only; HSTS on production over HTTPS. No CSP yet: the inline theme script and Monnify's redirect would need nonces — revisit if required.
 - **Password reset throttling**: Fortify doesn't limit forgot/reset password, so a middleware does: 5 a minute per email and IP, 20 an hour per IP, shown as a field error.
 - **`deploy.sh` (spec) is replaced** by the GitHub Actions + server pull deploy (host blocks inbound SSH); see Deployment.
+
+## After launch
+- **Official area offices** (from NSD, 8 Oct 2026): 23 offices in `ServiceAreaSeeder`, stored without the "AO" suffix. Production runs only `db:seed --class=ServiceAreaSeeder`; the fee is set in Fee settings.
+- **Area editing switched off for now** (user decision): add, rename and deactivate are hidden on the Service areas page and refused by the server (403). The page stays as a read-only list with reps and counts. `KENS_AREAS_EDITABLE=true` brings editing back without a code change. Note: renaming an area and re-running the seeder would re-add the original name.

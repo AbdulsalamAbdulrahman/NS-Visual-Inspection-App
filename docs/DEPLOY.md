@@ -114,19 +114,18 @@ releases. Both use the full PHP 8.5 path: cron runs with a minimal environment
 where plain `php` may be another version (`which php` in the terminal shows
 `/usr/local/php85/bin/php` on da38).
 
-### 6. Reference data and first admin
+### 6. Service areas and first admin
 
-Service areas and the launch fee (₦15,000) come from the production-safe
-seeder. It only adds areas that don't exist and only sets a fee when there is
-none; it never creates demo users:
+Load Kaduna Electric's 23 area offices (safe to re-run: it only adds missing ones):
 
 ```bash
-/usr/local/php85/bin/php ~/domains/kens.buildingelectcert.com.ng/app/artisan db:seed --force
+/usr/local/php85/bin/php ~/domains/kens.buildingelectcert.com.ng/app/artisan db:seed --class=ServiceAreaSeeder --force
 ```
 
-The area list in `database/seeders/ServiceAreaSeeder.php` is a placeholder until
-Kaduna Electric confirms the official one; admins can add, rename and
-deactivate areas under **Service areas** at any time. Then create the first admin:
+Area editing in the admin is switched off for now (`KENS_AREAS_EDITABLE=false`),
+so the list only changes through this seeder. Set the inspection fee in
+**Admin → Fee settings**; contractors can't pay until a fee is in effect.
+Then create the first admin:
 
 ```bash
 /usr/local/php85/bin/php ~/domains/kens.buildingelectcert.com.ng/app/artisan app:create-admin you@example.com "Your Name"

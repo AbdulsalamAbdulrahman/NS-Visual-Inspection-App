@@ -48,7 +48,7 @@ class DemoSeeder extends Seeder
         $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'NEMSA/CP/2022/0051', 'R.09931', 'Danladi Electrical Services Ltd');
         $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSA/C/2024/0610', status: UserStatus::Suspended);
 
-        $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Kakuri', 'Sabon Tasha']);
+        $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Makera', 'Mando']);
         $this->rep('Abubakar Shehu', 'a.shehu@kadunaelectric.com', ['Kawo', 'Rigasa']);
 
         $this->submissions();

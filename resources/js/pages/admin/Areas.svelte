@@ -21,7 +21,8 @@
         inspectionsThisMonth: number;
     };
 
-    let { areas }: { areas: Area[] } = $props();
+    /** `editable` is off while areas come from Kaduna Electric's official list (config/kens.php). */
+    let { areas, editable }: { areas: Area[]; editable: boolean } = $props();
 
     const addForm = useForm({ name: '' });
     const renameForm = useForm({ name: '' });
@@ -66,11 +67,18 @@
     <div class="hidden flex-col gap-0.5 lg:flex">
         <h1 class="text-[28px] font-extrabold">Service areas</h1>
         <span class="text-sm text-mut">
-            Shown in the contractor's Service area dropdown. Deactivated areas keep their history.
+            {editable
+                ? "Shown in the contractor's Service area dropdown. Deactivated areas keep their history."
+                : "Kaduna Electric's area offices, shown in the contractor's Service area dropdown."}
         </span>
     </div>
-    <p class="text-sm text-mut lg:hidden">Shown in the contractor's Service area dropdown. Deactivated areas keep their history.</p>
+    <p class="text-sm text-mut lg:hidden">
+        {editable
+            ? "Shown in the contractor's Service area dropdown. Deactivated areas keep their history."
+            : "Kaduna Electric's area offices, shown in the contractor's Service area dropdown."}
+    </p>
 
+    {#if editable}
     <form class="flex flex-col gap-1.5" onsubmit={add} novalidate>
         <div class="flex gap-2.5">
             <label class="sr-only" for="new-area">New area name</label>
@@ -93,6 +101,7 @@
             <span class="flex items-center gap-1 text-[13px] font-semibold text-bad"><ErrorIcon class="size-4" />{addForm.errors.name}</span>
         {/if}
     </form>
+    {/if}
 
     <div class="overflow-hidden rounded-2xl border border-line bg-sf lg:max-w-[980px]" role="table" aria-label="Service areas">
         <div role="row" class="hidden gap-3 border-b border-line bg-sf2 px-5 py-3 text-xs font-bold tracking-[0.06em] text-mut lg:grid {cols}">
@@ -163,7 +172,7 @@
                         <Button variant="ghost" size="xs" class="h-9 rounded-lg px-3 text-[13px]" onclick={() => (renaming = null)}>
                             Cancel
                         </Button>
-                    {:else}
+                    {:else if editable}
                         <button type="button" class="min-h-9 rounded-lg px-2 text-brand hover:bg-sf2" onclick={() => startRename(area)}>
                             Rename
                         </button>
