@@ -17,6 +17,7 @@
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="manifest" href="/manifest.webmanifest">
 
         @vite(['resources/css/app.css', 'resources/js/app.ts'])
         <x-inertia::head>
