@@ -78,7 +78,10 @@ jobs:
             git -C "$work" remote add origin "$remote"
           fi
 
-          rsync -a --delete --exclude .git "$RUNNER_TEMP/release/" "$work/"
+          # --checksum: rsync's default size+mtime check can skip a changed file that
+          # kept its size and was written in the same second (REVISION, 41 bytes).
+          rsync -a --checksum --delete --exclude .git "$RUNNER_TEMP/release/" "$work/"
+          printf '%s\n' "$GITHUB_SHA" > "$work/REVISION"
 
           cd "$work"
           git config user.name "github-actions[bot]"
