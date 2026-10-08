@@ -103,3 +103,12 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 - **The image-compression worker is bundled** (it loaded its script from jsDelivr by default, which fails offline and is an unnecessary third-party call).
 - **Sign-out** warns when drafts or files on the phone haven't synced, and clears IndexedDB and the page cache only after the server confirms sign-out (a failed offline sign-out loses nothing). If a different contractor signs in on the same phone, the previous user's copies are wiped first.
 - **Payment and resubmission always need network** (unchanged): Pay / Resubmit are disabled offline.
+
+## Phase 8
+- **Indexes**: the spec's indexes were all in place. Added (`status`, `submitted_at`) on inspections for the admin/rep lists and dropped the single `status` index it covers, and (`status`, `paid_at`) on payments for the overview revenue. `LIKE '%…%'` search can't use an index; fine at NSD's volume.
+- **N+1**: `Model::preventLazyLoading()` everywhere — it throws in development and tests (the suite exercises every list with several rows), and in production a violation is only logged (`Lazy loading` in the log) so a missed eager load never breaks a page.
+- **Abandoned payments**: hourly, pending payments older than 24 h are re-checked with Monnify first. Paid → finalised with a ticket; failed → failed; still pending or unknown → abandoned. If Monnify can't be reached, nothing is changed until the next run. An abandoned payment that Monnify later reports as paid is still finalised (webhook or verify).
+- **Error pages**: Inertia's exception hook renders a branded page for 403/404/429/500/503 on page visits (with shared props, so the signed-in user and NSD contacts are available). JSON calls (auto-save, uploads) keep JSON errors; with debug on, 5xx keep Laravel's detailed screen. An expired page (419) redirects back with a toast instead of an error.
+- **Security headers** on every page: nosniff, SAMEORIGIN framing, strict-origin referrer, and a permissions policy that keeps geolocation and camera for the app only; HSTS on production over HTTPS. No CSP yet: the inline theme script and Monnify's redirect would need nonces — revisit if required.
+- **Password reset throttling**: Fortify doesn't limit forgot/reset password, so a middleware does: 5 a minute per email and IP, 20 an hour per IP, shown as a field error.
+- **`deploy.sh` (spec) is replaced** by the GitHub Actions + server pull deploy (host blocks inbound SSH); see Deployment.

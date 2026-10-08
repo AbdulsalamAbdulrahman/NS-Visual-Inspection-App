@@ -122,3 +122,13 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Sign-out warns about unsynced work, then clears IndexedDB and the page caches
 - [x] Decisions, build, checks, test offline in Chrome (server stopped = no network), commit
 - [ ] Not yet exercised by hand: the sign-out warning with unsynced work, and a real phone in airplane mode (needs HTTPS — test on production)
+
+## Phase 8 · Production readiness
+- [x] Index review: spec indexes present; added (status, submitted_at) on inspections (replaces the single status index) and (status, paid_at) on payments; query plans checked
+- [x] N+1 guard: lazy loading throws in development and tests (whole suite passes), logged in production
+- [x] `payments:abandon-stale` (hourly): pending > 24 h checked with Monnify, then finalised, failed or abandoned; untouched while Monnify is down
+- [x] Scheduler: queue every minute, abandon hourly, prune failed jobs and expired reset tokens daily
+- [x] Branded error pages (403/404/429/500/503) for page visits; JSON callers keep JSON; expired page (419) goes back with a toast
+- [x] Security headers; rate limits on forgot/reset password
+- [x] `deploy.sh` superseded by the pull deploy (see Deployment decisions); `deploy/env.production.example`; DEPLOY.md: scheduled jobs, Monnify go-live, backups, monitoring
+- [x] Build, checks, 182 tests; commit

@@ -27,7 +27,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | 5 | Viewing | Done |
 | 6 | Review, certificate, print and verify | Done |
 | 7 | Offline (PWA) | Done |
-| 8 | Production readiness | Not started |
+| 8 | Production readiness | Done |
 
 ## Conventions
 - declare(strict_types=1); backed enums for every enum column; model config via class properties ($fillable, $casts).

@@ -129,6 +129,50 @@ Monnify dashboard → Settings → Webhook URL:
 `https://kens.buildingelectcert.com.ng/webhooks/monnify`. Keep
 `MONNIFY_VERIFY_SIGNATURE=false` on the sandbox; set it to `true` with the live keys.
 
+### 8. Certificate signatory
+
+Sign in as admin → More → **Certificate**: the Head of NSD's name, title and a
+scanned signature. Approving reports is blocked until this is set.
+
+## What runs on its own
+
+The scheduler (first cron line) runs:
+
+| When | What |
+|---|---|
+| Every minute | Sends queued email (login details, password resets, submission, approval and changes-requested emails) |
+| Hourly | `payments:abandon-stale`: payments pending for 24 h are checked with Monnify once more; paid ones are finalised (ticket issued), the rest marked Abandoned. Nothing changes while Monnify is unreachable. |
+| Daily | Prunes failed queue jobs older than 30 days and expired password-reset tokens |
+
+The second cron line deploys new releases (see above).
+
+## Going live with Monnify
+
+1. Get live keys from Monnify (API key, secret key, contract code).
+2. In `shared/.env` set `MONNIFY_BASE_URL=https://api.monnify.com`, the three
+   keys, and `MONNIFY_VERIFY_SIGNATURE=true`.
+3. `php $BASE/app/artisan optimize`, then set the live webhook URL in the
+   Monnify dashboard (same path: `/webhooks/monnify`).
+4. Make one real payment and check it on Admin → Payments.
+
+## Backups
+
+Not automatic in the app. In DirectAdmin → **Create/Restore Backups**, schedule
+a daily backup that includes the **database** `buildin1_kens` and the folder
+`domains/kens.buildingelectcert.com.ng/shared` (`.env` plus uploads,
+signatures and certificate signatures under `storage/app/private`). Keep at
+least one copy off the server. The releases themselves don't need backing up:
+they're rebuilt from GitHub.
+
+## Keeping an eye on it
+
+| Check | How |
+|---|---|
+| App errors | `$BASE/shared/storage/logs/laravel-YYYY-MM-DD.log` (30 days kept). Lines with `Lazy loading` point to a slow list worth fixing. |
+| Emails not arriving | `php $BASE/app/artisan queue:failed` lists failed sends; `queue:retry all` resends them once mail settings are fixed |
+| Deploys | `tail -n 30 $BASE/deploy.log` |
+| Health | `https://kens.buildingelectcert.com.ng/up` returns 200 when the app boots |
+
 ## Day to day
 
 | Task | How |

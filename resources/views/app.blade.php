@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @if (in_array($appearance ?? 'light', ['light', 'dark'], true)) data-theme="{{ $appearance }}" @endif>
+@php($appearance ??= 'light') {{-- unset on pages outside the web middleware (e.g. a 404 for an unknown URL) --}}
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @if (in_array($appearance, ['light', 'dark'], true)) data-theme="{{ $appearance }}" @endif>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

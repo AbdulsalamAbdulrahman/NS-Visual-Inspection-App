@@ -6,6 +6,8 @@ use App\Http\Middleware\EnsureAccountUsable;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\ThrottlePasswordResets;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -29,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            SecurityHeaders::class,
+            ThrottlePasswordResets::class,
             HandleAppearance::class,
             EnsureAccountUsable::class,
             HandleInertiaRequests::class,
