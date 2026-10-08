@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Inspections\SaveDraft;
 use App\Actions\Inspections\StartInspection;
+use App\Actions\Reviews\ResubmitInspection;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -13,6 +14,7 @@ use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
+use App\Enums\ReviewStatus;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
 use App\Http\Requests\Inspections\SaveDraftRequest;
@@ -27,7 +29,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -45,6 +46,8 @@ class InspectionController extends Controller
         $search = trim($request->string('search')->toString());
 
         $drafts = $user->inspections()->drafts()->with('serviceArea:id,name')->latest('updated_at')->get();
+        $returned = $user->inspections()->submitted()->where('review_status', ReviewStatus::ChangesRequested)
+            ->with('serviceArea:id,name')->latest('reviewed_at')->get();
 
         $submitted = $user->inspections()->submitted()
             ->with('serviceArea:id,name')
@@ -55,6 +58,7 @@ class InspectionController extends Controller
 
         return Inertia::render('contractor/Home', [
             'drafts' => InspectionCardResource::collection($drafts),
+            'returned' => InspectionCardResource::collection($returned),
             'submitted' => InspectionCardResource::collection($submitted),
             'submittedTotal' => $user->inspections()->submitted()->count(),
             'filters' => ['search' => $search],
@@ -84,7 +88,9 @@ class InspectionController extends Controller
 
         return Inertia::render('contractor/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
-            'printUrl' => Route::has('inspections.print') ? route('inspections.print', $inspection) : null,
+            'printUrl' => route('inspections.print', $inspection),
+            'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
+            'editUrl' => $inspection->needsChanges() ? route('inspections.edit', $inspection) : null,
             'paid' => $inspection->paidPayment ? Money::format($inspection->paidPayment->amount_paid_kobo ?? $inspection->paidPayment->amount_kobo) : null,
         ]);
     }
@@ -133,6 +139,12 @@ class InspectionController extends Controller
                 'amount' => Money::format($fee->amount_kobo),
                 'effectiveFrom' => $fee->effective_from->format('d M Y'),
             ] : null,
+            // Sent back by NSD: the last step resubmits instead of paying.
+            'changesRequested' => $inspection->needsChanges() ? [
+                'note' => $inspection->review_note,
+                'ticketNo' => $inspection->ticket_no,
+                'requestedAt' => $inspection->reviewed_at?->format('d M Y'),
+            ] : null,
         ]);
     }
 
@@ -158,6 +170,18 @@ class InspectionController extends Controller
                 ? route('inspections.signature', $inspection).'?v='.md5($inspection->signature_path)
                 : null,
         ]);
+    }
+
+    /** A report sent back by NSD goes back into the review queue; no new payment. */
+    public function resubmit(Request $request, Inspection $inspection, ResubmitInspection $resubmit): RedirectResponse
+    {
+        Gate::authorize('resubmit', $inspection);
+
+        $resubmit->handle($inspection, $request->user());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Resubmitted. NSD will review it again.']);
+
+        return to_route('inspections.show', $inspection);
     }
 
     public function signature(Inspection $inspection): StreamedResponse

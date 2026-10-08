@@ -12,6 +12,7 @@ use App\Enums\NemsaCategory;
 use App\Enums\PaymentStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
+use App\Enums\ReviewStatus;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
 use Carbon\CarbonImmutable;
@@ -26,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * A Visual Site Inspection Report. Editable by its contractor while a draft;
+ * A building electrical inspection report. Editable by its contractor while a draft;
  * locked once Monnify confirms payment and it becomes submitted.
  *
  * @property int $id
@@ -34,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $contractor_id
  * @property int|null $service_area_id
  * @property InspectionStatus $status
+ * @property ReviewStatus|null $review_status
  * @property int $current_step
  * @property string|null $ticket_no
  * @property string|null $form74_no
@@ -82,6 +84,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $inspector_coren_no
  * @property string|null $inspector_firm_name
  * @property CarbonImmutable|null $submitted_at
+ * @property int|null $reviewed_by
+ * @property CarbonImmutable|null $reviewed_at
+ * @property string|null $review_note
+ * @property CarbonImmutable|null $approved_at
+ * @property string|null $signatory_name
+ * @property string|null $signatory_title
+ * @property string|null $signatory_signature_path
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read User $contractor
@@ -89,6 +98,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read Collection<int, InspectionCircuit> $circuits
  * @property-read Collection<int, InspectionAttachment> $attachments
  * @property-read Payment|null $paidPayment
+ * @property-read User|null $reviewer
+ * @property-read Collection<int, InspectionReview> $reviews
  */
 class Inspection extends Model
 {
@@ -165,6 +176,9 @@ class Inspection extends Model
         'declaration_accepted_at' => 'datetime',
         'inspector_nemsa_category' => NemsaCategory::class,
         'submitted_at' => 'datetime',
+        'review_status' => ReviewStatus::class,
+        'reviewed_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     /**
@@ -230,6 +244,24 @@ class Inspection extends Model
         return $this->hasOne(Payment::class)->where('status', PaymentStatus::Paid)->oldest('paid_at');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by')->withTrashed();
+    }
+
+    /**
+     * Review history, oldest first.
+     *
+     * @return HasMany<InspectionReview, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(InspectionReview::class)->orderBy('id');
+    }
+
     public function isDraft(): bool
     {
         return $this->status === InspectionStatus::Draft;
@@ -238,6 +270,29 @@ class Inspection extends Model
     public function isSubmitted(): bool
     {
         return $this->status === InspectionStatus::Submitted;
+    }
+
+    public function isAwaitingReview(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::Pending;
+    }
+
+    /** NSD sent it back: the contractor may edit and resubmit (no new payment). */
+    public function needsChanges(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::ChangesRequested;
+    }
+
+    /** Approved by NSD: the certificate exists. */
+    public function isApproved(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::Approved;
+    }
+
+    /** The contractor can still change the report (a draft, or sent back for changes). */
+    public function isEditable(): bool
+    {
+        return $this->isDraft() || $this->needsChanges();
     }
 
     /** Folder on the private disk for this inspection's files. */

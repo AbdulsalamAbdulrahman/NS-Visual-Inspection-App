@@ -8,7 +8,6 @@ use App\Models\Inspection;
 use App\Support\Money;
 use App\Support\TicketQr;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,8 +36,8 @@ class TicketController extends Controller
                 'paymentReference' => $payment->transaction_reference ?? $payment?->payment_reference,
                 'confirmedAt' => ($payment->paid_at ?? $inspection->submitted_at)?->format('H:i'),
                 'date' => $inspection->submitted_at?->format('d M Y, H:i'),
-                'reportUrl' => Route::has('inspections.show') ? route('inspections.show', $inspection) : null,
-                'printUrl' => Route::has('inspections.print') ? route('inspections.print', $inspection) : null,
+                'reportUrl' => route('inspections.show', $inspection),
+                'printUrl' => route('inspections.print', $inspection),
             ],
         ]);
     }

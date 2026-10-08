@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\ReviewStatus;
 use App\Enums\Role;
 use App\Http\Resources\AuthUserResource;
 use App\Models\FeeSchedule;
@@ -69,6 +70,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             'inspections' => Inspection::query()->submitted()->count(),
+            'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->count(),
             'contractors' => User::query()->role(Role::Contractor)->count(),
             'reps' => User::query()->role(Role::Rep)->count(),
             'areas' => ServiceArea::query()->count(),

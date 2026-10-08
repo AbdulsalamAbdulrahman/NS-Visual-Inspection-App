@@ -8,6 +8,7 @@ use App\Enums\CircuitCondition;
 use App\Enums\WiringMethod;
 use App\Models\Inspection;
 use App\Models\InspectionCircuit;
+use App\Models\InspectionReview;
 use App\Support\InspectionChecklist;
 use App\Support\Money;
 use Illuminate\Http\Request;
@@ -21,6 +22,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class InspectionReportResource extends JsonResource
 {
+    /** Printed reports leave payment details off for every role (spec). */
+    private bool $forPrint = false;
+
+    public function forPrint(): static
+    {
+        $this->forPrint = true;
+
+        return $this;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -121,7 +132,26 @@ class InspectionReportResource extends JsonResource
                 'issues' => $notStandard + $badCircuits,
             ],
 
-            'payment' => $this->when((bool) $request->user()?->isAdmin(), function (): ?array {
+            'review' => [
+                'status' => $this->review_status?->value,
+                'label' => $this->review_status?->label(),
+                'note' => $this->review_note,
+                'reviewedAt' => $this->reviewed_at?->format('d M Y, H:i'),
+                'approvedAt' => $this->approved_at?->format('d M Y'),
+                'history' => $this->when(
+                    (bool) $request->user()?->isAdmin() && $this->relationLoaded('reviews'),
+                    fn () => $this->reviews->map(fn (InspectionReview $r): array => [
+                        'id' => $r->id,
+                        'action' => $r->action->value,
+                        'label' => $r->action->label(),
+                        'note' => $r->note,
+                        'by' => $r->user?->name,
+                        'at' => $r->created_at->format('d M Y, H:i'),
+                    ])->values(),
+                ),
+            ],
+
+            'payment' => $this->when(! $this->forPrint && (bool) $request->user()?->isAdmin(), function (): ?array {
                 $payment = $this->paidPayment;
 
                 return $payment ? [

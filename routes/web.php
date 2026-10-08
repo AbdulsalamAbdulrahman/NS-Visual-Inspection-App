@@ -6,23 +6,33 @@ use App\Http\Controllers\Account\FirstPasswordController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\CertificateSettingsController;
 use App\Http\Controllers\Admin\ContractorController;
 use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\InspectionController as AdminInspectionController;
 use App\Http\Controllers\Admin\OverviewController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\RepController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PrintController;
 use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\VerifyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+// Public check behind the certificate QR code (no personal data beyond a masked name).
+Route::get('verify/{ticket}', VerifyController::class)
+    ->middleware('throttle:30,1')
+    ->where('ticket', '[A-Za-z0-9-]{1,40}')
+    ->name('verify');
 
 // Monnify payment notifications (CSRF-exempt, see bootstrap/app.php).
 Route::post('webhooks/monnify', MonnifyWebhookController::class)
@@ -46,6 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::get('inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
         Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
+        Route::post('inspections/{inspection}/resubmit', [InspectionController::class, 'resubmit'])->name('inspections.resubmit');
 
         Route::get('inspections/{inspection}/pay', [PaymentController::class, 'create'])->name('inspections.pay');
         Route::post('inspections/{inspection}/pay', [PaymentController::class, 'store'])->middleware('throttle:10,1')->name('inspections.pay.store');
@@ -60,6 +71,9 @@ Route::middleware('auth')->group(function () {
     // Shared by every role; access is checked by policy (role + service area).
     Route::get('inspections/{inspection}/signature', [InspectionController::class, 'signature'])->name('inspections.signature');
     Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
+    Route::get('inspections/{inspection}/print', [PrintController::class, 'report'])->name('inspections.print');
+    Route::get('inspections/{inspection}/certificate', [PrintController::class, 'certificate'])->name('inspections.certificate');
+    Route::get('inspections/{inspection}/certificate/signatory', [PrintController::class, 'signatorySignature'])->name('inspections.certificate.signature');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', OverviewController::class)->name('overview');
@@ -67,6 +81,12 @@ Route::middleware('auth')->group(function () {
         Route::get('inspections', [AdminInspectionController::class, 'index'])->name('inspections.index');
         Route::get('inspections/export', [AdminInspectionController::class, 'export'])->name('inspections.export');
         Route::get('inspections/{inspection}', [AdminInspectionController::class, 'show'])->name('inspections.show');
+        Route::post('inspections/{inspection}/approve', [ReviewController::class, 'approve'])->name('inspections.approve');
+        Route::post('inspections/{inspection}/request-changes', [ReviewController::class, 'requestChanges'])->name('inspections.request-changes');
+
+        Route::get('certificate', [CertificateSettingsController::class, 'edit'])->name('certificate.edit');
+        Route::post('certificate', [CertificateSettingsController::class, 'update'])->name('certificate.update');
+        Route::get('certificate/signature', [CertificateSettingsController::class, 'signature'])->name('certificate.signature');
 
         Route::get('payments', [AdminPaymentController::class, 'index'])->name('payments.index');
         Route::get('payments/export', [AdminPaymentController::class, 'export'])->name('payments.export');

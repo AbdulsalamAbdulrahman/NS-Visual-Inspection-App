@@ -1,0 +1,1 @@
+var e={pending:`info`,changes_requested:`imp`,approved:`ok`};export{e as t};

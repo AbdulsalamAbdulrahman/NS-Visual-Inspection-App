@@ -13,6 +13,7 @@ use App\Enums\EarthingSystemType;
 use App\Enums\InspectionStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
+use App\Enums\ReviewStatus;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
 use App\Models\Inspection;
@@ -110,8 +111,32 @@ class InspectionFactory extends Factory
     {
         return $this->complete()->state(fn (): array => [
             'status' => InspectionStatus::Submitted,
+            'review_status' => ReviewStatus::Pending,
             'ticket_no' => 'KE-NSD-'.now()->year.'-'.fake()->unique()->numerify('######'),
             'submitted_at' => now(),
+        ]);
+    }
+
+    /** NSD sent it back with a reason. */
+    public function changesRequested(string $note = 'Earth resistance reading looks wrong; please re-test and attach the photo.'): static
+    {
+        return $this->submitted()->state(fn (): array => [
+            'review_status' => ReviewStatus::ChangesRequested,
+            'reviewed_at' => now(),
+            'review_note' => $note,
+        ]);
+    }
+
+    /** Approved by NSD, with the signatory snapshot a real approval would take. */
+    public function approved(): static
+    {
+        return $this->submitted()->state(fn (): array => [
+            'review_status' => ReviewStatus::Approved,
+            'reviewed_at' => now(),
+            'approved_at' => now(),
+            'signatory_name' => 'Engr. Hauwa Abdullahi',
+            'signatory_title' => 'Head, New Service Department',
+            'signatory_signature_path' => 'inspections/test/nsd-signature.png',
         ]);
     }
 

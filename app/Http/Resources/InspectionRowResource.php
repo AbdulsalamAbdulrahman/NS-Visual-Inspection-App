@@ -34,6 +34,8 @@ class InspectionRowResource extends JsonResource
             'submittedAt' => $this->submitted_at?->format('d M Y'),
             'purpose' => $this->purpose?->label(),
             'connection' => $this->connection_type?->label(),
+            'review' => $this->review_status?->value,
+            'reviewLabel' => $this->review_status?->label(),
             'amount' => $this->when(
                 (bool) $request->user()?->isAdmin(),
                 fn () => $payment ? Money::format($payment->amount_paid_kobo ?? $payment->amount_kobo) : null,

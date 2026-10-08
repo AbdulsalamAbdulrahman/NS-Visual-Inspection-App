@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\PaymentStatus;
+use App\Enums\ReviewStatus;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
@@ -84,6 +85,7 @@ class OverviewController extends Controller
                 'contractorsTotal' => (int) $contractors->sum(),
                 'contractorsSuspended' => (int) ($contractors[UserStatus::Suspended->value] ?? 0),
                 'drafts' => Inspection::query()->drafts()->count(),
+                'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->count(),
             ],
             'areas' => $areas,
             'recent' => InspectionRowResource::collection($recent),

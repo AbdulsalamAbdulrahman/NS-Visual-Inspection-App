@@ -1,0 +1,1 @@
+import{J as e,a as t,gt as n}from"./dist-jmuH8img.js";function r(){let r=n(()=>new URL(t.url,`http://localhost`).pathname);return{get path(){return e(r)},isActive(t,n=!1){return n?e(r)===t:e(r)===t||e(r).startsWith(`${t}/`)}}}export{r as t};

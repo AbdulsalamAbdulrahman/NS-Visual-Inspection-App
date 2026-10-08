@@ -6,6 +6,7 @@ namespace App\Support;
 
 use App\Enums\ConnectionType;
 use App\Enums\PropertyPurpose;
+use App\Enums\ReviewStatus;
 use App\Models\Inspection;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,7 @@ final class InspectionFilters
         public readonly ?ConnectionType $connection,
         public readonly ?CarbonImmutable $from,
         public readonly ?CarbonImmutable $to,
+        public readonly ?ReviewStatus $review,
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -47,6 +49,7 @@ final class InspectionFilters
             connection: ConnectionType::tryFrom($request->string('connection')->toString()),
             from: $date('from'),
             to: $date('to'),
+            review: ReviewStatus::tryFrom($request->string('review')->toString()),
         );
     }
 
@@ -62,10 +65,11 @@ final class InspectionFilters
             ->when($this->purpose, fn (Builder $q) => $q->where('purpose', $this->purpose))
             ->when($this->connection, fn (Builder $q) => $q->where('connection_type', $this->connection))
             ->when($this->from, fn (Builder $q) => $q->where('submitted_at', '>=', $this->from))
-            ->when($this->to, fn (Builder $q) => $q->where('submitted_at', '<', $this->to->copy()->addDay()));
+            ->when($this->to, fn (Builder $q) => $q->where('submitted_at', '<', $this->to->copy()->addDay()))
+            ->when($this->review, fn (Builder $q) => $q->where('review_status', $this->review));
     }
 
-    /** Filters other than search (the "Filters" badge count on phones). */
+    /** Filters other than search and review status (the "Filters" badge count on phones; review has its own chips). */
     public function count(): int
     {
         return ($this->areaIds !== [] ? 1 : 0)
@@ -88,6 +92,7 @@ final class InspectionFilters
             'connection' => $this->connection?->value,
             'from' => $this->from?->toDateString(),
             'to' => $this->to?->toDateString(),
+            'review' => $this->review?->value,
             'count' => $this->count(),
         ];
     }
