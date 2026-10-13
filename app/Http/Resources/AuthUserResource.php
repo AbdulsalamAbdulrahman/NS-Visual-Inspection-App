@@ -28,7 +28,11 @@ class AuthUserResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role->value,
             'initials' => $this->initials(),
-            'subtitle' => $category ? "{$this->role->label()} · {$category->label()}" : $this->role->label(),
+            'subtitle' => match (true) {
+                $category !== null => "{$this->role->label()} · {$category->label()}",
+                $this->isLecan() && $this->lecan_state !== null => "{$this->role->label()} · {$this->lecan_state->label()} chapter",
+                default => $this->role->label(),
+            },
             'badge' => $category?->label(),
             'areas' => $this->isRep() ? $this->serviceAreas->pluck('name')->values()->all() : [],
         ];

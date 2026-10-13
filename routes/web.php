@@ -8,8 +8,10 @@ use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\CertificateSettingsController;
 use App\Http\Controllers\Admin\ContractorController;
+use App\Http\Controllers\Admin\ContractorImportController;
 use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\InspectionController as AdminInspectionController;
+use App\Http\Controllers\Admin\LecanController;
 use App\Http\Controllers\Admin\OverviewController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\RepController;
@@ -18,10 +20,12 @@ use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
+use App\Http\Controllers\Lecan\InspectionController as LecanInspectionController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
+use App\Http\Controllers\Rep\JobController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerifyController;
 use Illuminate\Support\Facades\Route;
@@ -52,8 +56,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:contractor')->group(function () {
         Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
-        Route::post('inspections', [InspectionController::class, 'store'])->name('inspections.store');
         Route::get('inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
+        Route::post('inspections/{inspection}/start', [InspectionController::class, 'start'])->name('inspections.start');
         Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
         Route::post('inspections/{inspection}/resubmit', [InspectionController::class, 'resubmit'])->name('inspections.resubmit');
@@ -94,8 +98,16 @@ Route::middleware('auth')->group(function () {
 
         Route::get('contractors', [ContractorController::class, 'index'])->name('contractors.index');
         Route::post('contractors', [ContractorController::class, 'store'])->name('contractors.store');
+        Route::get('contractors/template.csv', [ContractorImportController::class, 'template'])->name('contractors.template');
+        Route::get('contractors/import', [ContractorImportController::class, 'preview'])->name('contractors.import');
+        Route::post('contractors/import', [ContractorImportController::class, 'upload'])->middleware('throttle:20,1')->name('contractors.import.upload');
+        Route::post('contractors/import/confirm', [ContractorImportController::class, 'confirm'])->name('contractors.import.confirm');
+        Route::delete('contractors/import', [ContractorImportController::class, 'discard'])->name('contractors.import.discard');
         Route::put('contractors/{contractor}', [ContractorController::class, 'update'])->name('contractors.update');
 
+        Route::get('lecan', [LecanController::class, 'index'])->name('lecan.index');
+        Route::post('lecan', [LecanController::class, 'store'])->name('lecan.store');
+        Route::put('lecan/{official}', [LecanController::class, 'update'])->name('lecan.update');
         Route::get('reps', [RepController::class, 'index'])->name('reps.index');
         Route::post('reps', [RepController::class, 'store'])->name('reps.store');
         Route::put('reps/{rep}', [RepController::class, 'update'])->name('reps.update');
@@ -119,8 +131,27 @@ Route::middleware('auth')->group(function () {
         Route::delete('fees/{fee}', [FeeController::class, 'destroy'])->name('fees.destroy');
     });
 
+    Route::middleware('role:lecan')->prefix('lecan')->name('lecan.')->group(function () {
+        Route::get('inspections', [LecanInspectionController::class, 'index'])->name('inspections.index');
+        Route::get('inspections/{inspection}', [LecanInspectionController::class, 'show'])->name('inspections.show');
+        Route::post('inspections/{inspection}/approve', [ReviewController::class, 'approve'])->name('inspections.approve');
+        Route::post('inspections/{inspection}/request-changes', [ReviewController::class, 'requestChanges'])->name('inspections.request-changes');
+    });
+
     Route::middleware('role:rep')->prefix('rep')->name('rep.')->group(function () {
         Route::get('inspections', [RepInspectionController::class, 'index'])->name('inspections.index');
         Route::get('inspections/{inspection}', [RepInspectionController::class, 'show'])->name('inspections.show');
+
+        Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+        Route::get('jobs/new', [JobController::class, 'create'])->name('jobs.create');
+        Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+        Route::get('jobs/template.csv', [JobController::class, 'template'])->name('jobs.template');
+        Route::get('jobs/import', [JobController::class, 'preview'])->name('jobs.import');
+        Route::post('jobs/import', [JobController::class, 'upload'])->middleware('throttle:20,1')->name('jobs.import.upload');
+        Route::post('jobs/import/confirm', [JobController::class, 'confirm'])->name('jobs.import.confirm');
+        Route::delete('jobs/import', [JobController::class, 'discard'])->name('jobs.import.discard');
+        Route::get('jobs/{inspection}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+        Route::put('jobs/{inspection}', [JobController::class, 'update'])->name('jobs.update');
+        Route::delete('jobs/{inspection}', [JobController::class, 'destroy'])->name('jobs.destroy');
     });
 });

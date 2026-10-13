@@ -1,0 +1,1 @@
+var e={pending_lecan:`info`,pending_nsd:`info`,changes_requested:`imp`,approved:`ok`};export{e as t};

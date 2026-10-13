@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\NigerianState;
 use App\Models\Inspection;
+use App\Support\Form74Range;
 use App\Support\TicketQr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -29,9 +31,10 @@ class CertificateResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'certificateNo' => $ticket,
-            'form74No' => $this->form74_no,
+            'form74No' => Form74Range::label($this->form74_no, $this->form74_last_no),
             'description' => collect([
-                $this->purpose?->label(),
+                $this->building_type?->label() ?? $this->purpose?->label(),
+                $this->structure_count > 1 ? "{$this->structure_count} structures" : null,
                 $this->connection_type?->label(),
                 $this->voltage_level?->label(),
                 $this->sub_circuit_count ? "{$this->sub_circuit_count} sub-circuits" : null,
@@ -39,6 +42,7 @@ class CertificateResource extends JsonResource
             'ownerName' => $this->owner_name,
             'address' => $this->property_address ? (string) str($this->property_address)->squish() : null,
             'area' => $this->serviceArea?->name,
+            'chapter' => ($this->serviceArea->state ?? NigerianState::Kaduna)->label(),
             'inspectionDate' => $this->inspection_date?->format('jS F, Y'),
             'submittedAt' => $this->submitted_at?->format('jS F, Y'),
             'approvedAt' => $this->approved_at?->format('jS F, Y'),
@@ -51,6 +55,11 @@ class CertificateResource extends JsonResource
                 'corenNo' => $this->inspector_coren_no ?? $profile?->coren_no,
                 'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
             ],
+            // First-level approval by the LECAN state chapter (name only; no signature image yet).
+            'lecan' => $this->lecan_approver_name ? [
+                'name' => $this->lecan_approver_name,
+                'approvedAt' => $this->lecan_approved_at?->format('d M Y'),
+            ] : null,
             'signatory' => [
                 'name' => $this->signatory_name,
                 'title' => $this->signatory_title,

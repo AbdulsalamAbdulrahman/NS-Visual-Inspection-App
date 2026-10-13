@@ -1,0 +1,1 @@
+import{Y as e,_t as t,a as n}from"./dist-BQc0aOq9.js";function r(){let r=t(()=>new URL(n.url,`http://localhost`).pathname);return{get path(){return e(r)},isActive(t,n=!1){return n?e(r)===t:e(r)===t||e(r).startsWith(`${t}/`)}}}export{r as t};

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Inspections;
 
+use App\Enums\BuildingType;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
 use App\Enums\VoltageLevel;
@@ -36,11 +38,15 @@ class SaveDraftRequest extends FormRequest
     {
         $reading = ['nullable', 'numeric', 'min:0', 'max:100000'];
         $flag = ['nullable', 'boolean'];
+        // Client feedback: poles never exceed 4.
+        $poles = ['nullable', 'integer', 'between:1,4'];
 
         return [
             'current_step' => ['sometimes', 'integer', 'between:1,'.Inspection::STEPS],
 
             'form74_no' => ['nullable', 'string', 'max:60'],
+            'form74_last_no' => ['nullable', 'string', 'max:60'],
+            'building_type' => ['nullable', Rule::enum(BuildingType::class)],
             'owner_name' => ['nullable', 'string', 'max:255'],
             'property_address' => ['nullable', 'string', 'max:1000'],
             'service_area_id' => ['nullable', 'integer', Rule::exists('service_areas', 'id')],
@@ -57,17 +63,33 @@ class SaveDraftRequest extends FormRequest
             'earth_resistance_ohm' => $reading,
             'earth_pit' => $flag,
 
+            'cb_available' => $flag,
+            'cb_make' => ['nullable', 'string', 'max:80'],
             'cb_rated_a' => $reading,
             'cb_standard' => $flag,
+            'poles' => $poles,
+            'fuse_available' => $flag,
             'fuse_rated_a' => $reading,
+            'fuse_type' => ['nullable', Rule::enum(FuseType::class)],
             'fuse_standard' => $flag,
-            'poles' => ['nullable', 'integer', 'between:1,8'],
+            'fuse_poles' => $poles,
 
             'db_seen' => $flag,
             'db_standard' => $flag,
+            'db_mccb_count' => ['nullable', 'integer', 'between:0,999'],
+            'db_make' => ['nullable', 'string', 'max:80'],
             'changeover_seen' => $flag,
             'changeover_standard' => $flag,
+            'changeover_phase' => ['nullable', Rule::enum(ConnectionType::class)],
+            'changeover_rated_a' => $reading,
             'main_switch_standard' => $flag,
+            'main_switch_rated_a' => $reading,
+            'main_switch_poles' => $poles,
+            'main_switch_phase' => ['nullable', Rule::enum(ConnectionType::class)],
+            'db_main_breaker_seen' => $flag,
+            'db_main_breaker_rated_a' => $reading,
+            'db_main_breaker_poles' => $poles,
+            'db_main_breaker_standard' => $flag,
             'cb_type_standard' => $flag,
             'secondary_rated_a' => $reading,
             'secondary_type' => ['nullable', Rule::enum(ProtectionType::class)],

@@ -70,9 +70,10 @@ class HandleInertiaRequests extends Middleware
 
         return [
             'inspections' => Inspection::query()->submitted()->count(),
-            'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->count(),
+            'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::PendingNsd)->count(),
             'contractors' => User::query()->role(Role::Contractor)->count(),
             'reps' => User::query()->role(Role::Rep)->count(),
+            'lecan' => User::query()->role(Role::Lecan)->count(),
             'areas' => ServiceArea::query()->count(),
             'fee' => $fee === null ? null : Money::format($fee),
         ];

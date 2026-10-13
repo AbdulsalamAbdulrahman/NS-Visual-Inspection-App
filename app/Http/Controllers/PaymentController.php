@@ -7,11 +7,12 @@ namespace App\Http\Controllers;
 use App\Actions\Payments\InitPayment;
 use App\Actions\Payments\VerifyPayment;
 use App\Enums\PaymentStatus;
-use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Services\Monnify\MonnifyException;
+use App\Support\Form74Range;
 use App\Support\InspectionChecklist;
+use App\Support\InspectionFee;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -37,7 +38,7 @@ class PaymentController extends Controller
             return to_route('inspections.edit', ['inspection' => $inspection, 'step' => Inspection::STEPS]);
         }
 
-        $fee = FeeSchedule::current();
+        $fee = InspectionFee::quote($inspection);
         $inspection->loadMissing('serviceArea');
 
         return Inertia::render('contractor/Pay', [
@@ -45,11 +46,13 @@ class PaymentController extends Controller
                 'uuid' => $inspection->uuid,
                 'ownerName' => $inspection->owner_name,
                 'area' => $inspection->serviceArea?->name,
-                'form74No' => $inspection->form74_no,
+                'form74No' => Form74Range::label($inspection->form74_no, $inspection->form74_last_no),
+                'buildingType' => $inspection->building_type?->label(),
             ],
             'fee' => $fee ? [
-                'amount' => Money::format($fee->amount_kobo),
-                'effectiveFrom' => $fee->effective_from->format('d M Y'),
+                'amount' => $fee['amount'],
+                'effectiveFrom' => $fee['effectiveFrom'],
+                'breakdown' => $fee['breakdown'],
             ] : null,
         ]);
     }

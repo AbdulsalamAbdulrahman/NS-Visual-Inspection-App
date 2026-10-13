@@ -32,6 +32,8 @@ class ProfileResource extends JsonResource
                 'regNo' => $licence->nemsa_reg_no,
                 'corenNo' => $licence->coren_no,
                 'firmName' => $licence->firm_name,
+                'engineerName' => $licence->engineer_name,
+                'engineerRegNo' => $licence->engineer_reg_no,
             ] : null,
             'areas' => $this->isRep() ? $this->serviceAreas->pluck('name')->all() : [],
         ];

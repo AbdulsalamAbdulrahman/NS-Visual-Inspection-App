@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\AttachmentType;
+use App\Enums\BuildingType;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\InspectionStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
@@ -51,7 +53,8 @@ class InspectionFactory extends Factory
             'form74_no' => 'F74/KD/2026/'.fake()->unique()->numerify('#####'),
             'owner_name' => fake()->name(),
             'property_address' => fake()->streetAddress().', Kaduna',
-            'purpose' => fake()->randomElement(PropertyPurpose::cases()),
+            'purpose' => PropertyPurpose::Residential,
+            'building_type' => BuildingType::Duplex,
             'connection_type' => ConnectionType::ThreePhase,
             'voltage_level' => VoltageLevel::V415,
             'gps_lat' => 10.5221700,
@@ -62,15 +65,29 @@ class InspectionFactory extends Factory
             'earth_conductor_mm2' => 16,
             'earth_resistance_ohm' => 1.8,
             'earth_pit' => true,
+            'cb_available' => true,
+            'cb_make' => 'Schneider',
             'cb_rated_a' => 63,
             'cb_standard' => true,
-            'fuse_rated_a' => 100,
-            'fuse_standard' => true,
             'poles' => 4,
+            'fuse_available' => true,
+            'fuse_rated_a' => 100,
+            'fuse_type' => FuseType::Porcelain,
+            'fuse_standard' => true,
+            'fuse_poles' => 4,
             'db_seen' => true,
             'db_standard' => true,
+            'db_mccb_count' => 8,
+            'db_make' => 'Hager',
             'changeover_seen' => false,
             'main_switch_standard' => true,
+            'main_switch_rated_a' => 100,
+            'main_switch_poles' => 4,
+            'main_switch_phase' => ConnectionType::ThreePhase,
+            'db_main_breaker_seen' => true,
+            'db_main_breaker_rated_a' => 63,
+            'db_main_breaker_poles' => 4,
+            'db_main_breaker_standard' => true,
             'cb_type_standard' => true,
             'secondary_rated_a' => 40,
             'secondary_type' => ProtectionType::Rcd,
@@ -111,9 +128,19 @@ class InspectionFactory extends Factory
     {
         return $this->complete()->state(fn (): array => [
             'status' => InspectionStatus::Submitted,
-            'review_status' => ReviewStatus::Pending,
+            'review_status' => ReviewStatus::PendingLecan,
             'ticket_no' => 'KE-NSD-'.now()->year.'-'.fake()->unique()->numerify('######'),
             'submitted_at' => now(),
+        ]);
+    }
+
+    /** Approved by the LECAN chapter, waiting for NSD's final approval. */
+    public function awaitingNsd(string $official = 'Engr. Musa Adamu'): static
+    {
+        return $this->submitted()->state(fn (): array => [
+            'review_status' => ReviewStatus::PendingNsd,
+            'lecan_approved_at' => now(),
+            'lecan_approver_name' => $official,
         ]);
     }
 
@@ -132,11 +159,33 @@ class InspectionFactory extends Factory
     {
         return $this->submitted()->state(fn (): array => [
             'review_status' => ReviewStatus::Approved,
+            'lecan_approved_at' => now(),
+            'lecan_approver_name' => 'Engr. Musa Adamu',
             'reviewed_at' => now(),
             'approved_at' => now(),
             'signatory_name' => 'Engr. Hauwa Abdullahi',
             'signatory_title' => 'Head, New Service Department',
             'signatory_signature_path' => 'inspections/test/nsd-signature.png',
+        ]);
+    }
+
+    /**
+     * A job a rep created and assigned, not started yet: customer details only.
+     */
+    public function assigned(User $rep, ServiceArea $area): static
+    {
+        return $this->state(fn (): array => [
+            'status' => InspectionStatus::Assigned,
+            'inspection_date' => null,
+            'assigned_by' => $rep->id,
+            'assigned_at' => now(),
+            'service_area_id' => $area->id,
+            'owner_name' => fake()->name(),
+            'owner_phone' => '080'.fake()->numerify('########'),
+            'property_address' => fake()->numberBetween(1, 120).' '.fake()->randomElement(['Ahmadu Bello Way', 'Constitution Road', 'Kachia Road', 'Sokoto Road']).', '.$area->name,
+            'purpose' => PropertyPurpose::Residential,
+            'building_type' => BuildingType::Duplex,
+            'form74_no' => 'F74/KD/2026/'.fake()->unique()->numerify('0####'),
         ]);
     }
 

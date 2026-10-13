@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\NigerianState;
 use App\Models\ServiceArea;
 use Illuminate\Database\Seeder;
 
@@ -25,7 +26,22 @@ class ServiceAreaSeeder extends Seeder
     public function run(): void
     {
         foreach (self::AREAS as $name) {
-            ServiceArea::query()->firstOrCreate(['name' => $name], ['is_active' => true]);
+            $area = ServiceArea::query()->firstOrCreate(['name' => $name], ['is_active' => true, 'state' => self::stateOf($name)]);
+
+            // Re-running fills in the state on areas created before it existed.
+            $area->update(['state' => self::stateOf($name)]);
         }
+    }
+
+    /** Kebbi, Sokoto and Zamfara offices are named after their state; the rest are in Kaduna. */
+    public static function stateOf(string $name): NigerianState
+    {
+        foreach ([NigerianState::Kebbi, NigerianState::Sokoto, NigerianState::Zamfara] as $state) {
+            if (str_starts_with($name, $state->label())) {
+                return $state;
+            }
+        }
+
+        return NigerianState::Kaduna;
     }
 }

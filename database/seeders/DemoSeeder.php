@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Actions\Payments\GenerateTicket;
+use App\Enums\BuildingType;
+use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use App\Enums\PaymentStatus;
+use App\Enums\PropertyPurpose;
 use App\Enums\ReviewAction;
 use App\Enums\ReviewStatus;
 use App\Enums\Role;
@@ -42,18 +46,66 @@ class DemoSeeder extends Seeder
 
         $this->user('Hadiza Musa', 'h.musa@kadunaelectric.com', Role::Admin, phone: '0803 100 2201');
 
-        $this->contractor('Engr. Yusuf Bello', 'y.bello@bellopower.ng', '0803 412 7790', NemsaCategory::CatA, 'NEMSA/A/2023/0142', 'R.12873', 'Bello Power Systems Ltd');
-        $this->contractor('Aisha Lawal', 'aisha.lawal@gmail.com', '0806 220 1145', NemsaCategory::CatB, 'NEMSA/B/2022/0388');
-        $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSA/B/2021/0217', 'R.20456');
-        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'NEMSA/CP/2022/0051', 'R.09931', 'Danladi Electrical Services Ltd');
-        $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSA/C/2024/0610', status: UserStatus::Suspended);
+        $this->contractor('Engr. Yusuf Bello', 'y.bello@bellopower.ng', '0803 412 7790', NemsaCategory::CatA, 'NEMSAA20230142', 'R.12873', 'Bello Power Systems Ltd');
+        $this->contractor('Aisha Lawal', 'aisha.lawal@gmail.com', '0806 220 1145', NemsaCategory::CatB, 'NEMSAB20220388');
+        $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSAB20210217', 'R.20456', state: NigerianState::Sokoto);
+        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd');
+        $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSAC20240610', status: UserStatus::Suspended);
 
         $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Makera', 'Mando']);
         $this->rep('Abubakar Shehu', 'a.shehu@kadunaelectric.com', ['Kawo', 'Rigasa']);
 
+        // One LECAN official per state chapter.
+        foreach ([
+            ['Engr. Musa Adamu', 'm.adamu@lecan-kaduna.org', NigerianState::Kaduna],
+            ['Engr. Bello Argungu', 'b.argungu@lecan-kebbi.org', NigerianState::Kebbi],
+            ['Engr. Sani Wamakko', 's.wamakko@lecan-sokoto.org', NigerianState::Sokoto],
+            ['Engr. Lawal Gusau', 'l.gusau@lecan-zamfara.org', NigerianState::Zamfara],
+        ] as [$name, $email, $state]) {
+            $this->user($name, $email, Role::Lecan)->forceFill(['lecan_state' => $state])->save();
+        }
+
         $this->submissions();
         $this->placeholderFiles();
         $this->reviews();
+        $this->jobs();
+    }
+
+    /**
+     * A few jobs Grace (rep) created and assigned to Yusuf Bello, not started
+     * yet, so his home shows "Assigned to you". Only runs once.
+     */
+    private function jobs(): void
+    {
+        if (Inspection::query()->where('status', InspectionStatus::Assigned)->exists()) {
+            return;
+        }
+
+        $rep = User::query()->where('email', 'g.ayuba@kadunaelectric.com')->firstOrFail();
+        $contractor = User::query()->where('email', 'y.bello@bellopower.ng')->firstOrFail();
+        $areas = $rep->serviceAreas()->get();
+
+        Inspection::factory()->assigned($rep, $areas[0])->forContractor($contractor)->create([
+            'owner_name' => 'Amina Sule',
+            'owner_phone' => '08031234567',
+            'owner_email' => 'amina.sule@example.com',
+            'property_address' => '14 Ahmadu Bello Way, Barnawa',
+        ]);
+        Inspection::factory()->assigned($rep, $areas[1])->forContractor($contractor)->create([
+            'owner_name' => 'Sabon Gari Estate Ltd',
+            'owner_phone' => '08059876543',
+            'property_address' => 'Plot 3, Sabon Gari Estate, Makera',
+            'building_type' => BuildingType::BlockOfFlats,
+            'form74_no' => 'F74/KD/2026/09001',
+            'form74_last_no' => 'F74/KD/2026/09020',
+            'structure_count' => 20,
+        ]);
+        Inspection::factory()->assigned($rep, $areas[0])->forContractor($contractor)->create([
+            'owner_name' => 'Hajiya Rakiya Bala',
+            'owner_phone' => '08124459012',
+            'purpose' => PropertyPurpose::Commercial,
+            'building_type' => BuildingType::Shop,
+        ]);
     }
 
     /**
@@ -78,13 +130,27 @@ class DemoSeeder extends Seeder
 
         $admin = User::query()->where('role', Role::Admin)->first();
         $signatory = Setting::signatory();
-        $pending = Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->orderBy('submitted_at')->get();
+        $pending = Inspection::query()->submitted()->where('review_status', ReviewStatus::PendingLecan)->with('serviceArea')->orderBy('submitted_at')->get();
+        $officials = User::query()->role(Role::Lecan)->get()->keyBy(fn (User $u): string => (string) $u->lecan_state?->value);
 
         foreach ($pending as $i => $inspection) {
             $reviewedAt = $inspection->submitted_at?->addHours(fake()->numberBetween(2, 30));
 
+            $official = $officials->get((string) $inspection->serviceArea?->state->value);
+
             if ($reviewedAt === null || $reviewedAt->isFuture() || $i >= (int) ($pending->count() * 0.7)) {
-                continue; // The newest stay in the queue.
+                // The newest stay in the queues: some approved by LECAN and waiting for NSD.
+                if ($i % 2 === 0 && $official !== null) {
+                    $inspection->forceFill(['review_status' => ReviewStatus::PendingNsd, 'lecan_approved_by' => $official->id, 'lecan_approved_at' => now(), 'lecan_approver_name' => $official->name])->save();
+                    $inspection->reviews()->create(['user_id' => $official->id, 'action' => ReviewAction::LecanApproved]);
+                }
+
+                continue;
+            }
+
+            if ($official !== null) {
+                $inspection->forceFill(['lecan_approved_by' => $official->id, 'lecan_approved_at' => $reviewedAt->subHour(), 'lecan_approver_name' => $official->name]);
+                $inspection->reviews()->create(['user_id' => $official->id, 'action' => ReviewAction::LecanApproved]);
             }
 
             if ($i % 11 === 5) {
@@ -247,6 +313,7 @@ class DemoSeeder extends Seeder
         ?string $coren = null,
         ?string $firm = null,
         UserStatus $status = UserStatus::Active,
+        NigerianState $state = NigerianState::Kaduna,
     ): User {
         $user = $this->user($name, $email, Role::Contractor, $status, $phone);
 
@@ -255,6 +322,8 @@ class DemoSeeder extends Seeder
             'nemsa_reg_no' => $regNo,
             'coren_no' => $coren,
             'firm_name' => $firm,
+            'state' => $state,
+            'engineer_name' => $category === NemsaCategory::Corporate ? 'Engr. Ibrahim Danladi' : null,
         ]);
 
         return $user;

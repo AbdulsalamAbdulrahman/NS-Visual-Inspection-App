@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\BuildingType;
 use App\Models\FeeSchedule;
 use App\Support\Money;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FeeScheduleRequest extends FormRequest
 {
@@ -21,7 +23,11 @@ class FeeScheduleRequest extends FormRequest
      */
     public function rules(): array
     {
+        $type = BuildingType::tryFrom($this->string('building_type')->toString());
+
         return [
+            // Empty = the default fee, for building types without their own.
+            'building_type' => ['nullable', Rule::enum(BuildingType::class)],
             'amount' => [
                 'required',
                 function (string $attribute, mixed $value, Closure $fail): void {
@@ -38,9 +44,9 @@ class FeeScheduleRequest extends FormRequest
             ],
             'effective_from' => [
                 'required', 'date_format:Y-m-d', 'after_or_equal:today',
-                function (string $attribute, mixed $value, Closure $fail): void {
-                    if (FeeSchedule::query()->scheduled()->exists()) {
-                        $fail('A fee change is already scheduled. Cancel it before scheduling another.');
+                function (string $attribute, mixed $value, Closure $fail) use ($type): void {
+                    if (FeeSchedule::query()->scheduled()->where('building_type', $type)->exists()) {
+                        $fail('A change to this fee is already scheduled. Cancel it before scheduling another.');
                     }
                 },
             ],

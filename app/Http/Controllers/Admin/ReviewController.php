@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Reviews\ApproveInspection;
+use App\Actions\Reviews\LecanApprove;
 use App\Actions\Reviews\RequestChanges;
 use App\Http\Controllers\Controller;
 use App\Models\Inspection;
@@ -14,14 +15,22 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 /**
- * NSD review of a submitted report: approve (issues the certificate) or send
- * it back with a reason.
+ * Review of a submitted report, shared by both levels. A LECAN official's
+ * approval sends it to NSD; NSD's approval issues the certificate. Either can
+ * send it back with a reason. InspectionPolicy::review decides who may act.
  */
 class ReviewController extends Controller
 {
-    public function approve(Request $request, Inspection $inspection, ApproveInspection $approve): RedirectResponse
+    public function approve(Request $request, Inspection $inspection, ApproveInspection $approve, LecanApprove $lecanApprove): RedirectResponse
     {
         Gate::authorize('review', $inspection);
+
+        if ($request->user()->isLecan()) {
+            $lecanApprove->handle($inspection, $request->user());
+            Inertia::flash('toast', ['type' => 'success', 'message' => "Approved for LECAN. {$inspection->ticket_no} goes to NSD for final approval."]);
+
+            return back();
+        }
 
         $approve->handle($inspection, $request->user());
 

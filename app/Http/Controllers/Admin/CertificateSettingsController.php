@@ -35,7 +35,7 @@ class CertificateSettingsController extends Controller
                 'signatureUrl' => $path ? route('admin.certificate.signature').'?v='.md5($path) : null,
             ],
             'complete' => Setting::signatory() !== null,
-            'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->count(),
+            'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::PendingNsd)->count(),
         ]);
     }
 

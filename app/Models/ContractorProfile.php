@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use Database\Factories\ContractorProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $nemsa_reg_no
  * @property string|null $coren_no
  * @property string|null $firm_name
+ * @property NigerianState|null $state
+ * @property string|null $engineer_name
+ * @property string|null $engineer_reg_no
  * @property-read User $user
  */
 class ContractorProfile extends Model
@@ -34,12 +38,16 @@ class ContractorProfile extends Model
         'nemsa_reg_no',
         'coren_no',
         'firm_name',
+        'state',
+        'engineer_name',
+        'engineer_reg_no',
     ];
 
     /**
      * @var array<string, string>
      */
     protected $casts = [
+        'state' => NigerianState::class,
         'nemsa_category' => NemsaCategory::class,
     ];
 

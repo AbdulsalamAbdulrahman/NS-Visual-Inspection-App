@@ -10,6 +10,7 @@ enum PropertyPurpose: string
     case Commercial = 'commercial';
     case Industrial = 'industrial';
     case Government = 'government';
+    case EssentialService = 'essential_service';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum PropertyPurpose: string
             self::Commercial => 'Commercial',
             self::Industrial => 'Industrial',
             self::Government => 'Government',
+            self::EssentialService => 'Essential service',
         };
     }
 

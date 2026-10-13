@@ -6,12 +6,15 @@ namespace App\Enums;
 
 enum InspectionStatus: string
 {
+    /** Created by a rep for a contractor; not started yet. */
+    case Assigned = 'assigned';
     case Draft = 'draft';
     case Submitted = 'submitted';
 
     public function label(): string
     {
         return match ($this) {
+            self::Assigned => 'Assigned',
             self::Draft => 'Draft',
             self::Submitted => 'Submitted',
         };

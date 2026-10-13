@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\NigerianState;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Notifications\QueuedResetPassword;
@@ -27,6 +28,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string|null $phone
  * @property Role $role
+ * @property NigerianState|null $lecan_state State chapter a LECAN official reviews
  * @property UserStatus $status
  * @property bool $must_change_password
  * @property CarbonImmutable|null $last_active_at
@@ -51,6 +53,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'role',
+        'lecan_state',
         'status',
         'must_change_password',
         'password',
@@ -69,6 +72,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'role' => Role::class,
+        'lecan_state' => NigerianState::class,
         'status' => UserStatus::class,
         'must_change_password' => 'boolean',
         'last_active_at' => 'datetime',
@@ -126,6 +130,11 @@ class User extends Authenticatable
     public function inspections(): HasMany
     {
         return $this->hasMany(Inspection::class, 'contractor_id');
+    }
+
+    public function isLecan(): bool
+    {
+        return $this->role === Role::Lecan;
     }
 
     public function isAdmin(): bool

@@ -33,6 +33,10 @@ class DraftResource extends JsonResource
             'uuid' => $this->uuid,
             'status' => $this->status->value,
             ...$fields,
+            // A rep filled the customer details: StepA shows them read-only.
+            'from_rep' => $this->hasRepDetails(),
+            'owner_phone' => $this->owner_phone,
+            'owner_email' => $this->owner_email,
             'gps_captured_at' => $this->gps_captured_at?->toIso8601String(),
             'declaration_accepted' => $this->declaration_accepted_at !== null,
             'inspection_date' => $this->inspection_date?->format('d M Y'),

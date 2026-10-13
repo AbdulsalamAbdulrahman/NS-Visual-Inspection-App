@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\BuildingType;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
 use App\Enums\PaymentStatus;
@@ -39,7 +41,17 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $current_step
  * @property string|null $ticket_no
  * @property string|null $form74_no
+ * @property string|null $form74_last_no Estates: the last Form 74 number of the range
+ * @property int $structure_count
+ * @property BuildingType|null $building_type
  * @property string|null $owner_name
+ * @property string|null $owner_phone
+ * @property string|null $owner_email
+ * @property int|null $assigned_by Rep who created the job
+ * @property int|null $lecan_approved_by
+ * @property CarbonImmutable|null $lecan_approved_at
+ * @property string|null $lecan_approver_name
+ * @property CarbonImmutable|null $assigned_at
  * @property string|null $property_address
  * @property PropertyPurpose|null $purpose
  * @property ConnectionType|null $connection_type
@@ -53,7 +65,23 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float|null $earth_conductor_mm2
  * @property float|null $earth_resistance_ohm
  * @property bool|null $earth_pit
+ * @property bool|null $cb_available
+ * @property string|null $cb_make
  * @property float|null $cb_rated_a
+ * @property bool|null $fuse_available
+ * @property FuseType|null $fuse_type
+ * @property int|null $fuse_poles
+ * @property int|null $db_mccb_count
+ * @property string|null $db_make
+ * @property ConnectionType|null $changeover_phase
+ * @property float|null $changeover_rated_a
+ * @property float|null $main_switch_rated_a
+ * @property int|null $main_switch_poles
+ * @property ConnectionType|null $main_switch_phase
+ * @property bool|null $db_main_breaker_seen
+ * @property float|null $db_main_breaker_rated_a
+ * @property int|null $db_main_breaker_poles
+ * @property bool|null $db_main_breaker_standard
  * @property bool|null $cb_standard
  * @property float|null $fuse_rated_a
  * @property bool|null $fuse_standard
@@ -83,6 +111,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $inspector_nemsa_reg_no
  * @property string|null $inspector_coren_no
  * @property string|null $inspector_firm_name
+ * @property string|null $inspector_engineer_name
+ * @property string|null $inspector_engineer_reg_no
  * @property CarbonImmutable|null $submitted_at
  * @property int|null $reviewed_by
  * @property CarbonImmutable|null $reviewed_at
@@ -112,15 +142,24 @@ class Inspection extends Model
     /** Fields a contractor may change on a draft (SaveDraft). */
     public const DRAFT_FIELDS = [
         'current_step',
-        'form74_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'connection_type',
+        'form74_no', 'form74_last_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'building_type', 'connection_type',
         'voltage_level', 'gps_lat', 'gps_lng', 'gps_accuracy_m', 'gps_captured_at',
         'earth_electrode_ft', 'earth_conductor_mm2', 'earth_resistance_ohm', 'earth_pit',
-        'cb_rated_a', 'cb_standard', 'fuse_rated_a', 'fuse_standard', 'poles',
-        'db_seen', 'db_standard', 'changeover_seen', 'changeover_standard', 'main_switch_standard',
+        'cb_available', 'cb_make', 'cb_rated_a', 'cb_standard', 'poles',
+        'fuse_available', 'fuse_rated_a', 'fuse_type', 'fuse_standard', 'fuse_poles',
+        'db_seen', 'db_standard', 'db_mccb_count', 'db_make',
+        'changeover_seen', 'changeover_standard', 'changeover_phase', 'changeover_rated_a',
+        'main_switch_standard', 'main_switch_rated_a', 'main_switch_poles', 'main_switch_phase',
+        'db_main_breaker_seen', 'db_main_breaker_rated_a', 'db_main_breaker_poles', 'db_main_breaker_standard',
         'cb_type_standard', 'secondary_rated_a', 'secondary_type', 'secondary_standard', 'socket_outlets_standard',
         'earthing_system_type', 'db_count', 'sub_circuit_count', 'main_cable_mm2', 'conductor_type',
         'wiring_method', 'wiring_method_other', 'cable_insulation',
         'declaration_accepted_at',
+    ];
+
+    /** Section A fields a rep sets on a job; the contractor can't change them. */
+    public const REP_FIELDS = [
+        'form74_no', 'form74_last_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'building_type',
     ];
 
     /**
@@ -130,6 +169,10 @@ class Inspection extends Model
         ...self::DRAFT_FIELDS,
         'contractor_id',
         'status',
+        'owner_phone',
+        'owner_email',
+        'assigned_by',
+        'assigned_at',
         'inspection_date',
         'signature_path',
     ];
@@ -141,6 +184,8 @@ class Inspection extends Model
         'status' => InspectionStatus::class,
         'current_step' => 'integer',
         'purpose' => PropertyPurpose::class,
+        'building_type' => BuildingType::class,
+        'structure_count' => 'integer',
         'connection_type' => ConnectionType::class,
         'voltage_level' => VoltageLevel::class,
         'gps_lat' => 'float',
@@ -152,7 +197,21 @@ class Inspection extends Model
         'earth_conductor_mm2' => 'float',
         'earth_resistance_ohm' => 'float',
         'earth_pit' => 'boolean',
+        'cb_available' => 'boolean',
         'cb_rated_a' => 'float',
+        'fuse_available' => 'boolean',
+        'fuse_type' => FuseType::class,
+        'fuse_poles' => 'integer',
+        'db_mccb_count' => 'integer',
+        'changeover_phase' => ConnectionType::class,
+        'changeover_rated_a' => 'float',
+        'main_switch_rated_a' => 'float',
+        'main_switch_poles' => 'integer',
+        'main_switch_phase' => ConnectionType::class,
+        'db_main_breaker_seen' => 'boolean',
+        'db_main_breaker_rated_a' => 'float',
+        'db_main_breaker_poles' => 'integer',
+        'db_main_breaker_standard' => 'boolean',
         'cb_standard' => 'boolean',
         'fuse_rated_a' => 'float',
         'fuse_standard' => 'boolean',
@@ -176,6 +235,8 @@ class Inspection extends Model
         'declaration_accepted_at' => 'datetime',
         'inspector_nemsa_category' => NemsaCategory::class,
         'submitted_at' => 'datetime',
+        'assigned_at' => 'datetime',
+        'lecan_approved_at' => 'datetime',
         'review_status' => ReviewStatus::class,
         'reviewed_at' => 'datetime',
         'approved_at' => 'datetime',
@@ -253,6 +314,16 @@ class Inspection extends Model
     }
 
     /**
+     * The rep who created and assigned this job.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function assigner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_by')->withTrashed();
+    }
+
+    /**
      * Review history, oldest first.
      *
      * @return HasMany<InspectionReview, $this>
@@ -260,6 +331,17 @@ class Inspection extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(InspectionReview::class)->orderBy('id');
+    }
+
+    public function isAssigned(): bool
+    {
+        return $this->status === InspectionStatus::Assigned;
+    }
+
+    /** Customer details came from a rep: the contractor can't change them. */
+    public function hasRepDetails(): bool
+    {
+        return $this->assigned_by !== null;
     }
 
     public function isDraft(): bool
@@ -272,9 +354,26 @@ class Inspection extends Model
         return $this->status === InspectionStatus::Submitted;
     }
 
+    /** In either review queue (LECAN or NSD). */
     public function isAwaitingReview(): bool
     {
-        return $this->isSubmitted() && $this->review_status === ReviewStatus::Pending;
+        return $this->isSubmitted() && $this->review_status?->isPending() === true;
+    }
+
+    public function isAwaitingLecan(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::PendingLecan;
+    }
+
+    public function isAwaitingNsd(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::PendingNsd;
+    }
+
+    /** LECAN chapter that reviews this report: the area office's state. */
+    public function isInStateOf(User $lecan): bool
+    {
+        return $lecan->lecan_state !== null && $this->serviceArea !== null && $this->serviceArea->state === $lecan->lecan_state;
     }
 
     /** NSD sent it back: the contractor may edit and resubmit (no new payment). */
@@ -319,7 +418,8 @@ class Inspection extends Model
 
     /**
      * Inspections the user may see: admins all, contractors their own, reps
-     * submitted ones in their assigned areas. Mirrors InspectionPolicy::view.
+     * submitted ones in their assigned areas, LECAN officials submitted ones
+     * in their state. Mirrors InspectionPolicy::view.
      *
      * @param  Builder<Inspection>  $query
      */
@@ -331,8 +431,22 @@ class Inspection extends Model
             $user->isRep() => $query
                 ->where('status', InspectionStatus::Submitted)
                 ->whereIn('service_area_id', $user->serviceAreas()->select('service_areas.id')),
+            $user->isLecan() => $query
+                ->where('status', InspectionStatus::Submitted)
+                ->whereIn('service_area_id', ServiceArea::query()->select('id')->where('state', $user->lecan_state)),
             default => $query->whereRaw('1 = 0'),
         };
+    }
+
+    /**
+     * Jobs reps created in the rep's area offices, whatever stage they're at.
+     *
+     * @param  Builder<Inspection>  $query
+     */
+    public function scopeJobsFor(Builder $query, User $rep): void
+    {
+        $query->whereNotNull('assigned_by')
+            ->whereIn('service_area_id', $rep->serviceAreas()->select('service_areas.id'));
     }
 
     /**
