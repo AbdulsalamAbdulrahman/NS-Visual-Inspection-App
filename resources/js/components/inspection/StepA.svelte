@@ -3,7 +3,7 @@
     import Field from '@/components/form/Field.svelte';
     import Select from '@/components/form/Select.svelte';
     import TextInput from '@/components/form/TextInput.svelte';
-    import { form74Count } from '@/lib/inspection/fee';
+    import { form74Count, form74Label } from '@/lib/inspection/fee';
     import type { Draft, FormOptions } from '@/lib/inspection/types';
     import GpsField from './GpsField.svelte';
     import Required from './Required.svelte';
@@ -19,6 +19,7 @@
     let { draft = $bindable(), options, areas, errors }: Props = $props();
 
     const areaOptions = $derived(areas.map((a) => ({ value: a.id, label: a.name })));
+    const labelOf = (list: { value: string; label: string }[], value: string | null): string => list.find((o) => o.value === value)?.label ?? '—';
 
     /** Building descriptions for the chosen use of property (client spreadsheet). */
     const buildingOptions = $derived(options.buildingType.filter((t) => t.purpose === draft.purpose));
@@ -44,6 +45,31 @@
     }
 </script>
 
+{#if draft.from_rep}
+    <!-- Job from NSD: the customer's details were filled in by the service rep. -->
+    <section class="flex flex-col gap-3 rounded-2xl border border-line bg-sf p-4" aria-labelledby="customer-heading">
+        <div class="flex items-center gap-2">
+            <Lock class="size-5 text-mut" />
+            <h2 id="customer-heading" class="text-base font-bold">Customer details from NSD</h2>
+        </div>
+        <dl class="grid gap-2.5 text-[15px]">
+            {#each [
+                ['Form 74', form74Label(draft.form74_no, draft.form74_last_no) + (typeof count === 'number' && count > 1 ? ` (${count} structures)` : '')],
+                ['Owner', draft.owner_name],
+                ['Phone', draft.owner_phone],
+                ['Address', draft.property_address],
+                ['Use · building', `${labelOf(options.purpose, draft.purpose)} · ${labelOf(options.buildingType, draft.building_type)}`],
+                ['Area office', areas.find((a) => a.id === draft.service_area_id)?.name],
+            ] as [term, value] (term)}
+                <div class="flex flex-col gap-0.5">
+                    <dt class="text-[13px] font-semibold text-mut">{term}</dt>
+                    <dd class={['break-words', (term === 'Form 74' || term === 'Phone') && 'font-mono']}>{value || '—'}</dd>
+                </div>
+            {/each}
+        </dl>
+        <p class="text-[13px] text-mut">Something wrong? Tell the service rep or the New Service Department.</p>
+    </section>
+{:else}
 <ChoiceGroup
     label="Number of structures"
     variant="segmented"
@@ -113,6 +139,7 @@
         invalid={!!errors.service_area_id}
     />
 </Field>
+{/if}
 
 <Field id="connection_type" error={errors.connection_type}>
     {#snippet labelAside()}<span class="text-[15px] font-semibold">Connection type <Required /></span>{/snippet}

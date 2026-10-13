@@ -36,6 +36,10 @@ export type Draft = {
     uuid: string;
     status: 'draft' | 'submitted';
     current_step: number;
+    /** A rep filled the customer details (read-only for the contractor). */
+    from_rep?: boolean;
+    owner_phone?: string | null;
+    owner_email?: string | null;
 
     form74_no: string | null;
     /** Estates: last Form 74 number of the range (null = one structure). */

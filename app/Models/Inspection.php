@@ -45,6 +45,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $structure_count
  * @property BuildingType|null $building_type
  * @property string|null $owner_name
+ * @property string|null $owner_phone
+ * @property string|null $owner_email
+ * @property int|null $assigned_by Rep who created the job
+ * @property CarbonImmutable|null $assigned_at
  * @property string|null $property_address
  * @property PropertyPurpose|null $purpose
  * @property ConnectionType|null $connection_type
@@ -150,6 +154,11 @@ class Inspection extends Model
         'declaration_accepted_at',
     ];
 
+    /** Section A fields a rep sets on a job; the contractor can't change them. */
+    public const REP_FIELDS = [
+        'form74_no', 'form74_last_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'building_type',
+    ];
+
     /**
      * @var list<string>
      */
@@ -157,6 +166,10 @@ class Inspection extends Model
         ...self::DRAFT_FIELDS,
         'contractor_id',
         'status',
+        'owner_phone',
+        'owner_email',
+        'assigned_by',
+        'assigned_at',
         'inspection_date',
         'signature_path',
     ];
@@ -219,6 +232,7 @@ class Inspection extends Model
         'declaration_accepted_at' => 'datetime',
         'inspector_nemsa_category' => NemsaCategory::class,
         'submitted_at' => 'datetime',
+        'assigned_at' => 'datetime',
         'review_status' => ReviewStatus::class,
         'reviewed_at' => 'datetime',
         'approved_at' => 'datetime',
@@ -296,6 +310,16 @@ class Inspection extends Model
     }
 
     /**
+     * The rep who created and assigned this job.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function assigner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_by')->withTrashed();
+    }
+
+    /**
      * Review history, oldest first.
      *
      * @return HasMany<InspectionReview, $this>
@@ -303,6 +327,17 @@ class Inspection extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(InspectionReview::class)->orderBy('id');
+    }
+
+    public function isAssigned(): bool
+    {
+        return $this->status === InspectionStatus::Assigned;
+    }
+
+    /** Customer details came from a rep: the contractor can't change them. */
+    public function hasRepDetails(): bool
+    {
+        return $this->assigned_by !== null;
     }
 
     public function isDraft(): bool
@@ -376,6 +411,17 @@ class Inspection extends Model
                 ->whereIn('service_area_id', $user->serviceAreas()->select('service_areas.id')),
             default => $query->whereRaw('1 = 0'),
         };
+    }
+
+    /**
+     * Jobs reps created in the rep's area offices, whatever stage they're at.
+     *
+     * @param  Builder<Inspection>  $query
+     */
+    public function scopeJobsFor(Builder $query, User $rep): void
+    {
+        $query->whereNotNull('assigned_by')
+            ->whereIn('service_area_id', $rep->serviceAreas()->select('service_areas.id'));
     }
 
     /**

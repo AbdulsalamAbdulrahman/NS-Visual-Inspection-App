@@ -41,6 +41,8 @@ class ContractorResource extends JsonResource
             'firmName' => $licence?->firm_name,
             'engineerName' => $licence?->engineer_name,
             'engineerRegNo' => $licence?->engineer_reg_no,
+            'state' => $licence?->state?->value,
+            'stateLabel' => $licence?->state?->label(),
         ];
     }
 }

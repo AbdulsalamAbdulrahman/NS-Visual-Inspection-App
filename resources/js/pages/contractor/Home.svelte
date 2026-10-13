@@ -5,23 +5,24 @@
 <script lang="ts">
     import { Link, page, router } from '@inertiajs/svelte';
     import Avatar from '@/components/Avatar.svelte';
-    import BottomBar from '@/components/BottomBar.svelte';
     import Button from '@/components/Button.svelte';
     import EmptyState from '@/components/EmptyState.svelte';
     import MobileHeader from '@/components/MobileHeader.svelte';
     import Pagination, { type PageLinks, type PageMeta } from '@/components/Pagination.svelte';
     import SearchField from '@/components/SearchField.svelte';
     import StatusPill from '@/components/StatusPill.svelte';
+    import type { Job } from '@/lib/inspection/job';
     import { REVIEW_TONE, type ReviewStatus } from '@/lib/inspection/report';
-    import { STEP_COUNT, STEPS } from '@/lib/inspection/steps';
-    import { getBootstrap, getLocalDraft, listLocalDrafts, offlineSupported, putLocalDraft, type LocalDraft } from '@/lib/offline/db';
+    import { STEP_COUNT } from '@/lib/inspection/steps';
+    import { getBootstrap, getLocalDraft, listLocalDrafts, offlineSupported, type LocalDraft } from '@/lib/offline/db';
     import { offlineSync } from '@/lib/offline/sync.svelte';
     import { onMount } from 'svelte';
-    import { edit, show, store } from '@/routes/inspections';
+    import { edit, show, start as startRoute } from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
-    import AddCircle from '~icons/ms/add-circle';
     import ArrowForward from '~icons/ms/arrow-forward';
-    import AssignmentAdd from '~icons/ms/assignment-add';
+    import AssignmentInd from '~icons/ms/assignment-ind';
+    import Call from '~icons/ms/call';
+    import PlayArrow from '~icons/ms/play-arrow';
     import ChevronRight from '~icons/ms/chevron-right';
     import CloudOff from '~icons/ms/cloud-off';
     import PhoneAndroid from '~icons/ms/phone-android';
@@ -46,6 +47,8 @@
     };
 
     type Props = {
+        /** Jobs NSD assigned, not started yet (oldest first). */
+        assigned: Job[];
         /** Not paginated: a contractor has a handful of drafts at most. */
         drafts: Card[];
         /** Sent back by NSD; shown first because they block the certificate. */
@@ -56,10 +59,11 @@
         fee: string | null;
     };
 
-    let { drafts, returned, submitted, submittedTotal, filters, fee }: Props = $props();
+    let { assigned, drafts, returned, submitted, submittedTotal, filters, fee }: Props = $props();
 
     const user = $derived(page.props.auth.user!);
-    let starting = $state(false);
+    /** uuid of the job being started. */
+    let starting = $state<string | null>(null);
     let online = $state(typeof navigator === 'undefined' ? true : navigator.onLine);
     let offlineNotice = $state<string | null>(null);
 
@@ -79,30 +83,7 @@
         }
     });
 
-    const serverDraftIds = $derived(new Set(drafts.map((d) => d.uuid)));
     const unsynced = $derived(new Set(localDrafts.filter((l) => l.dirty).map((l) => l.uuid)));
-    /** Started on this phone and not on the server yet. */
-    const phoneOnly = $derived<Card[]>(
-        localDrafts
-            .filter((l) => l.localOnly && !serverDraftIds.has(l.uuid))
-            .map((l) => ({
-                uuid: l.uuid,
-                status: 'draft',
-                ticketNo: null,
-                ownerName: l.draft.owner_name,
-                address: l.draft.property_address,
-                area: null,
-                step: l.step,
-                stepLabel: STEPS[l.step - 1]?.short ?? '',
-                savedLabel: 'on this phone',
-                submittedAt: null,
-                review: null,
-                reviewLabel: null,
-                reviewNote: null,
-                amount: null,
-            })),
-    );
-    const allDrafts = $derived([...phoneOnly, ...drafts]);
 
     /** Open a draft from the copy on this phone (no server round trip). */
     async function openFromPhone(uuid: string): Promise<boolean> {
@@ -127,7 +108,7 @@
         offlineNotice = null;
         const local = localDrafts.find((l) => l.uuid === uuid);
 
-        // Only on this phone, or no network: open the phone copy straight away.
+        // No network: open the phone copy straight away.
         if ((local?.localOnly || !navigator.onLine) && (await openFromPhone(uuid))) {
             return;
         }
@@ -146,51 +127,27 @@
         });
     }
 
-    /** No network: a new draft with a phone-made id; the server creates it on the first sync. */
-    async function startOnPhone(): Promise<void> {
-        const bootstrap = await getBootstrap(user.uuid);
-
-        if (!bootstrap) {
-            offlineNotice = 'Open any inspection once while online; after that this phone can start new ones without network.';
-
-            return;
-        }
-
-        const uuid = crypto.randomUUID();
-        const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-
-        await putLocalDraft({
-            uuid,
-            userId: user.uuid,
-            draft: { ...bootstrap.blankDraft, uuid, status: 'draft', current_step: 1, inspection_date: today, updated_at: null, circuits: [], attachments: [] },
-            step: 1,
-            updatedAt: Date.now(),
-            dirty: true,
-            localOnly: true,
-        });
-        await openFromPhone(uuid);
-    }
-
-    const empty = $derived(allDrafts.length === 0 && submittedTotal === 0);
+    const empty = $derived(assigned.length === 0 && drafts.length === 0 && submittedTotal === 0);
     const where = (c: Card): string => [c.address, c.area].filter(Boolean).join(' · ') || 'No address yet';
 
-    function start(): void {
-        starting = true;
+    /** At the property: the job becomes a draft on the server, then the form opens (works offline from then on). */
+    function startJob(uuid: string): void {
         offlineNotice = null;
 
         if (!navigator.onLine) {
-            void startOnPhone().finally(() => (starting = false));
+            offlineNotice = 'Starting a job needs network once. After that you can fill it in without network.';
 
             return;
         }
 
+        starting = uuid;
         router.post(
-            store.url(),
-            { uuid: crypto.randomUUID() },
+            startRoute.url(uuid),
+            {},
             {
-                onFinish: () => (starting = false),
+                onFinish: () => (starting = null),
                 onNetworkError: () => {
-                    void startOnPhone();
+                    offlineNotice = 'Starting a job needs network once. Move to where there is signal and try again.';
 
                     return false;
                 },
@@ -199,6 +156,7 @@
     }
 
     const steps = $derived([
+        'NSD assigns you a job',
         'Fill sections A–D on site',
         fee ? `Pay the ${fee} inspection fee` : 'Pay the inspection fee',
         'NSD reviews the report',
@@ -229,12 +187,11 @@
         <div class="flex flex-col gap-1">
             <h1 class="text-[32px] font-extrabold tracking-[-0.02em]">My inspections</h1>
             <span class="text-[15px] text-mut">
-                {empty ? 'No inspections yet' : `${submittedTotal} submitted · ${allDrafts.length} draft${allDrafts.length === 1 ? '' : 's'}`}
+                {empty
+                    ? 'No jobs yet'
+                    : `${assigned.length} assigned · ${drafts.length} draft${drafts.length === 1 ? '' : 's'} · ${submittedTotal} submitted`}
             </span>
         </div>
-        <Button size="md" class="ml-auto font-extrabold" onclick={start} disabled={starting}>
-            <AddCircle />Start new inspection
-        </Button>
     </div>
 
     {#if !online || offlineSync.queued.length > 0 || offlineSync.needsSignIn || unsynced.size > 0 || offlineNotice}
@@ -257,9 +214,9 @@
 
     {#if empty}
         <EmptyState
-            icon={AssignmentAdd}
-            title="No inspections yet"
-            body="Start your first inspection at the property. Your progress saves as you go — even without network."
+            icon={AssignmentInd}
+            title="No jobs yet"
+            body="The New Service Department assigns inspections to you. They appear here with the customer’s details; tap Start inspection when you’re at the property."
         >
             <ol class="mt-2 flex w-full max-w-[300px] flex-col gap-2 text-left">
                 {#each steps as text, i (i)}
@@ -271,6 +228,37 @@
             </ol>
         </EmptyState>
     {:else}
+        {#if assigned.length > 0}
+            <section class="flex flex-col gap-3" aria-labelledby="assigned-heading">
+                <h2 id="assigned-heading" class="eyebrow px-1">Assigned to you · {assigned.length}</h2>
+                <ul class="grid gap-3 lg:grid-cols-3 lg:gap-4">
+                    {#each assigned as job (job.uuid)}
+                        <li class="flex flex-col gap-2.5 rounded-2xl border-[1.5px] border-pri bg-sf p-3.5 lg:gap-3 lg:p-[18px]">
+                            <div class="flex min-w-0 flex-col gap-0.5">
+                                <b class="truncate text-base lg:text-[17px]">{job.ownerName}</b>
+                                <span class="line-clamp-2 text-sm text-mut">{job.address}</span>
+                            </div>
+                            <dl class="flex flex-col gap-1 text-sm">
+                                <div class="flex gap-1.5"><dt class="text-mut">Building</dt><dd class="truncate font-semibold">{job.building}{job.structures > 1 ? ` · ${job.structures} structures` : ''}</dd></div>
+                                <div class="flex gap-1.5"><dt class="text-mut">Form 74</dt><dd class="truncate font-mono">{job.form74}</dd></div>
+                                <div class="flex gap-1.5"><dt class="text-mut">Area</dt><dd class="truncate">{job.area} · assigned {job.assignedAt}</dd></div>
+                            </dl>
+                            <div class="flex items-center gap-2">
+                                {#if job.ownerPhone}
+                                    <a href="tel:{job.ownerPhone}" class="flex h-14 flex-none items-center gap-1.5 rounded-xl border border-line px-3.5 font-mono text-sm font-semibold text-ink no-underline lg:h-11" aria-label="Call {job.ownerName}">
+                                        <Call class="size-5" />{job.ownerPhone}
+                                    </a>
+                                {/if}
+                                <Button size="lg" class="flex-1 lg:h-11 lg:rounded-[10px] lg:text-[15px]" onclick={() => startJob(job.uuid)} disabled={starting !== null}>
+                                    <PlayArrow />{starting === job.uuid ? 'Starting…' : 'Start inspection'}
+                                </Button>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+            </section>
+        {/if}
+
         {#if returned.length > 0}
             <section class="flex flex-col gap-3" aria-labelledby="returned-heading">
                 <h2 id="returned-heading" class="eyebrow px-1 text-imp">Needs changes · {returned.length}</h2>
@@ -297,11 +285,11 @@
             </section>
         {/if}
 
-        {#if allDrafts.length > 0}
+        {#if drafts.length > 0}
             <section class="flex flex-col gap-3" aria-labelledby="drafts-heading">
-                <h2 id="drafts-heading" class="eyebrow px-1">Drafts<span class="lg:hidden"> · {allDrafts.length}</span></h2>
+                <h2 id="drafts-heading" class="eyebrow px-1">Drafts<span class="lg:hidden"> · {drafts.length}</span></h2>
                 <ul class="grid gap-3 lg:grid-cols-3 lg:gap-4">
-                    {#each allDrafts as d, i (d.uuid)}
+                    {#each drafts as d, i (d.uuid)}
                         <li class="flex flex-col gap-2.5 rounded-2xl border border-line bg-sf p-3.5 lg:gap-3 lg:p-[18px]">
                             <div class="flex justify-between gap-2">
                                 <div class="flex min-w-0 flex-col gap-0.5">
@@ -387,7 +375,3 @@
         </section>
     {/if}
 </div>
-
-<BottomBar class="lg:hidden">
-    <Button size="xl" block onclick={start} disabled={starting}><AddCircle />Start new inspection</Button>
-</BottomBar>

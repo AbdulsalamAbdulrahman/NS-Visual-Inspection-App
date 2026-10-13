@@ -21,9 +21,10 @@
         filters: { search: string };
         summary: { total: number; active: number; invited: number; suspended: number };
         categories: { value: string; label: string }[];
+        states: { value: string; label: string }[];
     };
 
-    let { contractors, filters, summary, categories }: Props = $props();
+    let { contractors, filters, summary, categories, states }: Props = $props();
 
     let drawer: ReturnType<typeof ContractorDrawer> | undefined = $state();
     let drawerOpen = $state(false);
@@ -185,4 +186,4 @@
     {/if}
 </div>
 
-<ContractorDrawer bind:this={drawer} bind:open={drawerOpen} contractor={editing} {categories} />
+<ContractorDrawer bind:this={drawer} bind:open={drawerOpen} contractor={editing} {categories} {states} />

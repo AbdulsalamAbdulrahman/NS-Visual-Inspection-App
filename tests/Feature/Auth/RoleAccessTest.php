@@ -12,7 +12,7 @@ test('home sends each role to its own landing page', function (string $state, st
 })->with([
     'admin' => ['admin', 'admin.overview'],
     'contractor' => ['contractor', 'inspections.index'],
-    'rep' => ['rep', 'rep.inspections.index'],
+    'rep' => ['rep', 'rep.jobs.index'],
 ]);
 
 test('roles cannot open each other\'s areas', function (string $state, array $forbidden) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin;
 
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -57,6 +58,8 @@ class ContractorRequest extends FormRequest
             // Corporate firms name their electrical engineer/technologist.
             'engineer_name' => [Rule::requiredIf($this->isCorporate()), 'nullable', 'string', 'max:255'],
             'engineer_reg_no' => ['nullable', 'string', 'max:60'],
+            // LECAN chapter they work in: reps assign jobs to contractors in the area's state.
+            'state' => ['required', Rule::enum(NigerianState::class)],
         ];
     }
 
@@ -68,7 +71,7 @@ class ContractorRequest extends FormRequest
     /**
      * Validated input in the shape CreateContractor / UpdateContractor expect.
      *
-     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null}
+     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string}
      */
     public function contractorData(): array
     {
@@ -84,6 +87,7 @@ class ContractorRequest extends FormRequest
             'firm_name' => $input->filled('firm_name') ? $input->string('firm_name')->toString() : null,
             'engineer_name' => $input->filled('engineer_name') ? $input->string('engineer_name')->toString() : null,
             'engineer_reg_no' => $input->filled('engineer_reg_no') ? $input->string('engineer_reg_no')->toString() : null,
+            'state' => $input->string('state')->toString(),
         ];
     }
 
@@ -112,6 +116,7 @@ class ContractorRequest extends FormRequest
         return [
             'nemsa_category' => 'NEMSA category',
             'nemsa_reg_no' => 'NEMSA registration no.',
+            'state' => 'state',
             'coren_no' => 'COREN no.',
         ];
     }

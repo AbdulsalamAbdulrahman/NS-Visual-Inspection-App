@@ -24,6 +24,10 @@ class SaveDraft
         DB::transaction(function () use ($inspection, $data): void {
             $fields = Arr::only($data, Inspection::DRAFT_FIELDS);
 
+            if ($inspection->hasRepDetails()) {
+                $fields = Arr::except($fields, Inspection::REP_FIELDS);
+            }
+
             if (array_key_exists('declaration_accepted', $data)) {
                 $fields['declaration_accepted_at'] = $data['declaration_accepted']
                     ? ($inspection->declaration_accepted_at ?? now())

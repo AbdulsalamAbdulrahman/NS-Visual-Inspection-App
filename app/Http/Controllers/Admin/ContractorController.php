@@ -8,6 +8,7 @@ use App\Actions\Accounts\CreateContractor;
 use App\Actions\Accounts\UpdateContractor;
 use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
@@ -57,6 +58,7 @@ class ContractorController extends Controller
                 'invited' => (int) ($counts[UserStatus::Invited->value] ?? 0),
                 'suspended' => (int) ($counts[UserStatus::Suspended->value] ?? 0),
             ],
+            'states' => NigerianState::options(),
             'categories' => collect(NemsaCategory::cases())->map(fn (NemsaCategory $c): array => [
                 'value' => $c->value,
                 'label' => $c->label(),

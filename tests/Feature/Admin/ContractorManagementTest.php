@@ -26,6 +26,7 @@ function contractorPayload(array $overrides = []): array
         'firm_name' => 'Garba Power Ltd',
         'engineer_name' => 'Engr. Halima Garba',
         'engineer_reg_no' => '',
+        'state' => 'kaduna',
         ...$overrides,
     ];
 }

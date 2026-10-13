@@ -15,6 +15,8 @@
         firmName: string | null;
         engineerName: string | null;
         engineerRegNo: string | null;
+        state: string | null;
+        stateLabel: string | null;
     };
 </script>
 
@@ -34,9 +36,11 @@
         /** null = add a new contractor. */
         contractor: ContractorRow | null;
         categories: { value: string; label: string }[];
+        /** LECAN chapters (Kaduna Electric's franchise states). */
+        states: { value: string; label: string }[];
     };
 
-    let { open = $bindable(false), contractor, categories }: Props = $props();
+    let { open = $bindable(false), contractor, categories, states }: Props = $props();
 
     const form = useForm({
         name: '',
@@ -48,6 +52,7 @@
         firm_name: '',
         engineer_name: '',
         engineer_reg_no: '',
+        state: null as string | null,
     });
 
     const editing = $derived(contractor !== null);
@@ -65,6 +70,7 @@
         form.firm_name = row?.firmName ?? '';
         form.engineer_name = row?.engineerName ?? '';
         form.engineer_reg_no = row?.engineerRegNo ?? '';
+        form.state = row?.state ?? null;
     }
 
     function submit(event: SubmitEvent): void {
@@ -95,6 +101,10 @@
                 <TextInput id="c-phone" type="tel" inputmode="tel" mono size="md" class={compact} bind:value={form.phone} invalid={!!form.errors.phone} />
             </Field>
         </div>
+
+        <Field id="c-state" label="State they work in" hint="Reps assign jobs to contractors in the area office's state." error={form.errors.state}>
+            <ChoiceGroup label="State they work in" variant="segmented" options={states} bind:value={form.state} invalid={!!form.errors.state} />
+        </Field>
 
         <Field id="c-category" label="NEMSA category" error={form.errors.nemsa_category}>
             <ChoiceGroup

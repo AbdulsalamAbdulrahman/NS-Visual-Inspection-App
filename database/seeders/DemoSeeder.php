@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Actions\Payments\GenerateTicket;
+use App\Enums\BuildingType;
+use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use App\Enums\PaymentStatus;
+use App\Enums\PropertyPurpose;
 use App\Enums\ReviewAction;
 use App\Enums\ReviewStatus;
 use App\Enums\Role;
@@ -44,7 +48,7 @@ class DemoSeeder extends Seeder
 
         $this->contractor('Engr. Yusuf Bello', 'y.bello@bellopower.ng', '0803 412 7790', NemsaCategory::CatA, 'NEMSAA20230142', 'R.12873', 'Bello Power Systems Ltd');
         $this->contractor('Aisha Lawal', 'aisha.lawal@gmail.com', '0806 220 1145', NemsaCategory::CatB, 'NEMSAB20220388');
-        $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSAB20210217', 'R.20456');
+        $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSAB20210217', 'R.20456', state: NigerianState::Sokoto);
         $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd');
         $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSAC20240610', status: UserStatus::Suspended);
 
@@ -54,6 +58,44 @@ class DemoSeeder extends Seeder
         $this->submissions();
         $this->placeholderFiles();
         $this->reviews();
+        $this->jobs();
+    }
+
+    /**
+     * A few jobs Grace (rep) created and assigned to Yusuf Bello, not started
+     * yet, so his home shows "Assigned to you". Only runs once.
+     */
+    private function jobs(): void
+    {
+        if (Inspection::query()->where('status', InspectionStatus::Assigned)->exists()) {
+            return;
+        }
+
+        $rep = User::query()->where('email', 'g.ayuba@kadunaelectric.com')->firstOrFail();
+        $contractor = User::query()->where('email', 'y.bello@bellopower.ng')->firstOrFail();
+        $areas = $rep->serviceAreas()->get();
+
+        Inspection::factory()->assigned($rep, $areas[0])->forContractor($contractor)->create([
+            'owner_name' => 'Amina Sule',
+            'owner_phone' => '08031234567',
+            'owner_email' => 'amina.sule@example.com',
+            'property_address' => '14 Ahmadu Bello Way, Barnawa',
+        ]);
+        Inspection::factory()->assigned($rep, $areas[1])->forContractor($contractor)->create([
+            'owner_name' => 'Sabon Gari Estate Ltd',
+            'owner_phone' => '08059876543',
+            'property_address' => 'Plot 3, Sabon Gari Estate, Makera',
+            'building_type' => BuildingType::BlockOfFlats,
+            'form74_no' => 'F74/KD/2026/09001',
+            'form74_last_no' => 'F74/KD/2026/09020',
+            'structure_count' => 20,
+        ]);
+        Inspection::factory()->assigned($rep, $areas[0])->forContractor($contractor)->create([
+            'owner_name' => 'Hajiya Rakiya Bala',
+            'owner_phone' => '08124459012',
+            'purpose' => PropertyPurpose::Commercial,
+            'building_type' => BuildingType::Shop,
+        ]);
     }
 
     /**
@@ -247,6 +289,7 @@ class DemoSeeder extends Seeder
         ?string $coren = null,
         ?string $firm = null,
         UserStatus $status = UserStatus::Active,
+        NigerianState $state = NigerianState::Kaduna,
     ): User {
         $user = $this->user($name, $email, Role::Contractor, $status, $phone);
 
@@ -255,6 +298,7 @@ class DemoSeeder extends Seeder
             'nemsa_reg_no' => $regNo,
             'coren_no' => $coren,
             'firm_name' => $firm,
+            'state' => $state,
             'engineer_name' => $category === NemsaCategory::Corporate ? 'Engr. Ibrahim Danladi' : null,
         ]);
 

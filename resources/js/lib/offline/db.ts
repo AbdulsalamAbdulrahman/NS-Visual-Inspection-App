@@ -47,8 +47,6 @@ export type FormBootstrap = {
     options: FormOptions;
     inspector: Inspector;
     fees: FeeTable;
-    /** Empty draft in the server's shape, for starting new inspections offline. */
-    blankDraft: Draft;
     savedAt: number;
 };
 

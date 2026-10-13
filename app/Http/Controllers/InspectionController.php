@@ -24,6 +24,7 @@ use App\Http\Requests\Inspections\SaveDraftRequest;
 use App\Http\Resources\DraftResource;
 use App\Http\Resources\InspectionCardResource;
 use App\Http\Resources\InspectionReportResource;
+use App\Http\Resources\JobResource;
 use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
@@ -40,7 +41,7 @@ use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Contractor side: home (CH-01), start a draft, the 9-step form, auto-save.
+ * Contractor side: home (CH-01), start an assigned job, the 9-step form, auto-save.
  */
 class InspectionController extends Controller
 {
@@ -49,6 +50,8 @@ class InspectionController extends Controller
         $user = $request->user();
         $search = trim($request->string('search')->toString());
 
+        $assigned = $user->inspections()->where('status', InspectionStatus::Assigned)
+            ->with(['serviceArea:id,name', 'contractor:id,uuid,name', 'assigner:id,name'])->oldest('assigned_at')->get();
         $drafts = $user->inspections()->drafts()->with('serviceArea:id,name')->latest('updated_at')->get();
         $returned = $user->inspections()->submitted()->where('review_status', ReviewStatus::ChangesRequested)
             ->with('serviceArea:id,name')->latest('reviewed_at')->get();
@@ -61,6 +64,7 @@ class InspectionController extends Controller
             ->withQueryString();
 
         return Inertia::render('contractor/Home', [
+            'assigned' => JobResource::collection($assigned),
             'drafts' => InspectionCardResource::collection($drafts),
             'returned' => InspectionCardResource::collection($returned),
             'submitted' => InspectionCardResource::collection($submitted),
@@ -70,11 +74,12 @@ class InspectionController extends Controller
         ]);
     }
 
-    public function store(Request $request, StartInspection $start): RedirectResponse
+    /** At the property: the assigned job becomes a draft and the form opens. */
+    public function start(Inspection $inspection, StartInspection $start): RedirectResponse
     {
-        $validated = $request->validate(['uuid' => ['nullable', 'uuid', 'unique:inspections,uuid']]);
+        Gate::authorize('start', $inspection);
 
-        $inspection = $start->handle($request->user(), $validated['uuid'] ?? null);
+        $start->handle($inspection);
 
         return to_route('inspections.edit', $inspection);
     }
@@ -86,6 +91,10 @@ class InspectionController extends Controller
 
         if ($inspection->isDraft()) {
             return to_route('inspections.edit', $inspection);
+        }
+
+        if ($inspection->isAssigned()) {
+            return $this->notStarted();
         }
 
         $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile']);
@@ -103,6 +112,10 @@ class InspectionController extends Controller
     {
         Gate::authorize('view', $inspection);
 
+        if ($inspection->isAssigned()) {
+            return $this->notStarted();
+        }
+
         if (! $request->user()->can('update', $inspection)) {
             // Submitted inspections are locked: show the read-only report.
             Inertia::flash('toast', ['type' => 'info', 'message' => 'This inspection has been submitted and can no longer be edited.']);
@@ -115,8 +128,6 @@ class InspectionController extends Controller
 
         return Inertia::render('contractor/InspectionForm', [
             'inspection' => DraftResource::make($inspection),
-            // Empty draft in the same shape, kept on the phone to start new inspections offline.
-            'blankDraft' => DraftResource::make(new Inspection(['current_step' => 1])->forceFill(['status' => InspectionStatus::Draft])),
             'step' => min(max($request->integer('step', $inspection->current_step), 1), Inspection::STEPS),
             'areas' => ServiceArea::query()
                 ->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $inspection->service_area_id))
@@ -154,15 +165,14 @@ class InspectionController extends Controller
     }
 
     /**
-     * Auto-save / Save draft (JSON). Upserts so a draft started offline with
-     * a phone-generated uuid is created on its first sync.
+     * Auto-save / Save draft (JSON). Drafts exist on the server from the
+     * moment the contractor starts an assigned job.
      */
-    public function saveDraft(SaveDraftRequest $request, string $uuid, SaveDraft $save, StartInspection $start): JsonResponse
+    public function saveDraft(SaveDraftRequest $request, string $uuid, SaveDraft $save): JsonResponse
     {
         abort_unless(Str::isUuid($uuid), 404);
 
-        $inspection = Inspection::query()->where('uuid', $uuid)->first()
-            ?? $start->handle($request->user(), $uuid);
+        $inspection = Inspection::query()->where('uuid', $uuid)->firstOrFail();
 
         Gate::authorize('update', $inspection);
 
@@ -187,6 +197,13 @@ class InspectionController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Resubmitted. NSD will review it again.']);
 
         return to_route('inspections.show', $inspection);
+    }
+
+    private function notStarted(): RedirectResponse
+    {
+        Inertia::flash('toast', ['type' => 'info', 'message' => 'Start this job from My inspections when you are at the property.']);
+
+        return to_route('inspections.index');
     }
 
     public function signature(Inspection $inspection): StreamedResponse

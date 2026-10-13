@@ -150,4 +150,12 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Form, review, report, certificate and CSV show building type and the Form 74 range
 - [x] Tests (208), PHPStan, lint, types, build, Chrome check
 ### Stage 3 · Reps create and assign jobs
+- [x] Inspection status "assigned"; jobs carry assigned_by/at, owner phone (11 digits) and optional email; contractors carry their state (required in the admin drawer)
+- [x] Rep Jobs page (progress tabs, search), New/Edit job form (contractors filtered by the area office's state), cancel/reassign until started; reps land on Jobs
+- [x] CSV upload: template, every row checked with per-row problems in a preview, confirm creates the valid rows (rechecked) in one transaction
+- [x] JobAssigned email to the contractor (new or reassigned) and to the owner only when an email is given
+- [x] Contractor home: "Assigned to you" with Start inspection (needs network once); contractor-created drafts and the offline start path removed
+- [x] StepA shows rep-filled customer details read-only; SaveDraft ignores them for jobs
+- [x] Tests (230), PHPStan, lint, types, build
+- [ ] Chrome check (needs a sign-in)
 ### Stage 4 · LECAN officials & two-level approval

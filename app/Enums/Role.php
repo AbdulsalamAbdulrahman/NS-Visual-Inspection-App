@@ -25,7 +25,7 @@ enum Role: string
         return match ($this) {
             self::Admin => 'admin.overview',
             self::Contractor => 'inspections.index',
-            self::Rep => 'rep.inspections.index',
+            self::Rep => 'rep.jobs.index',
         };
     }
 }

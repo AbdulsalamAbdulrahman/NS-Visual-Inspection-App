@@ -45,10 +45,9 @@
         fees: FeeTable;
         /** Sent back by NSD: the last step resubmits (already paid) instead of paying. */
         changesRequested: { note: string | null; ticketNo: string | null; requestedAt: string | null } | null;
-        blankDraft: Draft;
     };
 
-    let { inspection, step: initialStep, areas, options, inspector, fees, changesRequested, blankDraft }: Props = $props();
+    let { inspection, step: initialStep, areas, options, inspector, fees, changesRequested }: Props = $props();
 
     // The form owns its working copy; the server is updated in the background.
     // svelte-ignore state_referenced_locally
@@ -177,7 +176,7 @@
 
         if (offlineSupported()) {
             // What the form needs to open offline (same for every draft).
-            void saveBootstrap(userId, $state.snapshot({ areas, options, inspector, fees, blankDraft }) as Omit<FormBootstrap, 'savedAt'>);
+            void saveBootstrap(userId, $state.snapshot({ areas, options, inspector, fees }) as Omit<FormBootstrap, 'savedAt'>);
             void restoreFromPhone();
         }
 

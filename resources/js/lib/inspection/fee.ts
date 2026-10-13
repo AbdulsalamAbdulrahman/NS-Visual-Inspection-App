@@ -48,6 +48,19 @@ export function form74Count(
         : count;
 }
 
+/** "F74/KD/2026/08841 – 08860" for display (Form74Range::label). */
+export function form74Label(first: string | null, last: string | null): string {
+    if (!first) {
+        return '';
+    }
+
+    if (!last) {
+        return first;
+    }
+
+    return `${first} – ${last.match(/(\d+)$/)?.[1] ?? last}`;
+}
+
 export function naira(kobo: number): string {
     return `₦${(kobo / 100).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

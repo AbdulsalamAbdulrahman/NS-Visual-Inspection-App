@@ -59,6 +59,22 @@ class InspectionPolicy
         return $inspection->isApproved() && $this->view($user, $inspection);
     }
 
+    /** The assigned contractor turns a job into a draft when they're at the property. */
+    public function start(User $user, Inspection $inspection): bool
+    {
+        return $this->owns($user, $inspection) && $inspection->isAssigned();
+    }
+
+    /** A rep changes, reassigns or cancels a job in their areas until it's started. */
+    public function changeJob(User $user, Inspection $inspection): bool
+    {
+        return $user->isRep()
+            && $inspection->isAssigned()
+            && $inspection->hasRepDetails()
+            && $inspection->service_area_id !== null
+            && $user->serviceAreas()->whereKey($inspection->service_area_id)->exists();
+    }
+
     private function owns(User $user, Inspection $inspection): bool
     {
         return $user->isContractor() && $inspection->contractor_id === $user->id;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\NemsaCategory;
+use App\Enums\NigerianState;
 use App\Models\ContractorProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,6 +27,7 @@ class ContractorProfileFactory extends Factory
             'nemsa_reg_no' => sprintf('NEMSA%s%d%04d', $category->letter(), fake()->numberBetween(2018, 2026), fake()->unique()->numberBetween(1, 9999)),
             'coren_no' => fake()->optional()->numerify('R.#####'),
             'firm_name' => null,
+            'state' => NigerianState::Kaduna,
         ];
     }
 

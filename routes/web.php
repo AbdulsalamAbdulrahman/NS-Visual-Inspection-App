@@ -22,6 +22,7 @@ use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
+use App\Http\Controllers\Rep\JobController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerifyController;
 use Illuminate\Support\Facades\Route;
@@ -52,8 +53,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:contractor')->group(function () {
         Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
-        Route::post('inspections', [InspectionController::class, 'store'])->name('inspections.store');
         Route::get('inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
+        Route::post('inspections/{inspection}/start', [InspectionController::class, 'start'])->name('inspections.start');
         Route::get('inspections/{inspection}/edit', [InspectionController::class, 'edit'])->name('inspections.edit');
         Route::put('inspections/{uuid}/draft', [InspectionController::class, 'saveDraft'])->name('inspections.draft');
         Route::post('inspections/{inspection}/resubmit', [InspectionController::class, 'resubmit'])->name('inspections.resubmit');
@@ -122,5 +123,17 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:rep')->prefix('rep')->name('rep.')->group(function () {
         Route::get('inspections', [RepInspectionController::class, 'index'])->name('inspections.index');
         Route::get('inspections/{inspection}', [RepInspectionController::class, 'show'])->name('inspections.show');
+
+        Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+        Route::get('jobs/new', [JobController::class, 'create'])->name('jobs.create');
+        Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+        Route::get('jobs/template.csv', [JobController::class, 'template'])->name('jobs.template');
+        Route::get('jobs/import', [JobController::class, 'preview'])->name('jobs.import');
+        Route::post('jobs/import', [JobController::class, 'upload'])->middleware('throttle:20,1')->name('jobs.import.upload');
+        Route::post('jobs/import/confirm', [JobController::class, 'confirm'])->name('jobs.import.confirm');
+        Route::delete('jobs/import', [JobController::class, 'discard'])->name('jobs.import.discard');
+        Route::get('jobs/{inspection}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+        Route::put('jobs/{inspection}', [JobController::class, 'update'])->name('jobs.update');
+        Route::delete('jobs/{inspection}', [JobController::class, 'destroy'])->name('jobs.destroy');
     });
 });

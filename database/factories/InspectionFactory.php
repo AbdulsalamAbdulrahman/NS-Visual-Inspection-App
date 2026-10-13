@@ -157,6 +157,26 @@ class InspectionFactory extends Factory
         ]);
     }
 
+    /**
+     * A job a rep created and assigned, not started yet: customer details only.
+     */
+    public function assigned(User $rep, ServiceArea $area): static
+    {
+        return $this->state(fn (): array => [
+            'status' => InspectionStatus::Assigned,
+            'inspection_date' => null,
+            'assigned_by' => $rep->id,
+            'assigned_at' => now(),
+            'service_area_id' => $area->id,
+            'owner_name' => fake()->name(),
+            'owner_phone' => '080'.fake()->numerify('########'),
+            'property_address' => fake()->numberBetween(1, 120).' '.fake()->randomElement(['Ahmadu Bello Way', 'Constitution Road', 'Kachia Road', 'Sokoto Road']).', '.$area->name,
+            'purpose' => PropertyPurpose::Residential,
+            'building_type' => BuildingType::Duplex,
+            'form74_no' => 'F74/KD/2026/'.fake()->unique()->numerify('0####'),
+        ]);
+    }
+
     public function forContractor(User $contractor): static
     {
         return $this->state(['contractor_id' => $contractor->id]);

@@ -15,18 +15,17 @@ beforeEach(function () {
     $this->contractor = User::factory()->contractor()->create();
 });
 
-test('a contractor can start a draft with a phone-generated uuid', function () {
-    $uuid = (string) Str::uuid();
+test('starting an assigned job turns it into a draft dated today and opens the form', function () {
+    $job = Inspection::factory()->assigned(User::factory()->rep()->create(), ServiceArea::factory()->create())
+        ->forContractor($this->contractor)->create();
 
     $this->actingAs($this->contractor)
-        ->post(route('inspections.store'), ['uuid' => $uuid])
-        ->assertRedirect(route('inspections.edit', $uuid));
+        ->post(route('inspections.start', $job))
+        ->assertRedirect(route('inspections.edit', $job));
 
-    $inspection = Inspection::query()->where('uuid', $uuid)->firstOrFail();
-
-    expect($inspection->contractor_id)->toBe($this->contractor->id)
-        ->and($inspection->isDraft())->toBeTrue()
-        ->and($inspection->inspection_date->isToday())->toBeTrue();
+    $job->refresh();
+    expect($job->isDraft())->toBeTrue()
+        ->and($job->inspection_date->isToday())->toBeTrue();
 });
 
 test('the form opens on the saved step with options and the inspector profile', function () {
@@ -105,14 +104,14 @@ test('a drawn signature is stored as a private PNG', function () {
     expect($inspection->fresh()->signature_path)->toBeNull();
 });
 
-test('saving to an unknown uuid creates the draft (offline-started drafts)', function () {
+test('saving to an unknown uuid returns 404: drafts only start from assigned jobs', function () {
     $uuid = (string) Str::uuid();
 
     $this->actingAs($this->contractor)
         ->putJson(route('inspections.draft', $uuid), ['owner_name' => 'Hauwa Sani'])
-        ->assertOk();
+        ->assertNotFound();
 
-    expect(Inspection::query()->where('uuid', $uuid)->value('owner_name'))->toBe('Hauwa Sani');
+    expect(Inspection::query()->where('uuid', $uuid)->exists())->toBeFalse();
 });
 
 test('draft values are range-checked even though they are optional', function () {
@@ -146,7 +145,9 @@ test('a submitted inspection cannot be edited', function () {
 test('only contractors use the form', function () {
     $rep = User::factory()->rep()->create();
 
-    $this->actingAs($rep)->post(route('inspections.store'))->assertForbidden();
+    $job = Inspection::factory()->assigned($rep, ServiceArea::factory()->create())->create();
+
+    $this->actingAs($rep)->post(route('inspections.start', $job))->assertForbidden();
     $this->actingAs($rep)->putJson(route('inspections.draft', (string) Str::uuid()), [])->assertForbidden();
 });
 
@@ -163,32 +164,26 @@ test('the home page lists drafts and submitted inspections separately', function
             ->where('submittedTotal', 1));
 });
 
-test('the form sends a blank draft template for starting inspections offline', function () {
-    $inspection = Inspection::factory()->forContractor($this->contractor)->create();
+test('the form flags customer details filled in by a rep', function () {
+    $job = Inspection::factory()->assigned(User::factory()->rep()->create(), ServiceArea::factory()->create())
+        ->forContractor($this->contractor)->create(['status' => 'draft', 'owner_phone' => '08031234567']);
 
-    $this->actingAs($this->contractor)->get(route('inspections.edit', $inspection))
+    $this->actingAs($this->contractor)->get(route('inspections.edit', $job))
         ->assertInertia(fn (Assert $page) => $page
-            ->where('blankDraft.uuid', null)
-            ->where('blankDraft.status', 'draft')
-            ->where('blankDraft.current_step', 1)
-            ->where('blankDraft.circuits', [])
-            ->where('blankDraft.attachments', [])
-            // Same keys as a real draft, so the phone can fill it in offline.
-            ->where('blankDraft', fn ($blank) => collect(Inspection::DRAFT_FIELDS)
-                ->reject(fn (string $f) => $f === 'current_step')
-                ->every(fn (string $f) => $blank->has($f) && $blank[$f] === null)));
+            ->where('inspection.from_rep', true)
+            ->where('inspection.owner_phone', '08031234567'));
 });
 
-test('a draft started offline is created by its first sync with the phone uuid', function () {
-    $uuid = (string) Str::uuid();
+test('draft saves leave the rep\'s customer details alone but keep the contractor\'s readings', function () {
+    $job = Inspection::factory()->assigned(User::factory()->rep()->create(), ServiceArea::factory()->create())
+        ->forContractor($this->contractor)->create(['status' => 'draft', 'owner_name' => 'Amina Sule', 'form74_no' => 'F74/KD/2026/08841']);
 
     $this->actingAs($this->contractor)
-        ->putJson(route('inspections.draft', $uuid), ['form74_no' => 'F74/KD/2026/55501', 'current_step' => 2])
-        ->assertOk()
-        ->assertJsonPath('uuid', $uuid);
+        ->putJson(route('inspections.draft', $job->uuid), ['owner_name' => 'Someone Else', 'form74_no' => 'F74/KD/2026/99999', 'connection_type' => 'three_phase'])
+        ->assertOk();
 
-    $inspection = Inspection::query()->where('uuid', $uuid)->firstOrFail();
-    expect($inspection->contractor_id)->toBe($this->contractor->id)
-        ->and($inspection->form74_no)->toBe('F74/KD/2026/55501')
-        ->and($inspection->current_step)->toBe(2);
+    $job->refresh();
+    expect($job->owner_name)->toBe('Amina Sule')
+        ->and($job->form74_no)->toBe('F74/KD/2026/08841')
+        ->and($job->connection_type?->value)->toBe('three_phase');
 });
