@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    import { page } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import AccountActions from '@/components/admin/AccountActions.svelte';
     import ContractorDrawer, { type ContractorRow } from '@/components/admin/ContractorDrawer.svelte';
     import DeleteConfirmRow from '@/components/admin/DeleteConfirmRow.svelte';
@@ -15,6 +15,8 @@
     import { accountTone } from '@/lib/status';
     import Engineering from '~icons/ms/engineering';
     import PersonAdd from '~icons/ms/person-add';
+    import UploadFile from '~icons/ms/upload-file';
+    import { importMethod as importPage } from '@/routes/admin/contractors';
 
     type Props = {
         contractors: { data: ContractorRow[]; meta: PageMeta; links: PageLinks };
@@ -65,6 +67,9 @@
             <h1 class="text-[20px] font-bold">Contractors</h1>
             <span class="text-[13px] text-mut">{summaryLine}</span>
         </div>
+        <Link href={importPage.url()} class="flex size-11 items-center justify-center rounded-xl border border-line text-ink" aria-label="Register contractors from a CSV">
+            <UploadFile class="size-6" />
+        </Link>
         <button
             type="button"
             class="flex size-11 items-center justify-center rounded-xl bg-pri text-on-pri"
@@ -85,6 +90,7 @@
             <span class="text-sm text-mut">{summaryLine}</span>
         </div>
         <SearchField class="ml-auto w-[300px]" value={filters.search} placeholder="Name, NEMSA or phone" only={['contractors', 'filters']} />
+        <Button href={importPage.url()} variant="outline" size="sm" class="h-11 rounded-xl"><UploadFile />Upload CSV</Button>
         <Button size="sm" class="h-11 rounded-xl" onclick={() => openDrawer(null)}>
             <PersonAdd />Add contractor
         </Button>
@@ -95,7 +101,7 @@
             icon={Engineering}
             tone="muted"
             title={filters.search ? `No contractors match “${filters.search}”` : 'No contractors yet'}
-            body={filters.search ? 'Try a name, NEMSA registration number or phone.' : 'Add the first licensed contractor to send their login details.'}
+            body={filters.search ? 'Try a name, NEMSA registration number or phone.' : 'Add a licensed contractor, or register many at once with Upload CSV. Each gets their login details by email.'}
         />
     {:else}
         <!-- Desktop table -->

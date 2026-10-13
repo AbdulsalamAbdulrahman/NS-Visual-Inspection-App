@@ -8,6 +8,7 @@ use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\CertificateSettingsController;
 use App\Http\Controllers\Admin\ContractorController;
+use App\Http\Controllers\Admin\ContractorImportController;
 use App\Http\Controllers\Admin\FeeController;
 use App\Http\Controllers\Admin\InspectionController as AdminInspectionController;
 use App\Http\Controllers\Admin\OverviewController;
@@ -95,6 +96,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('contractors', [ContractorController::class, 'index'])->name('contractors.index');
         Route::post('contractors', [ContractorController::class, 'store'])->name('contractors.store');
+        Route::get('contractors/template.csv', [ContractorImportController::class, 'template'])->name('contractors.template');
+        Route::get('contractors/import', [ContractorImportController::class, 'preview'])->name('contractors.import');
+        Route::post('contractors/import', [ContractorImportController::class, 'upload'])->middleware('throttle:20,1')->name('contractors.import.upload');
+        Route::post('contractors/import/confirm', [ContractorImportController::class, 'confirm'])->name('contractors.import.confirm');
+        Route::delete('contractors/import', [ContractorImportController::class, 'discard'])->name('contractors.import.discard');
         Route::put('contractors/{contractor}', [ContractorController::class, 'update'])->name('contractors.update');
 
         Route::get('reps', [RepController::class, 'index'])->name('reps.index');

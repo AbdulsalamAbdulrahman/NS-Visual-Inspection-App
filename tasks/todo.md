@@ -158,4 +158,6 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] StepA shows rep-filled customer details read-only; SaveDraft ignores them for jobs
 - [x] Tests (230), PHPStan, lint, types, build
 - [x] Chrome check (rep: list, form, validation, state-filtered contractors, create; contractor: assigned cards, start, locked details)
+- [x] Admin bulk registration of contractors by CSV (template, per-row preview incl. duplicates within the file, confirm registers and emails login details); state required single or bulk
+- [x] Shared CsvImport component and CsvRows reader for both uploads; contractor rules shared by the drawer and the import (234 tests)
 ### Stage 4 · LECAN officials & two-level approval

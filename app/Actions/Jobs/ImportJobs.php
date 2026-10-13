@@ -8,12 +8,12 @@ use App\Enums\BuildingType;
 use App\Enums\PropertyPurpose;
 use App\Models\ServiceArea;
 use App\Models\User;
+use App\Support\CsvRows;
 use App\Support\Form74Range;
 use App\Support\JobRules;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
@@ -39,48 +39,12 @@ class ImportJobs
      */
     public function read(User $rep, string $path): array
     {
-        $handle = fopen($path, 'r');
+        $areas = $rep->serviceAreas()->get()->keyBy(fn (ServiceArea $area): string => CsvRows::key($area->name));
 
-        if ($handle === false) {
-            throw new RuntimeException('The file could not be read.');
-        }
-
-        try {
-            $header = fgetcsv($handle, escape: '');
-            $header = is_array($header) ? array_map(fn ($h): string => Str::snake(trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $h))), $header) : [];
-            $missing = array_diff(self::COLUMNS, $header);
-
-            if ($missing !== []) {
-                throw new RuntimeException('Use the template: the first row must have the column names. Missing: '.implode(', ', $missing).'.');
-            }
-
-            $areas = $rep->serviceAreas()->get()->keyBy(fn (ServiceArea $area): string => $this->key($area->name));
-            $rows = [];
-            $line = 1;
-
-            while (($cells = fgetcsv($handle, escape: '')) !== false) {
-                $line++;
-
-                if ($cells === [null] || implode('', array_map('trim', array_map('strval', $cells))) === '') {
-                    continue;
-                }
-
-                if (count($rows) >= self::MAX_ROWS) {
-                    throw new RuntimeException('Upload at most '.self::MAX_ROWS.' jobs at a time.');
-                }
-
-                $values = array_combine($header, array_pad(array_slice($cells, 0, count($header)), count($header), ''));
-                $rows[] = $this->check($rep, $line, array_map(fn ($v): string => trim((string) $v), $values), $areas);
-            }
-        } finally {
-            fclose($handle);
-        }
-
-        if ($rows === []) {
-            throw new RuntimeException('The file has no jobs under the column names.');
-        }
-
-        return $rows;
+        return array_map(
+            fn (array $row): array => $this->check($rep, $row['line'], $row['values'], $areas),
+            CsvRows::read($path, self::COLUMNS, self::MAX_ROWS),
+        );
     }
 
     /**
@@ -109,7 +73,7 @@ class ImportJobs
      */
     private function check(User $rep, int $line, array $values, $areas): array
     {
-        $area = $areas->get($this->key($values['area_office']));
+        $area = $areas->get(CsvRows::key($values['area_office']));
         $purpose = $this->match(PropertyPurpose::cases(), $values['purpose']);
         $type = $this->match(BuildingType::cases(), $values['building_type']);
 
@@ -172,19 +136,14 @@ class ImportJobs
      */
     private function match(array $cases, string $text): PropertyPurpose|BuildingType|null
     {
-        $wanted = $this->key($text);
+        $wanted = CsvRows::key($text);
 
         foreach ($cases as $case) {
-            if ($wanted !== '' && ($this->key($case->value) === $wanted || $this->key($case->label()) === $wanted)) {
+            if ($wanted !== '' && (CsvRows::key($case->value) === $wanted || CsvRows::key($case->label()) === $wanted)) {
                 return $case;
             }
         }
 
         return null;
-    }
-
-    private function key(string $text): string
-    {
-        return preg_replace('/[^a-z0-9]/', '', Str::lower($text)) ?? '';
     }
 }
