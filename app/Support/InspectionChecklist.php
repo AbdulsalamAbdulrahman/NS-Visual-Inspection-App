@@ -58,15 +58,42 @@ final class InspectionChecklist
         $need($inspection->earth_resistance_ohm !== null, 'earth_resistance_ohm', 'Earth resistance', 2);
         $need($inspection->earth_pit !== null, 'earth_pit', 'Earth inspection pit', 2);
 
-        // 3 · B2
-        $need($inspection->cb_rated_a !== null && $inspection->cb_standard !== null, 'cb', 'Circuit breaker', 3);
-        $need($inspection->fuse_rated_a !== null && $inspection->fuse_standard !== null, 'fuse', 'Cut-out fuse', 3);
-        $need($inspection->poles !== null, 'poles', 'Number of poles', 3);
+        // 3 · B2: each device is either "not available" or fully described.
+        $need(
+            $inspection->cb_available === false
+                || ($inspection->cb_available === true && $inspection->cb_rated_a !== null && $inspection->cb_standard !== null && $inspection->poles !== null),
+            'cb', 'Circuit breaker', 3,
+        );
+        $need(
+            $inspection->fuse_available === false
+                || ($inspection->fuse_available === true && $inspection->fuse_rated_a !== null && $inspection->fuse_type !== null
+                    && $inspection->fuse_standard !== null && $inspection->fuse_poles !== null),
+            'fuse', 'Cut-out fuse', 3,
+        );
 
-        // 4 · B3
-        $need($inspection->db_seen !== null && ($inspection->db_seen === false || $inspection->db_standard !== null), 'db', 'Distribution board', 4);
-        $need($inspection->changeover_seen !== null && ($inspection->changeover_seen === false || $inspection->changeover_standard !== null), 'changeover', 'Change-over switch', 4);
-        $need($inspection->main_switch_standard !== null, 'main_switch_standard', 'Main switch type', 4);
+        // 4 · B3: details are only needed for items that were seen.
+        $need(
+            $inspection->db_seen === false
+                || ($inspection->db_seen === true && $inspection->db_standard !== null && $inspection->db_mccb_count !== null),
+            'db', 'Distribution board', 4,
+        );
+        $need(
+            $inspection->changeover_seen === false
+                || ($inspection->changeover_seen === true && $inspection->changeover_standard !== null
+                    && $inspection->changeover_phase !== null && $inspection->changeover_rated_a !== null),
+            'changeover', 'Change-over switch', 4,
+        );
+        $need(
+            $inspection->main_switch_standard !== null && $inspection->main_switch_rated_a !== null
+                && $inspection->main_switch_poles !== null && $inspection->main_switch_phase !== null,
+            'main_switch', 'Main switch', 4,
+        );
+        $need(
+            $inspection->db_main_breaker_seen === false
+                || ($inspection->db_main_breaker_seen === true && $inspection->db_main_breaker_rated_a !== null
+                    && $inspection->db_main_breaker_poles !== null && $inspection->db_main_breaker_standard !== null),
+            'db_main_breaker', 'DB main breaker switch', 4,
+        );
         $need($inspection->cb_type_standard !== null, 'cb_type_standard', 'Circuit breaker type', 4);
         $need(
             $inspection->secondary_rated_a !== null && $inspection->secondary_type !== null && $inspection->secondary_standard !== null,

@@ -13,6 +13,8 @@
         regNo: string | null;
         corenNo: string | null;
         firmName: string | null;
+        engineerName: string | null;
+        engineerRegNo: string | null;
     };
 </script>
 
@@ -44,6 +46,8 @@
         nemsa_reg_no: '',
         coren_no: '',
         firm_name: '',
+        engineer_name: '',
+        engineer_reg_no: '',
     });
 
     const editing = $derived(contractor !== null);
@@ -59,6 +63,8 @@
         form.nemsa_reg_no = row?.regNo ?? '';
         form.coren_no = row?.corenNo ?? '';
         form.firm_name = row?.firmName ?? '';
+        form.engineer_name = row?.engineerName ?? '';
+        form.engineer_reg_no = row?.engineerRegNo ?? '';
     }
 
     function submit(event: SubmitEvent): void {
@@ -107,7 +113,7 @@
                     mono
                     size="md"
                     class={compact}
-                    placeholder="NEMSA/A/2023/0142"
+                    placeholder={corporate ? 'CC/CE1F/PR/08634' : 'Letters and numbers only'}
                     autocapitalize="characters"
                     bind:value={form.nemsa_reg_no}
                     invalid={!!form.errors.nemsa_reg_no}
@@ -133,6 +139,27 @@
                 {/snippet}
                 <TextInput id="c-firm" size="md" class={compact} bind:value={form.firm_name} invalid={!!form.errors.firm_name} required={corporate} />
             </Field>
+        {/if}
+
+        {#if corporate}
+            <div class="grid gap-3.5 lg:grid-cols-2 lg:gap-3">
+                <Field id="c-engineer" error={form.errors.engineer_name}>
+                    {#snippet labelAside()}
+                        <label for="c-engineer" class="text-[15px] font-semibold lg:text-sm">
+                            Electrical engineer / technologist <span class="text-bad" aria-hidden="true">*</span>
+                        </label>
+                    {/snippet}
+                    <TextInput id="c-engineer" size="md" class={compact} bind:value={form.engineer_name} invalid={!!form.errors.engineer_name} required />
+                </Field>
+                <Field id="c-engineer-reg" error={form.errors.engineer_reg_no}>
+                    {#snippet labelAside()}
+                        <label for="c-engineer-reg" class="text-[15px] font-semibold lg:text-sm">
+                            Their reg. no. <span class="font-normal text-mut">optional</span>
+                        </label>
+                    {/snippet}
+                    <TextInput id="c-engineer-reg" mono size="md" class={compact} placeholder="—" bind:value={form.engineer_reg_no} />
+                </Field>
+            </div>
         {/if}
 
         {#if !editing}

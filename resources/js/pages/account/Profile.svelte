@@ -33,6 +33,8 @@
             regNo: string;
             corenNo: string | null;
             firmName: string | null;
+            engineerName: string | null;
+            engineerRegNo: string | null;
         } | null;
         areas: string[];
     };
@@ -63,6 +65,7 @@
                   { label: 'NEMSA reg. no.', value: profile.licence.regNo, mono: true },
                   { label: 'COREN no.', value: profile.licence.corenNo, mono: true },
                   { label: 'Firm', value: profile.licence.firmName, mono: false },
+                  { label: 'Engineer / technologist', value: [profile.licence.engineerName, profile.licence.engineerRegNo].filter(Boolean).join(' · ') || null, mono: false },
               ].filter((row) => row.value)
             : [],
     );

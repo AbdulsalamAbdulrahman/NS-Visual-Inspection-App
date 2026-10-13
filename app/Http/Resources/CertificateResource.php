@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\NigerianState;
 use App\Models\Inspection;
 use App\Support\TicketQr;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ class CertificateResource extends JsonResource
             'ownerName' => $this->owner_name,
             'address' => $this->property_address ? (string) str($this->property_address)->squish() : null,
             'area' => $this->serviceArea?->name,
+            'chapter' => ($this->serviceArea->state ?? NigerianState::Kaduna)->label(),
             'inspectionDate' => $this->inspection_date?->format('jS F, Y'),
             'submittedAt' => $this->submitted_at?->format('jS F, Y'),
             'approvedAt' => $this->approved_at?->format('jS F, Y'),

@@ -128,3 +128,12 @@ test('owner names are masked to initials', function (?string $name, ?string $mas
     ['', null],
     [null, null],
 ]);
+
+test('the certificate names the LECAN chapter of the area office state', function () {
+    $kebbi = ServiceArea::factory()->create(['name' => 'Kebbi Central', 'state' => 'kebbi']);
+    $inspection = Inspection::factory()->approved()->forContractor($this->contractor)->inArea($kebbi)->create();
+
+    $this->actingAs($this->admin)
+        ->get(route('inspections.certificate', $inspection))
+        ->assertInertia(fn (Assert $page) => $page->where('certificate.chapter', 'Kebbi'));
+});

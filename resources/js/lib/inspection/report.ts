@@ -38,13 +38,13 @@ export type Report = {
             resistance: boolean;
         };
     };
+    /** Circuit breaker and cut-out fuse rows, same shape as B3. */
     b2: {
-        cbRatedA: number | null;
-        cbStandard: boolean | null;
-        fuseRatedA: number | null;
-        fuseStandard: boolean | null;
-        poles: number | null;
-    };
+        label: string;
+        ref: string | null;
+        value: string;
+        tone: 'ok' | 'bad' | 'muted';
+    }[];
     b3: {
         label: string;
         ref: string | null;
@@ -74,6 +74,8 @@ export type Report = {
         regNo: string | null;
         corenNo: string | null;
         firmName: string | null;
+        /** Corporate contractors: their electrical engineer/technologist. */
+        engineerName: string | null;
         declaredAt: string | null;
         signatureUrl: string | null;
     };

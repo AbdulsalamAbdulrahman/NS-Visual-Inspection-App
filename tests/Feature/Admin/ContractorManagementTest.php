@@ -21,9 +21,11 @@ function contractorPayload(array $overrides = []): array
         'email' => 'M.Abubakar@GarbaPower.ng',
         'phone' => '0805 300 9921',
         'nemsa_category' => 'corporate',
-        'nemsa_reg_no' => 'nemsa/cp/2026/0212',
+        'nemsa_reg_no' => 'cc/ce1f/pr/08634',
         'coren_no' => '',
         'firm_name' => 'Garba Power Ltd',
+        'engineer_name' => 'Engr. Halima Garba',
+        'engineer_reg_no' => '',
         ...$overrides,
     ];
 }
@@ -63,7 +65,8 @@ test('creating a contractor makes an invited account and emails login details', 
         ->and($contractor->status)->toBe(UserStatus::Invited)
         ->and($contractor->must_change_password)->toBeTrue()
         ->and($contractor->contractorProfile->nemsa_category)->toBe(NemsaCategory::Corporate)
-        ->and($contractor->contractorProfile->nemsa_reg_no)->toBe('NEMSA/CP/2026/0212')
+        ->and($contractor->contractorProfile->nemsa_reg_no)->toBe('CC/CE1F/PR/08634')
+        ->and($contractor->contractorProfile->engineer_name)->toBe('Engr. Halima Garba')
         ->and($contractor->contractorProfile->coren_no)->toBeNull();
 
     Notification::assertSentTo($contractor, LoginDetails::class, function (LoginDetails $mail) use ($contractor) {
@@ -83,7 +86,7 @@ test('the registration number must look like a NEMSA number and be unique', func
         ->assertSessionHasErrors('nemsa_reg_no');
 
     $existing = User::factory()->contractor()->create();
-    $existing->contractorProfile->update(['nemsa_reg_no' => 'NEMSA/CP/2026/0212']);
+    $existing->contractorProfile->update(['nemsa_reg_no' => 'CC/CE1F/PR/08634']);
 
     $this->post(route('admin.contractors.store'), contractorPayload())
         ->assertSessionHasErrors('nemsa_reg_no');
@@ -102,12 +105,14 @@ test('contractor details can be edited', function () {
     $contractor = User::factory()->contractor()->create();
 
     $this->actingAs($this->admin)
-        ->put(route('admin.contractors.update', $contractor), contractorPayload(['email' => $contractor->email, 'nemsa_category' => 'cat_b', 'nemsa_reg_no' => 'NEMSA/B/2024/0377', 'firm_name' => '']))
+        ->put(route('admin.contractors.update', $contractor), contractorPayload(['email' => $contractor->email, 'nemsa_category' => 'cat_b', 'nemsa_reg_no' => 'nemsa b 2024 0377', 'firm_name' => '']))
         ->assertSessionHasNoErrors();
 
     expect($contractor->fresh()->contractorProfile)
         ->nemsa_category->toBe(NemsaCategory::CatB)
-        ->firm_name->toBeNull();
+        ->nemsa_reg_no->toBe('NEMSAB20240377')
+        ->firm_name->toBeNull()
+        ->engineer_name->toBeNull();
 });
 
 test('non-admins cannot manage contractors', function () {
@@ -115,4 +120,25 @@ test('non-admins cannot manage contractors', function () {
 
     $this->actingAs($rep)->get(route('admin.contractors.index'))->assertForbidden();
     $this->actingAs($rep)->post(route('admin.contractors.store'), contractorPayload())->assertForbidden();
+});
+
+test('individual registration numbers take letters and numbers only', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.contractors.store'), contractorPayload(['nemsa_category' => 'cat_a', 'nemsa_reg_no' => 'NEMSA/A/2023/0142', 'firm_name' => '']))
+        ->assertSessionHasErrors(['nemsa_reg_no' => 'Letters and numbers only, no spaces or slashes.']);
+
+    $this->post(route('admin.contractors.store'), contractorPayload(['nemsa_category' => 'cat_a', 'nemsa_reg_no' => 'NEMSAA20230142', 'firm_name' => '']))
+        ->assertSessionHasNoErrors();
+});
+
+test('corporate registration numbers follow the CC/CE1F/PR/08634 format', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.contractors.store'), contractorPayload(['nemsa_reg_no' => 'CCCE1FPR08634']))
+        ->assertSessionHasErrors(['nemsa_reg_no' => 'Use the corporate format, e.g. CC/CE1F/PR/08634.']);
+});
+
+test('corporate contractors must name their electrical engineer or technologist', function () {
+    $this->actingAs($this->admin)
+        ->post(route('admin.contractors.store'), contractorPayload(['engineer_name' => '']))
+        ->assertSessionHasErrors(['engineer_name' => 'Required for Corporate contractors']);
 });

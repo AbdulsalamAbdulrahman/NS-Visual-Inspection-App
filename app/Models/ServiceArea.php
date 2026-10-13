@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\NigerianState;
 use Database\Factories\ServiceAreaFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $name
+ * @property NigerianState $state LECAN chapter / franchise state
  * @property bool $is_active
  */
 class ServiceArea extends Model
@@ -26,6 +28,7 @@ class ServiceArea extends Model
      */
     protected $fillable = [
         'name',
+        'state',
         'is_active',
     ];
 
@@ -33,6 +36,7 @@ class ServiceArea extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'state' => NigerianState::class,
         'is_active' => 'boolean',
     ];
 

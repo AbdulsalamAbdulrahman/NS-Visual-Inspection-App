@@ -346,7 +346,7 @@
     {:else if step === 2}
         <StepB1 bind:draft {errors} />
     {:else if step === 3}
-        <StepB2 bind:draft {errors} />
+        <StepB2 bind:draft {options} {errors} />
     {:else if step === 4}
         <StepB3 bind:draft {options} {errors} />
     {:else if step === 5}

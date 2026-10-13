@@ -49,11 +49,28 @@
             draft.db_seen && draft.db_standard === false && 'Distribution board',
             draft.changeover_seen && draft.changeover_standard === false && 'Change-over switch',
             draft.main_switch_standard === false && 'Main switch',
+            draft.db_main_breaker_seen && draft.db_main_breaker_standard === false && 'DB main breaker switch',
             draft.cb_type_standard === false && 'Circuit breaker type',
             draft.secondary_standard === false && 'Secondary protection',
             draft.socket_outlets_standard === false && 'Socket outlets',
         ].filter(Boolean) as string[],
     );
+
+    const amps = (v: number | null): string | null => (v === null ? null : `${num(v)} A`);
+    const poles = (v: number | null): string | null => (v === null ? null : `${v}P`);
+
+    /** "Schneider · 63 A · 4P · ✓", or "Not available". */
+    function device(available: boolean | null, details: (string | null)[], standard: boolean | null): string {
+        if (available === null) {
+            return '—';
+        }
+
+        if (!available) {
+            return 'Not available';
+        }
+
+        return [...details, standard === null ? null : standard ? '✓ standard' : '✗ not standard'].filter(Boolean).join(' · ') || 'Available';
+    }
 
     const counts = $derived(
         CONDITION_ORDER.map((key) => ({ key, n: draft.circuits.filter((c) => c.condition === key).length })).filter((c) => c.n > 0),
@@ -135,12 +152,12 @@
                 <span class={warn.resistance && 'font-semibold text-imp'}>{num(draft.earth_resistance_ohm)} Ω{warn.resistance ? ' · above 2 Ω' : ''}</span>
             </dd>
             {@render row('Earth pit', yes(draft.earth_pit, 'Yes', 'No'))}
-            <dt class="text-mut">Breaker / fuse</dt>
-            <dd class="font-mono">
-                {num(draft.cb_rated_a)} A {draft.cb_standard === null ? '' : draft.cb_standard ? '✓' : '✗'} ·
-                {num(draft.fuse_rated_a)} A {draft.fuse_standard === null ? '' : draft.fuse_standard ? '✓' : '✗'} ·
-                {draft.poles ?? '—'} poles
-            </dd>
+            {@render row('Circuit breaker', device(draft.cb_available, [draft.cb_make, amps(draft.cb_rated_a), poles(draft.poles)], draft.cb_standard), true)}
+            {@render row(
+                'Cut-out fuse',
+                device(draft.fuse_available, [amps(draft.fuse_rated_a), draft.fuse_type ? label(options.fuseType, draft.fuse_type) : null, poles(draft.fuse_poles)], draft.fuse_standard),
+                true,
+            )}
             <dt class="text-mut">Not standard</dt>
             <dd class={notStandard.length ? 'font-semibold text-bad' : ''}>{notStandard.length ? notStandard.join(' · ') : 'None'}</dd>
             {@render row(

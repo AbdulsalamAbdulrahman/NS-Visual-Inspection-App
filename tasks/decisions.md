@@ -116,3 +116,7 @@ Calls made where the spec left room, or where the spec and designs disagreed.
 ## After launch
 - **Official area offices** (from NSD, 8 Oct 2026): 23 offices in `ServiceAreaSeeder`, stored without the "AO" suffix. Production runs only `db:seed --class=ServiceAreaSeeder`; the fee is set in Fee settings.
 - **Area editing switched off for now** (user decision): add, rename and deactivate are hidden on the Service areas page and refused by the server (403). The page stays as a read-only list with reps and counts. `KENS_AREAS_EDITABLE=true` brings editing back without a code change. Note: renaming an area and re-running the seeder would re-add the original name.
+
+## Phase 9 · Client feedback (Oct 2026)
+Decisions with the user (13 Oct): LECAN officials as a new role; owner notified by email only when an email is given; one job per estate with fee × structures; admin sets a fee per building type; reps create and assign jobs and contractors start them; existing mains items kept; CSV bulk upload; reps assign only contractors in the area's state.
+- **Stage 1 details**: "Make" is optional (contractors may not know it); everything else in a device/item block is required once it's Available/Seen. Poles are capped at 4 everywhere (client note). Existing reports get `cb_available`/`fuse_available` = true where a rating was recorded. Reg. no. formats apply when an account is created or edited; existing numbers aren't revalidated. The LECAN chapter on the certificate is the state of the report's area office.

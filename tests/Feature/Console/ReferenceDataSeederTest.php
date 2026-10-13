@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\NigerianState;
 use App\Models\FeeSchedule;
 use App\Models\ServiceArea;
 use App\Models\User;
@@ -37,4 +38,13 @@ test('the area seeder on its own adds just the 23 area offices', function () {
 
     expect(ServiceArea::query()->count())->toBe(23)
         ->and(FeeSchedule::query()->count())->toBe(0);
+});
+
+test('area offices get their franchise state', function () {
+    $this->seed(ServiceAreaSeeder::class);
+
+    $states = ServiceArea::query()->get()->groupBy(fn (ServiceArea $a) => $a->state->value)->map->count()->sortKeys()->all();
+
+    expect($states)->toBe(['kaduna' => 14, 'kebbi' => 3, 'sokoto' => 3, 'zamfara' => 3])
+        ->and(ServiceArea::query()->where('name', 'Zamfara West')->sole()->state)->toBe(NigerianState::Zamfara);
 });

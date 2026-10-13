@@ -91,13 +91,7 @@ class InspectionReportResource extends JsonResource
                 'warnings' => $warnings,
             ],
 
-            'b2' => [
-                'cbRatedA' => $this->cb_rated_a,
-                'cbStandard' => $this->cb_standard,
-                'fuseRatedA' => $this->fuse_rated_a,
-                'fuseStandard' => $this->fuse_standard,
-                'poles' => $this->poles,
-            ],
+            'b2' => $this->protectionRows(),
 
             'b3' => $mains,
 
@@ -121,6 +115,7 @@ class InspectionReportResource extends JsonResource
                 'regNo' => $this->inspector_nemsa_reg_no ?? $this->contractor->contractorProfile?->nemsa_reg_no,
                 'corenNo' => $this->inspector_coren_no ?? $this->contractor->contractorProfile?->coren_no,
                 'firmName' => $this->inspector_firm_name ?? $this->contractor->contractorProfile?->firm_name,
+                'engineerName' => $this->inspector_engineer_name ?? $this->contractor->contractorProfile?->engineer_name,
                 'declaredAt' => $this->declaration_accepted_at?->format('d M Y'),
                 'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
             ],
@@ -166,6 +161,52 @@ class InspectionReportResource extends JsonResource
     }
 
     /**
+     * B2 rows (circuit breaker, cut-out fuse) in the same shape as B3.
+     *
+     * @return list<array{label: string, ref: string|null, value: string, tone: string}>
+     */
+    private function protectionRows(): array
+    {
+        $device = function (?bool $available, array $details, ?bool $standard): array {
+            if ($available === null) {
+                return ['—', 'muted'];
+            }
+
+            if ($available === false) {
+                return ['Not available', 'muted'];
+            }
+
+            $value = collect([...$details, match ($standard) {
+                true => 'Standard',
+                false => 'Not standard',
+                null => null,
+            }])->filter()->join(' · ');
+
+            return [$value !== '' ? $value : 'Available', $standard === false ? 'bad' : ($standard === true ? 'ok' : 'muted')];
+        };
+
+        $rows = [
+            ['Circuit breaker', null, ...$device($this->cb_available, [
+                $this->cb_make,
+                self::amps($this->cb_rated_a),
+                $this->poles ? "{$this->poles}P" : null,
+            ], $this->cb_standard)],
+            ['Cut-out fuse', null, ...$device($this->fuse_available, [
+                self::amps($this->fuse_rated_a),
+                $this->fuse_type?->label(),
+                $this->fuse_poles ? "{$this->fuse_poles}P" : null,
+            ], $this->fuse_standard)],
+        ];
+
+        return array_map(fn (array $r): array => ['label' => $r[0], 'ref' => $r[1], 'value' => $r[2], 'tone' => $r[3]], $rows);
+    }
+
+    private static function amps(?float $value): ?string
+    {
+        return $value === null ? null : rtrim(rtrim(number_format($value, 1), '0'), '.').' A';
+    }
+
+    /**
      * B3 rows as shown in AD-03: label, standard reference, value, tone.
      *
      * @return list<array{label: string, ref: string|null, value: string, tone: string}>
@@ -204,10 +245,39 @@ class InspectionReportResource extends JsonResource
             },
         ])->filter()->join(' · ');
 
+        // "Seen · Standard · 8 MCCB · Hager": details only for items that were seen.
+        $detailed = function (?bool $wasSeen, ?bool $standard, array $details) use ($seen): array {
+            [$value, $tone] = $seen($wasSeen, $standard);
+
+            if ($wasSeen === true) {
+                $value = collect([$value, ...$details])->filter()->join(' · ');
+            }
+
+            return [$value, $tone];
+        };
+
+        [$mainSwitch, $mainTone] = $std($this->main_switch_standard);
+        $mainSwitch = collect([
+            self::amps($this->main_switch_rated_a),
+            $this->main_switch_poles ? "{$this->main_switch_poles}P" : null,
+            $this->main_switch_phase?->label(),
+            $this->main_switch_standard === null ? null : $mainSwitch,
+        ])->filter()->join(' · ') ?: '—';
+
         $rows = [
-            ['Distribution board', null, ...$seen($this->db_seen, $this->db_standard)],
-            ['Change-over switch', null, ...$seen($this->changeover_seen, $this->changeover_standard)],
-            ['Main switch', 'BS', ...$std($this->main_switch_standard)],
+            ['Distribution board', null, ...$detailed($this->db_seen, $this->db_standard, [
+                $this->db_mccb_count !== null ? "{$this->db_mccb_count} MCCB" : null,
+                $this->db_make,
+            ])],
+            ['Change-over switch', null, ...$detailed($this->changeover_seen, $this->changeover_standard, [
+                $this->changeover_phase?->label(),
+                self::amps($this->changeover_rated_a),
+            ])],
+            ['Main switch', 'BS EN 60947-3', $mainSwitch, $mainTone],
+            ['DB main breaker switch', null, ...$detailed($this->db_main_breaker_seen, $this->db_main_breaker_standard, [
+                self::amps($this->db_main_breaker_rated_a),
+                $this->db_main_breaker_poles ? "{$this->db_main_breaker_poles}P" : null,
+            ])],
             ['Circuit breaker type', 'BS EN 60898-1 · Type B', ...$std($this->cb_type_standard)],
             ['Socket outlets', 'BS 1363-2', ...$std($this->socket_outlets_standard)],
             ['Secondary protection', null, $secondary !== '' ? $secondary : '—', $this->secondary_standard === false ? 'bad' : 'muted'],

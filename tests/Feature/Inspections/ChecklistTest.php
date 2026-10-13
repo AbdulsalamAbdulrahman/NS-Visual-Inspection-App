@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Enums\CircuitDescription;
 use App\Models\Inspection;
+use App\Models\User;
 use App\Support\InspectionChecklist;
+use Illuminate\Support\Str;
 
 test('a complete inspection has nothing missing', function () {
     $inspection = Inspection::factory()->complete()->create();
@@ -41,4 +44,46 @@ test('out-of-range readings never block submission', function () {
     $inspection = Inspection::factory()->complete()->create(['earth_resistance_ohm' => 9.5, 'earth_electrode_ft' => 3]);
 
     expect(InspectionChecklist::isComplete($inspection))->toBeTrue();
+});
+
+test('a breaker or fuse marked not available needs no details', function () {
+    $inspection = Inspection::factory()->complete()->create([
+        'cb_available' => false, 'cb_make' => null, 'cb_rated_a' => null, 'cb_standard' => null, 'poles' => null,
+        'fuse_available' => false, 'fuse_rated_a' => null, 'fuse_type' => null, 'fuse_standard' => null, 'fuse_poles' => null,
+    ]);
+
+    expect(InspectionChecklist::missing($inspection))->toBe([]);
+});
+
+test('an available breaker or fuse needs its rating, standard and poles; make is optional', function () {
+    $inspection = Inspection::factory()->complete()->create(['cb_make' => null, 'fuse_type' => null]);
+    expect(collect(InspectionChecklist::missing($inspection))->pluck('key')->all())->toBe(['fuse']);
+
+    $inspection->update(['fuse_type' => 'polymer', 'cb_available' => null]);
+    expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('key')->all())->toBe(['cb']);
+});
+
+test('new mains items are required only when seen', function () {
+    $inspection = Inspection::factory()->complete()->create([
+        'changeover_seen' => true, 'changeover_standard' => true, 'changeover_phase' => null, 'changeover_rated_a' => null,
+        'db_main_breaker_seen' => false, 'db_main_breaker_rated_a' => null, 'db_main_breaker_poles' => null, 'db_main_breaker_standard' => null,
+        'main_switch_poles' => null,
+    ]);
+
+    expect(collect(InspectionChecklist::missing($inspection))->pluck('key')->all())->toBe(['changeover', 'main_switch']);
+});
+
+test('poles are limited to 4 when saving a draft', function () {
+    $contractor = User::factory()->contractor()->create();
+    $inspection = Inspection::factory()->forContractor($contractor)->create();
+
+    $this->actingAs($contractor)
+        ->putJson(route('inspections.draft', $inspection->uuid), ['poles' => 5, 'fuse_poles' => 4, 'fuse_type' => 'porcelain'])
+        ->assertJsonValidationErrors('poles');
+
+    $this->putJson(route('inspections.draft', $inspection->uuid), ['poles' => 4, 'fuse_type' => 'porcelain', 'circuits' => [
+        ['uuid' => (string) Str::uuid(), 'description' => 'ceiling_fan', 'rating_a' => 6, 'conductor_mm2' => 1.5, 'condition' => 'satisfactory'],
+    ]])->assertOk();
+
+    expect($inspection->fresh()->circuits->first()->description)->toBe(CircuitDescription::CeilingFan);
 });

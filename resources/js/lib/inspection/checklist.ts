@@ -81,37 +81,66 @@ export function missingItems(
     );
     need(filled(d.earth_pit), 'earth_pit', 'Earth inspection pit', 2);
 
+    // B2: each device is either "not available" or fully described.
     need(
-        filled(d.cb_rated_a) && filled(d.cb_standard),
+        d.cb_available === false ||
+            (d.cb_available === true &&
+                filled(d.cb_rated_a) &&
+                filled(d.cb_standard) &&
+                filled(d.poles)),
         'cb',
         'Circuit breaker',
         3,
     );
     need(
-        filled(d.fuse_rated_a) && filled(d.fuse_standard),
+        d.fuse_available === false ||
+            (d.fuse_available === true &&
+                filled(d.fuse_rated_a) &&
+                filled(d.fuse_type) &&
+                filled(d.fuse_standard) &&
+                filled(d.fuse_poles)),
         'fuse',
         'Cut-out fuse',
         3,
     );
-    need(filled(d.poles), 'poles', 'Number of poles', 3);
 
+    // B3: details are only needed for items that were seen.
     need(
-        filled(d.db_seen) && (d.db_seen === false || filled(d.db_standard)),
+        d.db_seen === false ||
+            (d.db_seen === true &&
+                filled(d.db_standard) &&
+                filled(d.db_mccb_count)),
         'db',
         'Distribution board',
         4,
     );
     need(
-        filled(d.changeover_seen) &&
-            (d.changeover_seen === false || filled(d.changeover_standard)),
+        d.changeover_seen === false ||
+            (d.changeover_seen === true &&
+                filled(d.changeover_standard) &&
+                filled(d.changeover_phase) &&
+                filled(d.changeover_rated_a)),
         'changeover',
         'Change-over switch',
         4,
     );
     need(
-        filled(d.main_switch_standard),
-        'main_switch_standard',
-        'Main switch type',
+        filled(d.main_switch_standard) &&
+            filled(d.main_switch_rated_a) &&
+            filled(d.main_switch_poles) &&
+            filled(d.main_switch_phase),
+        'main_switch',
+        'Main switch',
+        4,
+    );
+    need(
+        d.db_main_breaker_seen === false ||
+            (d.db_main_breaker_seen === true &&
+                filled(d.db_main_breaker_rated_a) &&
+                filled(d.db_main_breaker_poles) &&
+                filled(d.db_main_breaker_standard)),
+        'db_main_breaker',
+        'DB main breaker switch',
         4,
     );
     need(

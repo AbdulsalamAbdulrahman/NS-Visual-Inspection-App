@@ -12,6 +12,7 @@ use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\InspectionStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
@@ -125,6 +126,7 @@ class InspectionController extends Controller
                 'connectionType' => ConnectionType::options(),
                 'voltageLevel' => VoltageLevel::options(),
                 'protectionType' => ProtectionType::options(),
+                'fuseType' => FuseType::options(),
                 'earthingSystemType' => EarthingSystemType::options(),
                 'conductorType' => ConductorType::options(),
                 'wiringMethod' => WiringMethod::options(),

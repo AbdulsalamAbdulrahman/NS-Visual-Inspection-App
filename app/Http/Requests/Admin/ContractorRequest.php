@@ -26,6 +26,8 @@ class ContractorRequest extends FormRequest
             'nemsa_reg_no' => Str::upper(preg_replace('/\s+/', '', (string) $this->input('nemsa_reg_no'))),
             'coren_no' => $this->filled('coren_no') ? trim((string) $this->input('coren_no')) : null,
             'firm_name' => $this->filled('firm_name') ? trim((string) $this->input('firm_name')) : null,
+            'engineer_name' => $this->filled('engineer_name') ? trim((string) $this->input('engineer_name')) : null,
+            'engineer_reg_no' => $this->filled('engineer_reg_no') ? trim((string) $this->input('engineer_reg_no')) : null,
         ]);
     }
 
@@ -44,21 +46,29 @@ class ContractorRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:32', 'regex:/^[0-9+ ()-]{7,}$/'],
             'nemsa_category' => ['required', Rule::enum(NemsaCategory::class)],
             'nemsa_reg_no' => [
-                'required', 'string', 'max:40', 'regex:#^NEMSA/[A-Z]{1,4}/\d{4}/\d{1,6}$#',
+                'required', 'string', 'max:40',
+                // Client feedback: individuals use letters and numbers only; corporate
+                // numbers are slash-separated groups like CC/CE1F/PR/08634.
+                $this->isCorporate() ? 'regex:#^[A-Z0-9]+(/[A-Z0-9]+){2,5}$#' : 'regex:/^[A-Z0-9]+$/',
                 Rule::unique('contractor_profiles', 'nemsa_reg_no')->ignore($contractor?->contractorProfile?->id),
             ],
             'coren_no' => ['nullable', 'string', 'max:40'],
-            'firm_name' => [
-                Rule::requiredIf($this->input('nemsa_category') === NemsaCategory::Corporate->value),
-                'nullable', 'string', 'max:255',
-            ],
+            'firm_name' => [Rule::requiredIf($this->isCorporate()), 'nullable', 'string', 'max:255'],
+            // Corporate firms name their electrical engineer/technologist.
+            'engineer_name' => [Rule::requiredIf($this->isCorporate()), 'nullable', 'string', 'max:255'],
+            'engineer_reg_no' => ['nullable', 'string', 'max:60'],
         ];
+    }
+
+    private function isCorporate(): bool
+    {
+        return $this->input('nemsa_category') === NemsaCategory::Corporate->value;
     }
 
     /**
      * Validated input in the shape CreateContractor / UpdateContractor expect.
      *
-     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null}
+     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null}
      */
     public function contractorData(): array
     {
@@ -72,6 +82,8 @@ class ContractorRequest extends FormRequest
             'nemsa_reg_no' => $input->string('nemsa_reg_no')->toString(),
             'coren_no' => $input->filled('coren_no') ? $input->string('coren_no')->toString() : null,
             'firm_name' => $input->filled('firm_name') ? $input->string('firm_name')->toString() : null,
+            'engineer_name' => $input->filled('engineer_name') ? $input->string('engineer_name')->toString() : null,
+            'engineer_reg_no' => $input->filled('engineer_reg_no') ? $input->string('engineer_reg_no')->toString() : null,
         ];
     }
 
@@ -82,7 +94,10 @@ class ContractorRequest extends FormRequest
     {
         return [
             'email.unique' => 'An account with this email already exists (it may have been deleted).',
-            'nemsa_reg_no.regex' => 'Use the format NEMSA/A/2023/0142.',
+            'nemsa_reg_no.regex' => $this->isCorporate()
+                ? 'Use the corporate format, e.g. CC/CE1F/PR/08634.'
+                : 'Letters and numbers only, no spaces or slashes.',
+            'engineer_name.required' => 'Required for Corporate contractors',
             'nemsa_reg_no.unique' => 'Another contractor already has this registration number.',
             'firm_name.required' => 'Required for Corporate contractors',
             'phone.regex' => 'Enter a valid phone number.',

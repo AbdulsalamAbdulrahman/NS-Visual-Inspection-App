@@ -56,8 +56,9 @@
 {#snippet header()}
     <div class="flex items-center gap-3.5 border-b-2 border-brand pb-3">
         <img src="/images/ke-logo.png" alt="Kaduna Electric" class="size-[58px] flex-none object-contain" />
+        <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
         <div class="flex flex-1 flex-col gap-0.5">
-            <span class="font-mono text-[10px] font-semibold tracking-[0.1em] text-brand">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</span>
+            <span class="font-mono text-[10px] font-semibold tracking-[0.1em] text-brand">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT · LECAN</span>
             <span class="text-[20px] leading-tight font-extrabold tracking-[-0.01em]">{APP_TITLE}</span>
             <span class="text-[11px] text-mut">Inspection report · inspected under NESIS and the Nigerian Electricity Health &amp; Safety Code</span>
         </div>
@@ -158,20 +159,12 @@
             <div class="flex flex-col gap-1.5">
                 {@render title('B2 · PRIMARY SUPPLY OVER-CURRENT PROTECTION')}
                 <div class="overflow-hidden rounded-md border border-[#C9D2C7] text-[11.5px]">
-                    <div class="grid grid-cols-[1fr_70px_74px] bg-bg text-[10px] font-bold tracking-[0.05em] text-mut">
-                        <span class="px-2 py-1.5">ITEM</span><span class="px-2 py-1.5">RATED</span><span class="px-2 py-1.5">STANDARD</span>
-                    </div>
-                    <div class="grid grid-cols-[1fr_70px_74px] border-t border-[#E1E6DF]">
-                        <span class="px-2 py-1.5">Circuit breaker</span><span class="px-2 py-1.5 font-mono">{amps(report.b2.cbRatedA)}</span>
-                        <span class={['px-2 py-1.5', report.b2.cbStandard === false && 'font-bold text-bad']}>{yes(report.b2.cbStandard)}</span>
-                    </div>
-                    <div class="grid grid-cols-[1fr_70px_74px] border-t border-[#E1E6DF]">
-                        <span class="px-2 py-1.5">Cut-out fuse</span><span class="px-2 py-1.5 font-mono">{amps(report.b2.fuseRatedA)}</span>
-                        <span class={['px-2 py-1.5', report.b2.fuseStandard === false && 'font-bold text-bad']}>{yes(report.b2.fuseStandard)}</span>
-                    </div>
-                    <div class="grid grid-cols-[1fr_144px] border-t border-[#E1E6DF]">
-                        <span class="px-2 py-1.5">Number of poles</span><span class="px-2 py-1.5 font-mono">{report.b2.poles ?? '—'}</span>
-                    </div>
+                    {#each report.b2 as device (device.label)}
+                        <div class="grid grid-cols-[96px_1fr] border-b border-[#E1E6DF] last:border-b-0">
+                            <span class="bg-bg px-2 py-1.5 text-mut">{device.label}</span>
+                            <span class={['px-2 py-1.5 font-mono', toneClass[device.tone]]}>{device.value}</span>
+                        </div>
+                    {/each}
                 </div>
             </div>
         </div>
@@ -237,7 +230,10 @@
                     <div class="flex flex-col gap-0.5"><span class="text-[10px] text-mut">INSPECTOR</span><b>{report.d.name ?? '—'}</b></div>
                     <div class="flex flex-col gap-0.5"><span class="text-[10px] text-mut">NEMSA CATEGORY / REG. NO.</span><span class="font-mono">{[report.d.category, report.d.regNo].filter(Boolean).join(' · ') || '—'}</span></div>
                     <div class="flex flex-col gap-0.5"><span class="text-[10px] text-mut">COREN NO.</span><span class="font-mono">{report.d.corenNo ?? '—'}</span></div>
-                    <div class="col-span-2 flex flex-col gap-0.5"><span class="text-[10px] text-mut">FIRM</span><span>{report.d.firmName ?? '—'}</span></div>
+                    <div class="flex flex-col gap-0.5"><span class="text-[10px] text-mut">FIRM</span><span>{report.d.firmName ?? '—'}</span></div>
+                    {#if report.d.engineerName}
+                        <div class="flex flex-col gap-0.5"><span class="text-[10px] text-mut">ENGINEER / TECHNOLOGIST</span><span>{report.d.engineerName}</span></div>
+                    {/if}
                 </div>
                 <div class="rounded bg-bg px-3 py-2.5 text-[11.5px] leading-[1.55]">
                     ☑ I hereby certify that the electrical installation at the location above was inspected and tested in accordance with the Nigerian Electricity Supply Installation Standards (NESIS), the Nigerian Electricity Health and Safety Code, and all applicable regulations. The findings are accurate and complete to the best of my knowledge.

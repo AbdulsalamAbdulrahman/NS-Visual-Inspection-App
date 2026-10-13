@@ -10,6 +10,7 @@ use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\InspectionStatus;
 use App\Enums\PropertyPurpose;
 use App\Enums\ProtectionType;
@@ -62,15 +63,29 @@ class InspectionFactory extends Factory
             'earth_conductor_mm2' => 16,
             'earth_resistance_ohm' => 1.8,
             'earth_pit' => true,
+            'cb_available' => true,
+            'cb_make' => 'Schneider',
             'cb_rated_a' => 63,
             'cb_standard' => true,
-            'fuse_rated_a' => 100,
-            'fuse_standard' => true,
             'poles' => 4,
+            'fuse_available' => true,
+            'fuse_rated_a' => 100,
+            'fuse_type' => FuseType::Porcelain,
+            'fuse_standard' => true,
+            'fuse_poles' => 4,
             'db_seen' => true,
             'db_standard' => true,
+            'db_mccb_count' => 8,
+            'db_make' => 'Hager',
             'changeover_seen' => false,
             'main_switch_standard' => true,
+            'main_switch_rated_a' => 100,
+            'main_switch_poles' => 4,
+            'main_switch_phase' => ConnectionType::ThreePhase,
+            'db_main_breaker_seen' => true,
+            'db_main_breaker_rated_a' => 63,
+            'db_main_breaker_poles' => 4,
+            'db_main_breaker_standard' => true,
             'cb_type_standard' => true,
             'secondary_rated_a' => 40,
             'secondary_type' => ProtectionType::Rcd,

@@ -16,6 +16,8 @@
         submittedAt: string | null;
         approvedAt: string | null;
         approvedAtShort: string | null;
+        /** LECAN state chapter, from the area office's state. */
+        chapter: string;
         contractor: { name: string | null; firm: string | null; category: string | null; regNo: string | null; corenNo: string | null; signatureUrl: string | null };
         signatory: { name: string | null; title: string | null; signatureUrl: string | null };
         verifyUrl: string;
@@ -102,14 +104,15 @@
             </div>
 
             <!-- Statement -->
-            <div class="serif max-w-[580px] text-[14.5px] leading-[1.75] text-ink">
+            <div class="serif max-w-[600px] text-[13.5px] leading-[1.7] text-ink">
                 <p>
-                    This is to certify that the electrical installation at <b>{c.address ?? '—'}</b>{c.area ? ` (${c.area} service area)` : ''},
+                    This is to certify that the building electrical installation at <b>{c.address ?? '—'}</b>{c.area ? ` (${c.area} service area)` : ''},
                     owned by <b>{c.ownerName ?? '—'}</b>, was inspected on <b>{c.inspectionDate ?? '—'}</b> by
                     <b>{c.contractor.name ?? '—'}</b>{c.contractor.firm ? ` of ${c.contractor.firm}` : ''}, a NEMSA-licensed electrical contractor{licence ? ` (${licence})` : ''},
-                    and that the inspection report was reviewed and approved by the New Service Department of Kaduna Electric on <b>{c.approvedAt ?? '—'}</b>.
+                    and that the inspection report was reviewed and approved by the Licensed Electrical Contractors Association of Nigeria
+                    (LECAN, {c.chapter} State Chapter) and the New Service Unit of Kaduna Electric on <b>{c.approvedAt ?? '—'}</b>.
                 </p>
-                <p class="mt-3 text-[#0B5A33] italic">The installation was found satisfactory for connection at the time of inspection.</p>
+                <p class="mt-3 text-[#0B5A33] italic">The installation was found satisfactory and safe for connection to the grid at the time of inspection.</p>
             </div>
 
             <!-- Details line -->
@@ -134,9 +137,10 @@
             </div>
 
             <p class="max-w-[600px] text-[8.5px] leading-snug text-mut">
-                This certificate covers only the installation described above, as inspected and reported by the contractor named, and is valid only
-                when the verification page shows it as approved. Kaduna Electric and LECAN are not liable for any alteration or modification made after
-                certification. It does not replace NEMSA certification where the law requires it.
+                This certificate covers only the building installation described above, as inspected and reported by the appointed licensed NEMSA
+                contractor named, and is valid only when the verification page shows it as “Approved and safe for grid connection”. Kaduna Electric and
+                LECAN are not liable for any alteration or modification made to the existing wiring and installation after this certification. This
+                certification does not replace NEMSA certification where the law requires it.
             </p>
         </div>
     </section>

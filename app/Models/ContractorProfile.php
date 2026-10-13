@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $nemsa_reg_no
  * @property string|null $coren_no
  * @property string|null $firm_name
+ * @property string|null $engineer_name
+ * @property string|null $engineer_reg_no
  * @property-read User $user
  */
 class ContractorProfile extends Model
@@ -34,6 +36,8 @@ class ContractorProfile extends Model
         'nemsa_reg_no',
         'coren_no',
         'firm_name',
+        'engineer_name',
+        'engineer_reg_no',
     ];
 
     /**

@@ -87,10 +87,10 @@
                     </Field>
 
                     <div class="grid grid-cols-2 gap-2.5">
-                        <Field id="circuit-rating" label="Rating">
+                        <Field id="circuit-rating" label="Breaker rating">
                             <NumberInput id="circuit-rating" unit="A" bind:value={circuit.rating_a} />
                         </Field>
-                        <Field id="circuit-conductor" label="Conductor">
+                        <Field id="circuit-conductor" label="Conductor size">
                             <NumberInput id="circuit-conductor" unit="mm²" bind:value={circuit.conductor_mm2} />
                         </Field>
                     </div>

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
+use App\Enums\FuseType;
 use App\Enums\InspectionStatus;
 use App\Enums\NemsaCategory;
 use App\Enums\PaymentStatus;
@@ -53,7 +54,23 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float|null $earth_conductor_mm2
  * @property float|null $earth_resistance_ohm
  * @property bool|null $earth_pit
+ * @property bool|null $cb_available
+ * @property string|null $cb_make
  * @property float|null $cb_rated_a
+ * @property bool|null $fuse_available
+ * @property FuseType|null $fuse_type
+ * @property int|null $fuse_poles
+ * @property int|null $db_mccb_count
+ * @property string|null $db_make
+ * @property ConnectionType|null $changeover_phase
+ * @property float|null $changeover_rated_a
+ * @property float|null $main_switch_rated_a
+ * @property int|null $main_switch_poles
+ * @property ConnectionType|null $main_switch_phase
+ * @property bool|null $db_main_breaker_seen
+ * @property float|null $db_main_breaker_rated_a
+ * @property int|null $db_main_breaker_poles
+ * @property bool|null $db_main_breaker_standard
  * @property bool|null $cb_standard
  * @property float|null $fuse_rated_a
  * @property bool|null $fuse_standard
@@ -83,6 +100,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $inspector_nemsa_reg_no
  * @property string|null $inspector_coren_no
  * @property string|null $inspector_firm_name
+ * @property string|null $inspector_engineer_name
+ * @property string|null $inspector_engineer_reg_no
  * @property CarbonImmutable|null $submitted_at
  * @property int|null $reviewed_by
  * @property CarbonImmutable|null $reviewed_at
@@ -115,8 +134,12 @@ class Inspection extends Model
         'form74_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'connection_type',
         'voltage_level', 'gps_lat', 'gps_lng', 'gps_accuracy_m', 'gps_captured_at',
         'earth_electrode_ft', 'earth_conductor_mm2', 'earth_resistance_ohm', 'earth_pit',
-        'cb_rated_a', 'cb_standard', 'fuse_rated_a', 'fuse_standard', 'poles',
-        'db_seen', 'db_standard', 'changeover_seen', 'changeover_standard', 'main_switch_standard',
+        'cb_available', 'cb_make', 'cb_rated_a', 'cb_standard', 'poles',
+        'fuse_available', 'fuse_rated_a', 'fuse_type', 'fuse_standard', 'fuse_poles',
+        'db_seen', 'db_standard', 'db_mccb_count', 'db_make',
+        'changeover_seen', 'changeover_standard', 'changeover_phase', 'changeover_rated_a',
+        'main_switch_standard', 'main_switch_rated_a', 'main_switch_poles', 'main_switch_phase',
+        'db_main_breaker_seen', 'db_main_breaker_rated_a', 'db_main_breaker_poles', 'db_main_breaker_standard',
         'cb_type_standard', 'secondary_rated_a', 'secondary_type', 'secondary_standard', 'socket_outlets_standard',
         'earthing_system_type', 'db_count', 'sub_circuit_count', 'main_cable_mm2', 'conductor_type',
         'wiring_method', 'wiring_method_other', 'cable_insulation',
@@ -152,7 +175,21 @@ class Inspection extends Model
         'earth_conductor_mm2' => 'float',
         'earth_resistance_ohm' => 'float',
         'earth_pit' => 'boolean',
+        'cb_available' => 'boolean',
         'cb_rated_a' => 'float',
+        'fuse_available' => 'boolean',
+        'fuse_type' => FuseType::class,
+        'fuse_poles' => 'integer',
+        'db_mccb_count' => 'integer',
+        'changeover_phase' => ConnectionType::class,
+        'changeover_rated_a' => 'float',
+        'main_switch_rated_a' => 'float',
+        'main_switch_poles' => 'integer',
+        'main_switch_phase' => ConnectionType::class,
+        'db_main_breaker_seen' => 'boolean',
+        'db_main_breaker_rated_a' => 'float',
+        'db_main_breaker_poles' => 'integer',
+        'db_main_breaker_standard' => 'boolean',
         'cb_standard' => 'boolean',
         'fuse_rated_a' => 'float',
         'fuse_standard' => 'boolean',

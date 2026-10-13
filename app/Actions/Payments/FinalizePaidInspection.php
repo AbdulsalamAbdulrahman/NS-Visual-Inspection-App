@@ -81,6 +81,8 @@ class FinalizePaidInspection
                 'inspector_nemsa_reg_no' => $licence?->nemsa_reg_no,
                 'inspector_coren_no' => $licence?->coren_no,
                 'inspector_firm_name' => $licence?->firm_name,
+                'inspector_engineer_name' => $licence?->engineer_name,
+                'inspector_engineer_reg_no' => $licence?->engineer_reg_no,
             ])->save();
 
             $inspection->reviews()->create(['user_id' => $contractor->id, 'action' => ReviewAction::Submitted]);

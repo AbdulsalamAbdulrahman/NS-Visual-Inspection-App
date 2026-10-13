@@ -28,7 +28,6 @@
     }
 
     const yes = (v: boolean | null): string => (v === null ? '—' : v ? 'Yes' : 'No');
-    const mark = (v: boolean | null): string => (v === null ? '' : v ? ' ✓' : ' ✗');
     const fileLabel = (a: Attachment): string =>
         a.type === 'layout' ? 'Layout & load schedule' : a.type === 'calibration' ? 'Calibration certificate' : a.name;
 
@@ -77,10 +76,10 @@
         </dd>
         <dt class="text-mut">Pit</dt>
         <dd>{yes(report.b1.pit)}</dd>
-        <dt class="text-mut">Breaker / fuse</dt>
-        <dd class="font-mono">
-            {num(report.b2.cbRatedA)} A{mark(report.b2.cbStandard)} · {num(report.b2.fuseRatedA)} A{mark(report.b2.fuseStandard)} · {report.b2.poles ?? '—'}P
-        </dd>
+        {#each report.b2 as device (device.label)}
+            <dt class="text-mut">{device.label}</dt>
+            <dd class={['font-mono', device.tone === 'bad' && 'font-semibold text-bad']}>{device.value}</dd>
+        {/each}
     </dl>
 {/snippet}
 
@@ -129,8 +128,10 @@
     <span class="text-sm">
         {report.d.name}{report.d.category ? ` · ${report.d.category}` : ''}{#if report.d.regNo} · <span class="font-mono">{report.d.regNo}</span>{/if}
     </span>
-    {#if report.d.corenNo || report.d.firmName}
-        <span class="text-sm text-mut">{[report.d.corenNo ? `COREN ${report.d.corenNo}` : null, report.d.firmName].filter(Boolean).join(' · ')}</span>
+    {#if report.d.corenNo || report.d.firmName || report.d.engineerName}
+        <span class="text-sm text-mut">
+            {[report.d.corenNo ? `COREN ${report.d.corenNo}` : null, report.d.firmName, report.d.engineerName ? `Engineer: ${report.d.engineerName}` : null].filter(Boolean).join(' · ')}
+        </span>
     {/if}
     {#if report.d.signatureUrl}
         <img src={report.d.signatureUrl} alt="Inspector's signature" class="h-14 self-start rounded-md bg-white px-2" />

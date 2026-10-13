@@ -132,3 +132,17 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Security headers; rate limits on forgot/reset password
 - [x] `deploy.sh` superseded by the pull deploy (see Deployment decisions); `deploy/env.production.example`; DEPLOY.md: scheduled jobs, Monnify go-live, backups, monitoring
 - [x] Build, checks, 182 tests; commit
+
+## Phase 9 · Client feedback (Oct 2026) — plan: ~/.claude/plans/reflective-imagining-pretzel.md
+### Stage 1 · Wording, validation, form fields
+- [x] Certificate statement and liability text (client wording); LECAN state chapter from the area office's state; verify title "Approved and safe for grid connection"
+- [x] Service areas carry their state (Kaduna 14, Kebbi 3, Sokoto 3, Zamfara 3), filled by ServiceAreaSeeder
+- [x] NEMSA reg. no.: individuals letters+numbers only; corporate CC/CE1F/PR/08634 format; corporate engineer/technologist required (snapshotted onto reports)
+- [x] B2: circuit breaker and cut-out fuse each Available / Not available, make, rating, fuse type, standard, poles (max 4)
+- [x] B3: DB MCCB count + make; change-over phase + rating; main switch BS EN 60947-3 rating/poles/phase; DB main breaker switch; existing items kept
+- [x] Circuits: Ceiling fan; "Breaker rating" / "Conductor size" labels
+- [x] Report/review: separate Circuit breaker and Cut-out fuse rows; LECAN logo on the printed report
+- [x] Tests (195), PHPStan, lint, types, build, Chrome check
+### Stage 2 · Building types & per-type fees
+### Stage 3 · Reps create and assign jobs
+### Stage 4 · LECAN officials & two-level approval

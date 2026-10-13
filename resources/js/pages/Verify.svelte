@@ -30,8 +30,8 @@
     const states = {
         approved: {
             icon: CheckCircle,
-            title: 'Valid certificate',
-            body: 'This installation\'s inspection report was reviewed and approved by the Kaduna Electric New Service Department.',
+            title: 'Approved and safe for grid connection',
+            body: 'This installation\'s inspection report was reviewed and approved by LECAN and the New Service Unit of Kaduna Electric. The certificate is valid.',
             tone: 'border-ok bg-ok-bg text-ok',
         },
         pending: {

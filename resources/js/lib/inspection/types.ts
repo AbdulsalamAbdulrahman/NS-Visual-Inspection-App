@@ -55,17 +55,34 @@ export type Draft = {
     earth_resistance_ohm: number | null;
     earth_pit: boolean | null;
 
+    cb_available: boolean | null;
+    cb_make: string | null;
     cb_rated_a: number | null;
     cb_standard: boolean | null;
-    fuse_rated_a: number | null;
-    fuse_standard: boolean | null;
+    /** Circuit breaker poles (1–4). */
     poles: number | null;
+    fuse_available: boolean | null;
+    fuse_rated_a: number | null;
+    fuse_type: string | null;
+    fuse_standard: boolean | null;
+    fuse_poles: number | null;
 
     db_seen: boolean | null;
     db_standard: boolean | null;
+    db_mccb_count: number | null;
+    db_make: string | null;
     changeover_seen: boolean | null;
     changeover_standard: boolean | null;
+    changeover_phase: string | null;
+    changeover_rated_a: number | null;
     main_switch_standard: boolean | null;
+    main_switch_rated_a: number | null;
+    main_switch_poles: number | null;
+    main_switch_phase: string | null;
+    db_main_breaker_seen: boolean | null;
+    db_main_breaker_rated_a: number | null;
+    db_main_breaker_poles: number | null;
+    db_main_breaker_standard: boolean | null;
     cb_type_standard: boolean | null;
     secondary_rated_a: number | null;
     secondary_type: string | null;
@@ -94,6 +111,7 @@ export type FormOptions = {
     connectionType: Option[];
     voltageLevel: Option[];
     protectionType: Option[];
+    fuseType: Option[];
     earthingSystemType: Option[];
     conductorType: Option[];
     wiringMethod: Option[];

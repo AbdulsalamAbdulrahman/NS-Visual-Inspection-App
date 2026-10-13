@@ -174,8 +174,8 @@
         <div role="row" class="grid {cols} gap-3 border-b border-line bg-sf2 px-[18px] py-3 text-xs font-bold tracking-[0.06em] text-mut">
             <span role="columnheader">#</span>
             <span role="columnheader">CIRCUIT</span>
-            <span role="columnheader">RATING</span>
-            <span role="columnheader">CONDUCTOR</span>
+            <span role="columnheader">BREAKER (A)</span>
+            <span role="columnheader">CONDUCTOR (mm²)</span>
             <span role="columnheader">CONDITION</span>
             <span role="columnheader">OBSERVATION</span>
             <span role="columnheader"><span class="sr-only">Actions</span></span>

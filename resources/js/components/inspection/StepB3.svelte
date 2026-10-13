@@ -2,6 +2,8 @@
     import type { Snippet } from 'svelte';
     import ChoiceGroup, { STANDARD } from '@/components/form/ChoiceGroup.svelte';
     import NumberInput from '@/components/form/NumberInput.svelte';
+    import Stepper from '@/components/form/Stepper.svelte';
+    import TextInput from '@/components/form/TextInput.svelte';
     import type { Draft, FormOptions } from '@/lib/inspection/types';
     import ErrorIcon from '~icons/ms/error';
 
@@ -14,12 +16,33 @@
         { value: false, label: 'Not seen' },
     ];
 
-    // Hiding the Standard question when "Not seen" also clears its answer.
-    function seen(key: 'db' | 'changeover', value: boolean): void {
+    // "Not seen" hides the details and clears them, so nothing stale is kept.
+    function dbSeen(value: boolean): void {
         if (!value) {
-            draft[key === 'db' ? 'db_standard' : 'changeover_standard'] = null;
+            draft.db_standard = null;
+            draft.db_mccb_count = null;
+            draft.db_make = null;
         }
     }
+
+    function changeoverSeen(value: boolean): void {
+        if (!value) {
+            draft.changeover_standard = null;
+            draft.changeover_phase = null;
+            draft.changeover_rated_a = null;
+        }
+    }
+
+    function mainBreakerSeen(value: boolean): void {
+        if (!value) {
+            draft.db_main_breaker_rated_a = null;
+            draft.db_main_breaker_poles = null;
+            draft.db_main_breaker_standard = null;
+        }
+    }
+
+    const label = 'text-sm font-semibold text-mut';
+    const row = 'flex items-center justify-between gap-3';
 </script>
 
 {#snippet card(title: string, ref: string | null, error: string | undefined, body: Snippet)}
@@ -34,25 +57,63 @@
 {/snippet}
 
 {#snippet dbBody()}
-    <ChoiceGroup label="Distribution board" variant="segmented" compact options={SEEN} bind:value={draft.db_seen} onchange={(v) => seen('db', v)} />
+    <ChoiceGroup label="Distribution board" variant="segmented" compact options={SEEN} bind:value={draft.db_seen} onchange={dbSeen} />
     {#if draft.db_seen}
         <ChoiceGroup label="Distribution board standard" compact options={STANDARD} bind:value={draft.db_standard} />
+        <div class={row}>
+            <span id="db_mccb_count-label" class="text-[15px] font-semibold">No. of MCCB breakers</span>
+            <Stepper id="db_mccb_count" label="Number of MCCB breakers" bind:value={draft.db_mccb_count} min={0} max={99} />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label for="db_make" class={label}>Make <span class="font-normal">optional</span></label>
+            <TextInput id="db_make" size="md" class="bg-sf2" maxlength={80} placeholder="e.g. Hager" bind:value={draft.db_make} />
+        </div>
     {/if}
 {/snippet}
 {@render card('Distribution board', null, errors.db, dbBody)}
 
 {#snippet changeoverBody()}
-    <ChoiceGroup label="Change-over switch" variant="segmented" compact options={SEEN} bind:value={draft.changeover_seen} onchange={(v) => seen('changeover', v)} />
+    <ChoiceGroup label="Change-over switch" variant="segmented" compact options={SEEN} bind:value={draft.changeover_seen} onchange={changeoverSeen} />
     {#if draft.changeover_seen}
+        <ChoiceGroup label="Change-over switch phase" variant="segmented" compact options={options.connectionType} bind:value={draft.changeover_phase} />
+        <div class="flex flex-col gap-1.5">
+            <label for="changeover_rated_a" class={label}>Rated current</label>
+            <NumberInput id="changeover_rated_a" size="md" unit="A" class="bg-sf2" bind:value={draft.changeover_rated_a} />
+        </div>
         <ChoiceGroup label="Change-over switch standard" compact options={STANDARD} bind:value={draft.changeover_standard} />
     {/if}
 {/snippet}
 {@render card('Change-over switch', null, errors.changeover, changeoverBody)}
 
 {#snippet mainSwitchBody()}
-    <ChoiceGroup label="Main switch type" compact options={STANDARD} bind:value={draft.main_switch_standard} />
+    <div class="flex flex-col gap-1.5">
+        <label for="main_switch_rated_a" class={label}>Rated current</label>
+        <NumberInput id="main_switch_rated_a" size="md" unit="A" class="bg-sf2" bind:value={draft.main_switch_rated_a} />
+    </div>
+    <div class={row}>
+        <span id="main_switch_poles-label" class="text-[15px] font-semibold">Number of poles <span class="text-sm font-normal text-mut">max 4</span></span>
+        <Stepper id="main_switch_poles" label="Main switch poles" bind:value={draft.main_switch_poles} min={1} max={4} />
+    </div>
+    <ChoiceGroup label="Main switch phase" variant="segmented" compact options={options.connectionType} bind:value={draft.main_switch_phase} />
+    <ChoiceGroup label="Main switch standard" compact options={STANDARD} bind:value={draft.main_switch_standard} />
 {/snippet}
-{@render card('Main switch type', 'BS', errors.main_switch_standard, mainSwitchBody)}
+{@render card('Main switch', 'BS EN 60947-3', errors.main_switch, mainSwitchBody)}
+
+{#snippet mainBreakerBody()}
+    <ChoiceGroup label="DB main breaker switch" variant="segmented" compact options={SEEN} bind:value={draft.db_main_breaker_seen} onchange={mainBreakerSeen} />
+    {#if draft.db_main_breaker_seen}
+        <div class="flex flex-col gap-1.5">
+            <label for="db_main_breaker_rated_a" class={label}>Rated current</label>
+            <NumberInput id="db_main_breaker_rated_a" size="md" unit="A" class="bg-sf2" bind:value={draft.db_main_breaker_rated_a} />
+        </div>
+        <div class={row}>
+            <span id="db_main_breaker_poles-label" class="text-[15px] font-semibold">Number of poles <span class="text-sm font-normal text-mut">max 4</span></span>
+            <Stepper id="db_main_breaker_poles" label="DB main breaker poles" bind:value={draft.db_main_breaker_poles} min={1} max={4} />
+        </div>
+        <ChoiceGroup label="DB main breaker switch standard" compact options={STANDARD} bind:value={draft.db_main_breaker_standard} />
+    {/if}
+{/snippet}
+{@render card('DB main breaker switch', null, errors.db_main_breaker, mainBreakerBody)}
 
 {#snippet cbTypeBody()}
     <ChoiceGroup label="Circuit breaker type" compact options={STANDARD} bind:value={draft.cb_type_standard} />

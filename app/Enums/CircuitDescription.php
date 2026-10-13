@@ -15,6 +15,7 @@ enum CircuitDescription: string
     case ElectricalMotor = 'electrical_motor';
     case BoreholePump = 'borehole_pump';
     case OutdoorEquipment = 'outdoor_equipment';
+    case CeilingFan = 'ceiling_fan';
     case Other = 'other';
 
     public function label(): string
@@ -29,6 +30,7 @@ enum CircuitDescription: string
             self::ElectricalMotor => 'Electrical motor',
             self::BoreholePump => 'Borehole pump',
             self::OutdoorEquipment => 'Outdoor equipment',
+            self::CeilingFan => 'Ceiling fan',
             self::Other => 'Other',
         };
     }
