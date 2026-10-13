@@ -29,7 +29,7 @@ class VerifyController extends Controller
         $page = Inertia::render('Verify', [
             'ticket' => $ticket,
             'result' => $inspection ? [
-                'status' => $inspection->review_status->value ?? ReviewStatus::Pending->value,
+                'status' => $inspection->review_status->value ?? ReviewStatus::PendingLecan->value,
                 'submittedAt' => $inspection->submitted_at?->format('d M Y'),
                 'approvedAt' => $inspection->approved_at?->format('d M Y'),
                 'area' => $inspection->serviceArea?->name,

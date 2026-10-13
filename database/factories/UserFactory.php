@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\NigerianState;
 use App\Enums\Role;
 use App\Enums\UserStatus;
 use App\Models\ContractorProfile;
@@ -64,6 +65,12 @@ class UserFactory extends Factory
         return is_int($areas)
             ? $factory->hasAttached(ServiceArea::factory()->count($areas), [], 'serviceAreas')
             : $factory->hasAttached($areas, [], 'serviceAreas');
+    }
+
+    /** LECAN official of a state chapter. */
+    public function lecan(NigerianState $state = NigerianState::Kaduna): static
+    {
+        return $this->state(['role' => Role::Lecan, 'lecan_state' => $state]);
     }
 
     /** Freshly created by an admin: temporary password, must change it. */

@@ -10,6 +10,7 @@ enum ReviewAction: string
     case Submitted = 'submitted';
     case ChangesRequested = 'changes_requested';
     case Resubmitted = 'resubmitted';
+    case LecanApproved = 'lecan_approved';
     case Approved = 'approved';
 
     public function label(): string
@@ -18,6 +19,7 @@ enum ReviewAction: string
             self::Submitted => 'Submitted and paid',
             self::ChangesRequested => 'Changes requested',
             self::Resubmitted => 'Resubmitted',
+            self::LecanApproved => 'Approved by LECAN, sent to NSD',
             self::Approved => 'Approved, certificate issued',
         };
     }

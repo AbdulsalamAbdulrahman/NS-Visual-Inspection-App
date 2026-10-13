@@ -12,13 +12,16 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * NSD sent the report back with a reason (queued).
+ * LECAN or NSD sent the report back with a reason (queued).
  */
 class ChangesRequested extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public readonly Inspection $inspection)
+    /**
+     * @param  'LECAN'|'NSD'  $by
+     */
+    public function __construct(public readonly Inspection $inspection, public readonly string $by = 'NSD')
     {
         $this->afterCommit();
     }
@@ -38,7 +41,7 @@ class ChangesRequested extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Changes requested · {$inspection->ticket_no}")
             ->greeting("Hello {$notifiable->firstName()},")
-            ->line("The New Service Department reviewed the report for {$inspection->owner_name} and needs some changes before issuing the certificate:")
+            ->line(($this->by === 'LECAN' ? 'The LECAN state chapter' : 'The New Service Department')." reviewed the report for {$inspection->owner_name} and needs some changes before the certificate can be issued:")
             ->line('> '.$inspection->review_note)
             ->action('Fix and resubmit', route('inspections.edit', $inspection))
             ->line('There is nothing more to pay: the fee is already settled and the ticket number stays the same.')

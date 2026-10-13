@@ -55,6 +55,16 @@ class DemoSeeder extends Seeder
         $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Makera', 'Mando']);
         $this->rep('Abubakar Shehu', 'a.shehu@kadunaelectric.com', ['Kawo', 'Rigasa']);
 
+        // One LECAN official per state chapter.
+        foreach ([
+            ['Engr. Musa Adamu', 'm.adamu@lecan-kaduna.org', NigerianState::Kaduna],
+            ['Engr. Bello Argungu', 'b.argungu@lecan-kebbi.org', NigerianState::Kebbi],
+            ['Engr. Sani Wamakko', 's.wamakko@lecan-sokoto.org', NigerianState::Sokoto],
+            ['Engr. Lawal Gusau', 'l.gusau@lecan-zamfara.org', NigerianState::Zamfara],
+        ] as [$name, $email, $state]) {
+            $this->user($name, $email, Role::Lecan)->forceFill(['lecan_state' => $state])->save();
+        }
+
         $this->submissions();
         $this->placeholderFiles();
         $this->reviews();
@@ -120,13 +130,27 @@ class DemoSeeder extends Seeder
 
         $admin = User::query()->where('role', Role::Admin)->first();
         $signatory = Setting::signatory();
-        $pending = Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->orderBy('submitted_at')->get();
+        $pending = Inspection::query()->submitted()->where('review_status', ReviewStatus::PendingLecan)->with('serviceArea')->orderBy('submitted_at')->get();
+        $officials = User::query()->role(Role::Lecan)->get()->keyBy(fn (User $u): string => (string) $u->lecan_state?->value);
 
         foreach ($pending as $i => $inspection) {
             $reviewedAt = $inspection->submitted_at?->addHours(fake()->numberBetween(2, 30));
 
+            $official = $officials->get((string) $inspection->serviceArea?->state->value);
+
             if ($reviewedAt === null || $reviewedAt->isFuture() || $i >= (int) ($pending->count() * 0.7)) {
-                continue; // The newest stay in the queue.
+                // The newest stay in the queues: some approved by LECAN and waiting for NSD.
+                if ($i % 2 === 0 && $official !== null) {
+                    $inspection->forceFill(['review_status' => ReviewStatus::PendingNsd, 'lecan_approved_by' => $official->id, 'lecan_approved_at' => now(), 'lecan_approver_name' => $official->name])->save();
+                    $inspection->reviews()->create(['user_id' => $official->id, 'action' => ReviewAction::LecanApproved]);
+                }
+
+                continue;
+            }
+
+            if ($official !== null) {
+                $inspection->forceFill(['lecan_approved_by' => $official->id, 'lecan_approved_at' => $reviewedAt->subHour(), 'lecan_approver_name' => $official->name]);
+                $inspection->reviews()->create(['user_id' => $official->id, 'action' => ReviewAction::LecanApproved]);
             }
 
             if ($i % 11 === 5) {

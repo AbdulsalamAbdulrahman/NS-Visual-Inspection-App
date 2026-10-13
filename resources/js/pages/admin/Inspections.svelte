@@ -27,7 +27,8 @@
 
     const reviewChips: { value: ReviewStatus | null; label: string }[] = [
         { value: null, label: 'All' },
-        { value: 'pending', label: 'Under review' },
+        { value: 'pending_nsd', label: 'Awaiting NSD' },
+        { value: 'pending_lecan', label: 'Awaiting LECAN' },
         { value: 'changes_requested', label: 'Changes requested' },
         { value: 'approved', label: 'Approved' },
     ];

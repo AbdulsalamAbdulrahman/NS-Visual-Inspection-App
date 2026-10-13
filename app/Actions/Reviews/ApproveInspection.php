@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 /**
- * NSD approves a report: the certificate is issued. The signatory (name,
+ * NSD gives final approval (after LECAN): the certificate is issued. The signatory (name,
  * title, signature image) is copied onto the inspection so later changes to
  * the settings never alter a certificate that was already issued.
  */
@@ -38,7 +38,7 @@ class ApproveInspection
             /** @var Inspection $locked */
             $locked = Inspection::query()->whereKey($inspection->getKey())->lockForUpdate()->firstOrFail();
 
-            if (! $locked->isAwaitingReview()) {
+            if (! $locked->isAwaitingNsd()) {
                 throw ValidationException::withMessages([
                     'review' => 'This report was already reviewed. Reload to see its current status.',
                 ]);

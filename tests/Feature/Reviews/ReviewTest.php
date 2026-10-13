@@ -19,7 +19,8 @@ beforeEach(function () {
     Notification::fake();
     $this->admin = User::factory()->admin()->create();
     $this->contractor = User::factory()->contractor()->create();
-    $this->inspection = Inspection::factory()->submitted()->forContractor($this->contractor)->create();
+    // Approved by LECAN: NSD's turn.
+    $this->inspection = Inspection::factory()->awaitingNsd()->forContractor($this->contractor)->create();
 });
 
 function setSignatory(string $name = 'Engr. Hauwa Abdullahi'): void
@@ -30,15 +31,28 @@ function setSignatory(string $name = 'Engr. Hauwa Abdullahi'): void
     Setting::put(Setting::SIGNATORY_SIGNATURE, 'settings/nsd-signature.png');
 }
 
-test('a paid inspection enters the review queue', function () {
-    expect($this->inspection->review_status)->toBe(ReviewStatus::Pending);
+test('a paid inspection goes to LECAN first and NSD cannot review it yet', function () {
+    $paid = Inspection::factory()->submitted()->create();
+    expect($paid->review_status)->toBe(ReviewStatus::PendingLecan);
 
+    $this->actingAs($this->admin)
+        ->get(route('admin.inspections.show', $paid))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('canReview', false)
+            ->where('certificateUrl', null)
+            ->where('report.review.status', 'pending_lecan'));
+
+    setSignatory();
+    $this->post(route('admin.inspections.approve', $paid))->assertForbidden();
+});
+
+test('NSD reviews a report LECAN approved', function () {
     $this->actingAs($this->admin)
         ->get(route('admin.inspections.show', $this->inspection))
         ->assertInertia(fn (Assert $page) => $page
             ->where('canReview', true)
-            ->where('certificateUrl', null)
-            ->where('report.review.status', 'pending'));
+            ->where('report.review.status', 'pending_nsd')
+            ->where('report.review.lecanApprovedBy', 'Engr. Musa Adamu'));
 });
 
 test('approving snapshots the signatory, logs history and emails the contractor', function () {
@@ -71,7 +85,7 @@ test('approval needs a signatory first', function () {
         ->post(route('admin.inspections.approve', $this->inspection))
         ->assertSessionHasErrors('review');
 
-    expect($this->inspection->fresh()->review_status)->toBe(ReviewStatus::Pending);
+    expect($this->inspection->fresh()->review_status)->toBe(ReviewStatus::PendingNsd);
 });
 
 test('only reports awaiting review can be reviewed', function () {
@@ -92,7 +106,7 @@ test('reps and contractors cannot review', function () {
     $this->actingAs($rep)->post(route('admin.inspections.approve', $this->inspection))->assertForbidden();
     $this->actingAs($this->contractor)->post(route('admin.inspections.approve', $this->inspection))->assertForbidden();
 
-    expect($this->inspection->fresh()->review_status)->toBe(ReviewStatus::Pending);
+    expect($this->inspection->fresh()->review_status)->toBe(ReviewStatus::PendingNsd);
 });
 
 test('requesting changes needs a reason, reopens the report and emails it', function () {
@@ -132,7 +146,7 @@ test('the contractor can edit a returned report and resubmit without paying agai
     $this->post(route('inspections.resubmit', $returned))->assertRedirect(route('inspections.show', $returned));
 
     $fresh = $returned->fresh();
-    expect($fresh->review_status)->toBe(ReviewStatus::Pending)
+    expect($fresh->review_status)->toBe(ReviewStatus::PendingLecan)
         ->and($fresh->ticket_no)->toBe($ticket)
         ->and($fresh->owner_name)->toBe('Corrected Owner')
         ->and($fresh->isEditable())->toBeFalse()
@@ -184,6 +198,6 @@ test('home lists returned reports first and the admin list filters by review sta
         ->assertInertia(fn (Assert $page) => $page
             ->has('inspections.data', 1)
             ->where('inspections.data.0.review', 'approved')
-            ->where('reviewCounts', ['pending' => 1, 'changes_requested' => 1, 'approved' => 1])
+            ->where('reviewCounts', ['pending_lecan' => 0, 'pending_nsd' => 1, 'changes_requested' => 1, 'approved' => 1])
             ->where('adminNav.pendingReview', 1));
 });

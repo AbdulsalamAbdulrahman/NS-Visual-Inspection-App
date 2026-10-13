@@ -13,6 +13,7 @@ test('home sends each role to its own landing page', function (string $state, st
     'admin' => ['admin', 'admin.overview'],
     'contractor' => ['contractor', 'inspections.index'],
     'rep' => ['rep', 'rep.jobs.index'],
+    'lecan' => ['lecan', 'lecan.inspections.index'],
 ]);
 
 test('roles cannot open each other\'s areas', function (string $state, array $forbidden) {
@@ -24,7 +25,8 @@ test('roles cannot open each other\'s areas', function (string $state, array $fo
 })->with([
     'contractor' => ['contractor', ['admin.overview', 'rep.inspections.index']],
     'rep' => ['rep', ['admin.overview', 'inspections.index']],
-    'admin' => ['admin', ['inspections.index', 'rep.inspections.index']],
+    'admin' => ['admin', ['inspections.index', 'rep.inspections.index', 'lecan.inspections.index']],
+    'lecan' => ['lecan', ['admin.overview', 'inspections.index', 'rep.jobs.index']],
 ]);
 
 test('guests are sent to sign in', function () {

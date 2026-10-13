@@ -65,6 +65,7 @@ test('approved certificates show the snapshot signatory and verify link', functi
             ->component('print/Certificate')
             ->where('certificate.certificateNo', $inspection->ticket_no)
             ->where('certificate.signatory.name', 'Engr. Hauwa Abdullahi')
+            ->where('certificate.lecan.name', 'Engr. Musa Adamu')
             ->where('certificate.approvedAtShort', $inspection->approved_at->format('d M Y'))
             ->where('certificate.area', 'Barnawa')
             ->where('certificate.verifyUrl', fn (string $url) => str_ends_with($url, '/verify/'.$inspection->ticket_no)));
@@ -105,7 +106,7 @@ test('verify reports pending and unknown tickets honestly', function () {
 
     $this->get(route('verify', strtolower($pending->ticket_no)))
         ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->where('result.status', 'pending')->where('result.approvedAt', null));
+        ->assertInertia(fn (Assert $page) => $page->where('result.status', 'pending_lecan')->where('result.approvedAt', null));
 
     $this->get(route('verify', 'KE-NSD-2026-999999'))->assertNotFound();
     $this->get(route('verify', 'nonsense'))->assertNotFound()->assertInertia(fn (Assert $page) => $page->where('result', null));

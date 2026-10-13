@@ -20,6 +20,7 @@
         chapter: string;
         contractor: { name: string | null; firm: string | null; category: string | null; regNo: string | null; corenNo: string | null; signatureUrl: string | null };
         signatory: { name: string | null; title: string | null; signatureUrl: string | null };
+        lecan: { name: string; approvedAt: string | null } | null;
         verifyUrl: string;
         verifyLabel: string;
         qr: string;
@@ -124,6 +125,12 @@
                     </div>
                 {/each}
             </dl>
+
+            {#if c.lecan}
+                <p class="text-[11px] text-mut">
+                    Reviewed for LECAN ({c.chapter} State Chapter) by <b class="text-ink">{c.lecan.name}</b>{c.lecan.approvedAt ? ` on ${c.lecan.approvedAt}` : ''}.
+                </p>
+            {/if}
 
             <!-- Signatures and verification -->
             <div class="grid w-full grid-cols-[1fr_150px_1fr] items-end gap-4">

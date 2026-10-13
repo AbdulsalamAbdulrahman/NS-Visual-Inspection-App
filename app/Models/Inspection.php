@@ -48,6 +48,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $owner_phone
  * @property string|null $owner_email
  * @property int|null $assigned_by Rep who created the job
+ * @property int|null $lecan_approved_by
+ * @property CarbonImmutable|null $lecan_approved_at
+ * @property string|null $lecan_approver_name
  * @property CarbonImmutable|null $assigned_at
  * @property string|null $property_address
  * @property PropertyPurpose|null $purpose
@@ -233,6 +236,7 @@ class Inspection extends Model
         'inspector_nemsa_category' => NemsaCategory::class,
         'submitted_at' => 'datetime',
         'assigned_at' => 'datetime',
+        'lecan_approved_at' => 'datetime',
         'review_status' => ReviewStatus::class,
         'reviewed_at' => 'datetime',
         'approved_at' => 'datetime',
@@ -350,9 +354,26 @@ class Inspection extends Model
         return $this->status === InspectionStatus::Submitted;
     }
 
+    /** In either review queue (LECAN or NSD). */
     public function isAwaitingReview(): bool
     {
-        return $this->isSubmitted() && $this->review_status === ReviewStatus::Pending;
+        return $this->isSubmitted() && $this->review_status?->isPending() === true;
+    }
+
+    public function isAwaitingLecan(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::PendingLecan;
+    }
+
+    public function isAwaitingNsd(): bool
+    {
+        return $this->isSubmitted() && $this->review_status === ReviewStatus::PendingNsd;
+    }
+
+    /** LECAN chapter that reviews this report: the area office's state. */
+    public function isInStateOf(User $lecan): bool
+    {
+        return $lecan->lecan_state !== null && $this->serviceArea !== null && $this->serviceArea->state === $lecan->lecan_state;
     }
 
     /** NSD sent it back: the contractor may edit and resubmit (no new payment). */
@@ -397,7 +418,8 @@ class Inspection extends Model
 
     /**
      * Inspections the user may see: admins all, contractors their own, reps
-     * submitted ones in their assigned areas. Mirrors InspectionPolicy::view.
+     * submitted ones in their assigned areas, LECAN officials submitted ones
+     * in their state. Mirrors InspectionPolicy::view.
      *
      * @param  Builder<Inspection>  $query
      */
@@ -409,6 +431,9 @@ class Inspection extends Model
             $user->isRep() => $query
                 ->where('status', InspectionStatus::Submitted)
                 ->whereIn('service_area_id', $user->serviceAreas()->select('service_areas.id')),
+            $user->isLecan() => $query
+                ->where('status', InspectionStatus::Submitted)
+                ->whereIn('service_area_id', ServiceArea::query()->select('id')->where('state', $user->lecan_state)),
             default => $query->whereRaw('1 = 0'),
         };
     }

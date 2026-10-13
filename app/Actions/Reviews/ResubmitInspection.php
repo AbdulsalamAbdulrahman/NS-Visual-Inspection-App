@@ -42,9 +42,13 @@ class ResubmitInspection
                 ]);
             }
 
+            // Back to the start: LECAN reviews the corrected report again.
             $locked->forceFill([
-                'review_status' => ReviewStatus::Pending,
+                'review_status' => ReviewStatus::PendingLecan,
                 'review_note' => null,
+                'lecan_approved_by' => null,
+                'lecan_approved_at' => null,
+                'lecan_approver_name' => null,
             ])->save();
 
             $locked->reviews()->create(['user_id' => $contractor->id, 'action' => ReviewAction::Resubmitted]);

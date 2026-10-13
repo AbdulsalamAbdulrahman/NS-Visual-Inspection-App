@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'contractor' | 'rep';
+export type Role = 'admin' | 'contractor' | 'rep' | 'lecan';
 
 /** The signed-in user as shared on every Inertia response (see UserResource). */
 export type AuthUser = {

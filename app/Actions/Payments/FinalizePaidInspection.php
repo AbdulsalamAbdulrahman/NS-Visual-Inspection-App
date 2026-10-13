@@ -71,7 +71,7 @@ class FinalizePaidInspection
 
             $inspection->forceFill([
                 'status' => InspectionStatus::Submitted,
-                'review_status' => ReviewStatus::Pending,
+                'review_status' => ReviewStatus::PendingLecan,
                 'ticket_no' => $this->tickets->handle(),
                 'submitted_at' => now(),
                 'current_step' => Inspection::STEPS,

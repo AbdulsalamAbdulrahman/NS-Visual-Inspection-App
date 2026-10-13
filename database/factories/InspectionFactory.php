@@ -128,9 +128,19 @@ class InspectionFactory extends Factory
     {
         return $this->complete()->state(fn (): array => [
             'status' => InspectionStatus::Submitted,
-            'review_status' => ReviewStatus::Pending,
+            'review_status' => ReviewStatus::PendingLecan,
             'ticket_no' => 'KE-NSD-'.now()->year.'-'.fake()->unique()->numerify('######'),
             'submitted_at' => now(),
+        ]);
+    }
+
+    /** Approved by the LECAN chapter, waiting for NSD's final approval. */
+    public function awaitingNsd(string $official = 'Engr. Musa Adamu'): static
+    {
+        return $this->submitted()->state(fn (): array => [
+            'review_status' => ReviewStatus::PendingNsd,
+            'lecan_approved_at' => now(),
+            'lecan_approver_name' => $official,
         ]);
     }
 
@@ -149,6 +159,8 @@ class InspectionFactory extends Factory
     {
         return $this->submitted()->state(fn (): array => [
             'review_status' => ReviewStatus::Approved,
+            'lecan_approved_at' => now(),
+            'lecan_approver_name' => 'Engr. Musa Adamu',
             'reviewed_at' => now(),
             'approved_at' => now(),
             'signatory_name' => 'Engr. Hauwa Abdullahi',

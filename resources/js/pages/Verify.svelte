@@ -34,16 +34,22 @@
             body: 'This installation\'s inspection report was reviewed and approved by LECAN and the New Service Unit of Kaduna Electric. The certificate is valid.',
             tone: 'border-ok bg-ok-bg text-ok',
         },
-        pending: {
+        pending_lecan: {
             icon: HourglassTop,
             title: 'Report submitted, not yet certified',
-            body: 'The inspection report is genuine and paid, and is waiting for NSD review. No certificate has been issued yet.',
+            body: 'The inspection report is genuine and paid, and is waiting for LECAN review. No certificate has been issued yet.',
+            tone: 'border-info bg-info-bg text-info',
+        },
+        pending_nsd: {
+            icon: HourglassTop,
+            title: 'Report submitted, not yet certified',
+            body: 'The inspection report was approved by LECAN and is waiting for final approval by Kaduna Electric. No certificate has been issued yet.',
             tone: 'border-info bg-info-bg text-info',
         },
         changes_requested: {
             icon: Warning,
             title: 'Not certified: changes requested',
-            body: 'NSD reviewed this report and asked the contractor for changes. No certificate has been issued yet.',
+            body: 'The report was reviewed and the contractor was asked for changes. No certificate has been issued yet.',
             tone: 'border-imp bg-imp-bg text-imp',
         },
     } as const;

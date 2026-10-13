@@ -85,7 +85,7 @@ class OverviewController extends Controller
                 'contractorsTotal' => (int) $contractors->sum(),
                 'contractorsSuspended' => (int) ($contractors[UserStatus::Suspended->value] ?? 0),
                 'drafts' => Inspection::query()->drafts()->count(),
-                'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::Pending)->count(),
+                'pendingReview' => Inspection::query()->submitted()->where('review_status', ReviewStatus::PendingNsd)->count(),
             ],
             'areas' => $areas,
             'recent' => InspectionRowResource::collection($recent),

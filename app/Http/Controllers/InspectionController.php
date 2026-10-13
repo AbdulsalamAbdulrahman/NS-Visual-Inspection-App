@@ -97,7 +97,7 @@ class InspectionController extends Controller
             return $this->notStarted();
         }
 
-        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile']);
+        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile', 'reviewer:id,role']);
 
         return Inertia::render('contractor/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),

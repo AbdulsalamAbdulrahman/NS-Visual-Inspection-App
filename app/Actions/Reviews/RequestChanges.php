@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * NSD sends a report back with a reason. It reopens for the contractor, who
+ * LECAN or NSD sends a report back with a reason, from their own queue. It reopens for the contractor, who
  * fixes it and resubmits without paying again; the ticket number stays.
  */
 class RequestChanges
@@ -21,13 +21,13 @@ class RequestChanges
     /**
      * @throws ValidationException when the report was already reviewed
      */
-    public function handle(Inspection $inspection, User $admin, string $reason): Inspection
+    public function handle(Inspection $inspection, User $reviewer, string $reason): Inspection
     {
-        $returned = DB::transaction(function () use ($inspection, $admin, $reason): Inspection {
+        $returned = DB::transaction(function () use ($inspection, $reviewer, $reason): Inspection {
             /** @var Inspection $locked */
             $locked = Inspection::query()->whereKey($inspection->getKey())->lockForUpdate()->firstOrFail();
 
-            if (! $locked->isAwaitingReview()) {
+            if (! ($reviewer->isLecan() ? $locked->isAwaitingLecan() : $locked->isAwaitingNsd())) {
                 throw ValidationException::withMessages([
                     'review' => 'This report was already reviewed. Reload to see its current status.',
                 ]);
@@ -35,17 +35,17 @@ class RequestChanges
 
             $locked->forceFill([
                 'review_status' => ReviewStatus::ChangesRequested,
-                'reviewed_by' => $admin->id,
+                'reviewed_by' => $reviewer->id,
                 'reviewed_at' => now(),
                 'review_note' => $reason,
             ])->save();
 
-            $locked->reviews()->create(['user_id' => $admin->id, 'action' => ReviewAction::ChangesRequested, 'note' => $reason]);
+            $locked->reviews()->create(['user_id' => $reviewer->id, 'action' => ReviewAction::ChangesRequested, 'note' => $reason]);
 
             return $locked;
         });
 
-        $returned->contractor->notify(new ChangesRequested($returned));
+        $returned->contractor->notify(new ChangesRequested($returned, $reviewer->isLecan() ? 'LECAN' : 'NSD'));
 
         return $returned;
     }

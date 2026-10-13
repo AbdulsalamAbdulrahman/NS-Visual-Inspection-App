@@ -10,6 +10,7 @@
     import Assignment from '~icons/ms/assignment';
     import Badge from '~icons/ms/badge';
     import Engineering from '~icons/ms/engineering';
+    import Groups from '~icons/ms/groups';
     import MapIcon from '~icons/ms/map';
     import Menu from '~icons/ms/menu';
     import Payments from '~icons/ms/payments';
@@ -24,7 +25,7 @@
         label: string;
         href: string;
         icon: Component;
-        countKey?: 'inspections' | 'contractors' | 'reps' | 'areas';
+        countKey?: 'inspections' | 'contractors' | 'reps' | 'lecan' | 'areas';
         exact?: boolean;
     };
 
@@ -42,6 +43,7 @@
         { label: 'Inspections', href: '/admin/inspections', icon: Assignment, countKey: 'inspections' },
         { label: 'Contractors', href: '/admin/contractors', icon: Engineering, countKey: 'contractors' },
         { label: 'Service reps', href: '/admin/reps', icon: Badge, countKey: 'reps' },
+        { label: 'LECAN officials', href: '/admin/lecan', icon: Groups, countKey: 'lecan' },
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, countKey: 'areas' },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
         { label: 'Fee settings', href: '/admin/fees', icon: Tune },

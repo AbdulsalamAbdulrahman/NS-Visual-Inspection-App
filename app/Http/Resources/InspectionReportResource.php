@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Enums\CircuitCondition;
+use App\Enums\ReviewStatus;
 use App\Enums\WiringMethod;
 use App\Models\Inspection;
 use App\Models\InspectionCircuit;
@@ -136,14 +137,21 @@ class InspectionReportResource extends JsonResource
                 'note' => $this->review_note,
                 'reviewedAt' => $this->reviewed_at?->format('d M Y, H:i'),
                 'approvedAt' => $this->approved_at?->format('d M Y'),
+                'chapter' => $this->serviceArea?->state->label(),
+                'lecanApprovedBy' => $this->lecan_approver_name,
+                'lecanApprovedAt' => $this->lecan_approved_at?->format('d M Y, H:i'),
+                // Who sent it back: LECAN or NSD.
+                'sentBackBy' => $this->review_status === ReviewStatus::ChangesRequested
+                    ? ($this->reviewer?->isLecan() ? 'LECAN' : 'NSD')
+                    : null,
                 'history' => $this->when(
-                    (bool) $request->user()?->isAdmin() && $this->relationLoaded('reviews'),
+                    ($request->user()?->isAdmin() || $request->user()?->isLecan()) && $this->relationLoaded('reviews'),
                     fn () => $this->reviews->map(fn (InspectionReview $r): array => [
                         'id' => $r->id,
                         'action' => $r->action->value,
                         'label' => $r->action->label(),
                         'note' => $r->note,
-                        'by' => $r->user?->name,
+                        'by' => $r->user ? $r->user->name.($r->user->isLecan() ? ' (LECAN)' : '') : null,
                         'at' => $r->created_at->format('d M Y, H:i'),
                     ])->values(),
                 ),

@@ -1,6 +1,11 @@
 import type { Attachment, CircuitCondition } from './types';
 
-export type ReviewStatus = 'pending' | 'changes_requested' | 'approved';
+/** LECAN (state chapter) reviews first, then NSD gives final approval. */
+export type ReviewStatus =
+    | 'pending_lecan'
+    | 'pending_nsd'
+    | 'changes_requested'
+    | 'approved';
 
 /** InspectionReportResource (read-only report for every role). */
 export type Report = {
@@ -90,13 +95,20 @@ export type Report = {
         note: string | null;
         reviewedAt: string | null;
         approvedAt: string | null;
-        /** Admins only. */
+        /** LECAN state chapter (the area office's state). */
+        chapter: string | null;
+        lecanApprovedBy: string | null;
+        lecanApprovedAt: string | null;
+        /** Who sent it back for changes. */
+        sentBackBy: 'LECAN' | 'NSD' | null;
+        /** Admins and LECAN officials only. */
         history?: {
             id: number;
             action:
                 | 'submitted'
                 | 'changes_requested'
                 | 'resubmitted'
+                | 'lecan_approved'
                 | 'approved';
             label: string;
             note: string | null;
@@ -144,7 +156,8 @@ export type ListFilters = {
 
 /** Review status → pill tone and label (status is never colour alone). */
 export const REVIEW_TONE: Record<ReviewStatus, 'ok' | 'info' | 'imp'> = {
-    pending: 'info',
+    pending_lecan: 'info',
+    pending_nsd: 'info',
     changes_requested: 'imp',
     approved: 'ok',
 };

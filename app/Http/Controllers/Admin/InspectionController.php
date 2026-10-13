@@ -56,7 +56,7 @@ class InspectionController extends Controller
     {
         abort_unless($inspection->isSubmitted(), 404);
 
-        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile', 'reviews.user:id,name']);
+        $inspection->load(['serviceArea', 'circuits', 'attachments', 'paidPayment', 'contractor.contractorProfile', 'reviews.user:id,name,role', 'reviewer:id,role']);
 
         return Inertia::render('admin/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),

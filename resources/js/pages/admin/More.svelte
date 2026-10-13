@@ -7,6 +7,7 @@
     import type { Component } from 'svelte';
     import { signOut } from '@/lib/offline/signout';
     import { show as profile } from '@/routes/profile';
+    import Groups from '~icons/ms/groups';
     import BadgeIcon from '~icons/ms/badge';
     import ChevronRight from '~icons/ms/chevron-right';
     import Logout from '~icons/ms/logout';
@@ -20,11 +21,12 @@
 
     /** Sidebar counts and the current fee label, shared on admin responses. */
     const nav = $derived(
-        (page.props.adminNav as { reps?: number; areas?: number; fee?: string } | undefined) ?? {},
+        (page.props.adminNav as { reps?: number; lecan?: number; areas?: number; fee?: string } | undefined) ?? {},
     );
 
     const manage: Item[] = $derived([
         { label: 'Service reps', href: '/admin/reps', icon: BadgeIcon, meta: nav.reps },
+        { label: 'LECAN officials', href: '/admin/lecan', icon: Groups, meta: nav.lecan },
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, meta: nav.areas },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
         { label: 'Fee settings', href: '/admin/fees', icon: Tune, meta: nav.fee },

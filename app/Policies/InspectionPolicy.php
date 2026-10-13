@@ -20,6 +20,7 @@ class InspectionPolicy
             $user->isRep() => $inspection->isSubmitted()
                 && $inspection->service_area_id !== null
                 && $user->serviceAreas()->whereKey($inspection->service_area_id)->exists(),
+            $user->isLecan() => $inspection->isSubmitted() && $inspection->isInStateOf($user),
             default => false,
         };
     }
@@ -41,10 +42,17 @@ class InspectionPolicy
         return $this->owns($user, $inspection) && $inspection->needsChanges();
     }
 
-    /** NSD admins approve or send back reports waiting in the review queue. */
+    /**
+     * Two levels: the LECAN official of the area's state reviews first, then
+     * NSD admins give final approval. Either may send the report back.
+     */
     public function review(User $user, Inspection $inspection): bool
     {
-        return $user->isAdmin() && $inspection->isAwaitingReview();
+        return match (true) {
+            $user->isAdmin() => $inspection->isAwaitingNsd(),
+            $user->isLecan() => $inspection->isAwaitingLecan() && $inspection->isInStateOf($user),
+            default => false,
+        };
     }
 
     /** The full report prints once it has a ticket, i.e. once it's submitted. */

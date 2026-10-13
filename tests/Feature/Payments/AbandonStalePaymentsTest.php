@@ -46,7 +46,7 @@ test('a stale payment Monnify says was paid is finalised, not abandoned', functi
     expect($payment->fresh()->status)->toBe(PaymentStatus::Paid)
         ->and($inspection->isSubmitted())->toBeTrue()
         ->and($inspection->ticket_no)->not->toBeNull()
-        ->and($inspection->review_status)->toBe(ReviewStatus::Pending);
+        ->and($inspection->review_status)->toBe(ReviewStatus::PendingLecan);
 });
 
 test('a payment Monnify has no record of is abandoned', function () {

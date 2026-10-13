@@ -55,6 +55,11 @@ class CertificateResource extends JsonResource
                 'corenNo' => $this->inspector_coren_no ?? $profile?->coren_no,
                 'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
             ],
+            // First-level approval by the LECAN state chapter (name only; no signature image yet).
+            'lecan' => $this->lecan_approver_name ? [
+                'name' => $this->lecan_approver_name,
+                'approvedAt' => $this->lecan_approved_at?->format('d M Y'),
+            ] : null,
             'signatory' => [
                 'name' => $this->signatory_name,
                 'title' => $this->signatory_title,

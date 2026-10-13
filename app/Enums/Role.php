@@ -9,6 +9,8 @@ enum Role: string
     case Admin = 'admin';
     case Contractor = 'contractor';
     case Rep = 'rep';
+    /** LECAN state chapter official: first-level review of reports in their state. */
+    case Lecan = 'lecan';
 
     public function label(): string
     {
@@ -16,6 +18,7 @@ enum Role: string
             self::Admin => 'NSD Admin',
             self::Contractor => 'Contractor',
             self::Rep => 'Service rep',
+            self::Lecan => 'LECAN official',
         };
     }
 
@@ -26,6 +29,7 @@ enum Role: string
             self::Admin => 'admin.overview',
             self::Contractor => 'inspections.index',
             self::Rep => 'rep.jobs.index',
+            self::Lecan => 'lecan.inspections.index',
         };
     }
 }

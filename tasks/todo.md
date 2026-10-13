@@ -161,3 +161,11 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Admin bulk registration of contractors by CSV (template, per-row preview incl. duplicates within the file, confirm registers and emails login details); state required single or bulk
 - [x] Shared CsvImport component and CsvRows reader for both uploads; contractor rules shared by the drawer and the import (234 tests)
 ### Stage 4 · LECAN officials & two-level approval
+- [x] Role `lecan` with a state chapter; admin page to add/edit officials (login details emailed), chapter queues with "No official yet" warnings
+- [x] Review: pending_lecan → pending_nsd → approved; either level sends back; resubmit starts again with LECAN; existing "pending" reports go to LECAN
+- [x] LECAN pages: reports in their state (queue first, oldest first), report view with Approve for NSD / Request changes; shared ReviewPanel with NSD
+- [x] Banner, verify page, admin filters and overview use the two queues; contractor email names who sent it back
+- [x] Certificate: "Reviewed for LECAN ({State} State Chapter) by {name} on {date}" (name only, no signature image yet)
+- [x] DemoSeeder: one official per state; demo reports in every review state
+- [x] Tests (245), PHPStan, lint, types, build
+- [ ] Chrome check (needs a LECAN sign-in)
