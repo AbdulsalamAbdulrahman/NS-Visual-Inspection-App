@@ -157,5 +157,5 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Contractor home: "Assigned to you" with Start inspection (needs network once); contractor-created drafts and the offline start path removed
 - [x] StepA shows rep-filled customer details read-only; SaveDraft ignores them for jobs
 - [x] Tests (230), PHPStan, lint, types, build
-- [ ] Chrome check (needs a sign-in)
+- [x] Chrome check (rep: list, form, validation, state-filtered contractors, create; contractor: assigned cards, start, locked details)
 ### Stage 4 · LECAN officials & two-level approval
