@@ -38,10 +38,13 @@ export type Draft = {
     current_step: number;
 
     form74_no: string | null;
+    /** Estates: last Form 74 number of the range (null = one structure). */
+    form74_last_no: string | null;
     owner_name: string | null;
     property_address: string | null;
     service_area_id: number | null;
     purpose: string | null;
+    building_type: string | null;
     connection_type: string | null;
     voltage_level: string | null;
     gps_lat: number | null;
@@ -108,6 +111,7 @@ export type Draft = {
 
 export type FormOptions = {
     purpose: Option[];
+    buildingType: (Option & { purpose: string })[];
     connectionType: Option[];
     voltageLevel: Option[];
     protectionType: Option[];

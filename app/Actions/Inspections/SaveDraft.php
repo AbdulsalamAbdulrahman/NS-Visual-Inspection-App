@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Inspections;
 
 use App\Models\Inspection;
+use App\Support\Form74Range;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -34,6 +35,9 @@ class SaveDraft
             }
 
             $inspection->fill($fields);
+            // Estates: the Form 74 range gives the number of structures charged for.
+            $count = Form74Range::count($inspection->form74_no, $inspection->form74_last_no);
+            $inspection->structure_count = is_int($count) ? $count : 1;
             // Always bump updated_at so "Saved 11:03" reflects the latest save.
             $inspection->updated_at = now();
             $inspection->save();

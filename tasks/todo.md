@@ -144,5 +144,10 @@ Design: a hand-written service worker (no new dependency) + IndexedDB via `idb`.
 - [x] Report/review: separate Circuit breaker and Cut-out fuse rows; LECAN logo on the printed report
 - [x] Tests (195), PHPStan, lint, types, build, Chrome check
 ### Stage 2 · Building types & per-type fees
+- [x] BuildingType enum (21 types from the client spreadsheet) grouped by use of property; "Essential service" added
+- [x] Fees per building type with a default fallback; Fee settings is a per-type table with its own schedule per fee and a type column in history
+- [x] Estates: first/last Form 74 number → structure count (≤ 500); fee × structures at payment; breakdown on the pay panel
+- [x] Form, review, report, certificate and CSV show building type and the Form 74 range
+- [x] Tests (208), PHPStan, lint, types, build, Chrome check
 ### Stage 3 · Reps create and assign jobs
 ### Stage 4 · LECAN officials & two-level approval

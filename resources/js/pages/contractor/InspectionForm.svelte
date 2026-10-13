@@ -17,6 +17,7 @@
     import { Autosave, draftPayload } from '@/lib/inspection/autosave.svelte';
     import { missingItems } from '@/lib/inspection/checklist';
     import { STEP_COUNT, STEPS, backLabel, nextLabel } from '@/lib/inspection/steps';
+    import { form74Count, quote, type FeeTable } from '@/lib/inspection/fee';
     import type { Attachment, Draft, FormOptions, Inspector } from '@/lib/inspection/types';
     import { getLocalDraft, markDraftSynced, offlineSupported, putLocalDraft, saveBootstrap, type FormBootstrap } from '@/lib/offline/db';
     import { ATTACHMENT_UPLOADED, offlineSync, type AttachmentUploadedDetail } from '@/lib/offline/sync.svelte';
@@ -40,13 +41,14 @@
         areas: { id: number; name: string }[];
         options: FormOptions;
         inspector: Inspector;
-        fee: { amount: string; effectiveFrom: string } | null;
+        /** Fees per building type (per structure); the total is worked out here, offline too. */
+        fees: FeeTable;
         /** Sent back by NSD: the last step resubmits (already paid) instead of paying. */
         changesRequested: { note: string | null; ticketNo: string | null; requestedAt: string | null } | null;
         blankDraft: Draft;
     };
 
-    let { inspection, step: initialStep, areas, options, inspector, fee, changesRequested, blankDraft }: Props = $props();
+    let { inspection, step: initialStep, areas, options, inspector, fees, changesRequested, blankDraft }: Props = $props();
 
     // The form owns its working copy; the server is updated in the background.
     // svelte-ignore state_referenced_locally
@@ -79,6 +81,13 @@
     saver.prime(draftPayload($state.snapshot(inspection) as Draft));
 
     const activeAreas = $derived(new Set(areas.map((a) => a.id)));
+    /** Estates: structures in the Form 74 range (1 for a single building). */
+    const structures = $derived.by(() => {
+        const count = form74Count(draft.form74_no, draft.form74_last_no);
+
+        return typeof count === 'number' ? count : 1;
+    });
+    const fee = $derived(quote(fees, draft.building_type, structures));
     const missing = $derived(missingItems(draft, activeAreas));
     const meta = $derived(STEPS[step - 1]);
     const isReview = $derived(step === STEP_COUNT);
@@ -168,7 +177,7 @@
 
         if (offlineSupported()) {
             // What the form needs to open offline (same for every draft).
-            void saveBootstrap(userId, $state.snapshot({ areas, options, inspector, fee, blankDraft }) as Omit<FormBootstrap, 'savedAt'>);
+            void saveBootstrap(userId, $state.snapshot({ areas, options, inspector, fees, blankDraft }) as Omit<FormBootstrap, 'savedAt'>);
             void restoreFromPhone();
         }
 

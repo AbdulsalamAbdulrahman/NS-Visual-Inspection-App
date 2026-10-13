@@ -1,3 +1,4 @@
+import { form74Count } from './fee';
 import type { Circuit, Draft } from './types';
 
 /**
@@ -57,6 +58,18 @@ export function missingItems(
         1,
     );
     need(filled(d.purpose), 'purpose', 'Purpose of property', 1);
+    need(
+        filled(d.building_type),
+        'building_type',
+        'Description of building',
+        1,
+    );
+    need(
+        typeof form74Count(d.form74_no, d.form74_last_no) === 'number',
+        'form74_last_no',
+        'Form 74 range',
+        1,
+    );
     need(filled(d.connection_type), 'connection_type', 'Connection type', 1);
     need(filled(d.voltage_level), 'voltage_level', 'Voltage level', 1);
     need(filled(d.gps_lat) && filled(d.gps_lng), 'gps', 'GPS location', 1);

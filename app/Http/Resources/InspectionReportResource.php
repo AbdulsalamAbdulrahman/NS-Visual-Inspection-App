@@ -9,6 +9,7 @@ use App\Enums\WiringMethod;
 use App\Models\Inspection;
 use App\Models\InspectionCircuit;
 use App\Models\InspectionReview;
+use App\Support\Form74Range;
 use App\Support\InspectionChecklist;
 use App\Support\Money;
 use Illuminate\Http\Request;
@@ -65,11 +66,13 @@ class InspectionReportResource extends JsonResource
             'submittedAtLong' => $this->submitted_at?->format('d M Y, H:i'),
 
             'a' => [
-                'form74No' => $this->form74_no,
+                'form74No' => Form74Range::label($this->form74_no, $this->form74_last_no),
+                'structures' => $this->structure_count,
                 'ownerName' => $this->owner_name,
                 'address' => $this->property_address,
                 'area' => $this->serviceArea?->name,
                 'purpose' => $this->purpose?->label(),
+                'buildingType' => $this->building_type?->label(),
                 'connection' => $this->connection_type?->label(),
                 'voltage' => $this->voltage_level?->label(),
                 'inspectionDate' => $this->inspection_date?->format('d M Y'),

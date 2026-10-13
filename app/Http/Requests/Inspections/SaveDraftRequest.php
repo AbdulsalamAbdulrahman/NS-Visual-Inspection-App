@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Inspections;
 
+use App\Enums\BuildingType;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -44,6 +45,8 @@ class SaveDraftRequest extends FormRequest
             'current_step' => ['sometimes', 'integer', 'between:1,'.Inspection::STEPS],
 
             'form74_no' => ['nullable', 'string', 'max:60'],
+            'form74_last_no' => ['nullable', 'string', 'max:60'],
+            'building_type' => ['nullable', Rule::enum(BuildingType::class)],
             'owner_name' => ['nullable', 'string', 'max:255'],
             'property_address' => ['nullable', 'string', 'max:1000'],
             'service_area_id' => ['nullable', 'integer', Rule::exists('service_areas', 'id')],

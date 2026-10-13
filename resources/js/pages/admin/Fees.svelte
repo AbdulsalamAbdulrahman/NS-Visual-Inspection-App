@@ -4,9 +4,11 @@
 
 <script lang="ts">
     import { Link, router, useForm } from '@inertiajs/svelte';
+    import { tick } from 'svelte';
     import Button from '@/components/Button.svelte';
     import Field from '@/components/form/Field.svelte';
     import { fieldBox } from '@/components/form/inputClasses';
+    import Select from '@/components/form/Select.svelte';
     import StatusPill from '@/components/StatusPill.svelte';
     import admin from '@/routes/admin';
     import { destroy, store } from '@/routes/admin/fees';
@@ -15,6 +17,8 @@
 
     type Fee = {
         id: number;
+        buildingType: string | null;
+        buildingTypeLabel: string;
         amountKobo: number;
         amount: string;
         effectiveFrom: string;
@@ -24,82 +28,146 @@
         isScheduled: boolean;
     };
 
-    type Props = {
+    type Row = {
+        /** "default" or a building type value. */
+        key: string;
+        label: string;
+        purpose: string | null;
         current: Fee | null;
+        usesDefault: boolean;
         scheduled: Fee | null;
+    };
+
+    type Props = {
+        default: Fee | null;
+        rows: Row[];
         history: Fee[];
     };
 
-    let { current, scheduled, history }: Props = $props();
+    let { default: defaultFee, rows, history }: Props = $props();
 
     const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 
-    const form = useForm({ amount: '', effective_from: today, reason: '' });
+    const form = useForm({ building_type: 'default', amount: '', effective_from: today, reason: '' });
 
     const isToday = $derived(form.effective_from === today);
+    const typeOptions = $derived(rows.map((r) => ({ value: r.key, label: r.purpose ? `${r.purpose} · ${r.label}` : r.label })));
+    const groups = $derived(
+        rows.reduce<{ purpose: string; rows: Row[] }[]>((all, row) => {
+            const purpose = row.purpose ?? '';
+            const group = all.find((g) => g.purpose === purpose);
+
+            if (group) {
+                group.rows.push(row);
+            } else {
+                all.push({ purpose, rows: [row] });
+            }
+
+            return all;
+        }, []),
+    );
+
+    let formEl: HTMLFormElement | undefined = $state();
+
+    async function change(row: Row): Promise<void> {
+        form.building_type = row.key;
+        form.amount = '';
+        form.clearErrors();
+        await tick();
+        formEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('fee-amount')?.focus();
+    }
 
     function submit(event: SubmitEvent): void {
         event.preventDefault();
-        form.post(store.url(), { preserveScroll: true, onSuccess: () => form.reset() });
+        form.transform((data) => ({ ...data, building_type: data.building_type === 'default' ? null : data.building_type })).post(store.url(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                form.amount = '';
+                form.reason = '';
+                form.effective_from = today;
+            },
+        });
     }
 
     function cancelScheduled(fee: Fee): void {
         router.delete(destroy.url(fee.id), { preserveScroll: true });
     }
 
-    const cols = 'grid-cols-[120px_120px_120px_minmax(0,1fr)_minmax(0,1.3fr)]';
+    const cols = 'grid-cols-[150px_120px_120px_120px_minmax(0,1fr)_minmax(0,1.3fr)]';
 </script>
 
 <svelte:head>
-    <title>Inspection fee · KENS</title>
+    <title>Inspection fees · KENS</title>
 </svelte:head>
 
 <header class="sticky top-0 z-20 flex items-center gap-1 border-b border-line bg-sf px-2 pt-[calc(4px+env(safe-area-inset-top))] pb-1 lg:hidden">
     <Link href={admin.more()} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Back to More">
         <ArrowBack class="size-[22px]" />
     </Link>
-    <h1 class="flex-1 text-[18px] font-bold">Inspection fee</h1>
+    <h1 class="flex-1 text-[18px] font-bold">Inspection fees</h1>
 </header>
 
 <div class="flex flex-col gap-5 px-4 py-4 lg:px-10 lg:py-8">
-    <h1 class="hidden text-[28px] font-extrabold lg:block">Inspection fee</h1>
+    <div class="hidden flex-col gap-1 lg:flex">
+        <h1 class="text-[28px] font-extrabold">Inspection fees</h1>
+        <p class="text-[15px] text-mut">Per structure. A building type without its own fee uses the default. Estates pay the fee × the number of structures.</p>
+    </div>
 
-    <div class="grid max-w-[1040px] gap-5 lg:grid-cols-2">
-        <!-- Current fee with the ticket-band motif -->
-        <section class="relative flex flex-col gap-2 overflow-hidden rounded-[20px] bg-hero p-[26px] text-white" aria-label="Current fee">
-            <div class="absolute -right-[90px] bottom-[34px] h-[26px] w-[300px] -rotate-[26deg] bg-lime" aria-hidden="true"></div>
-            <span class="mono-caps relative tracking-[0.08em] opacity-85">Current fee</span>
-            {#if current}
-                <span class="relative font-mono text-[40px] font-semibold tracking-[-0.02em] lg:text-[48px]">{current.amount}</span>
-                <span class="relative text-sm opacity-90">In effect since {current.effectiveFrom} · set by {current.changedBy}</span>
-            {:else}
-                <span class="relative text-[22px] font-bold">No fee set</span>
-                <span class="relative text-sm opacity-90">Contractors can't pay until a fee is in effect.</span>
-            {/if}
-
-            {#if scheduled}
-                <div class="relative mt-2.5 flex flex-wrap items-center gap-2.5 rounded-xl bg-white/12 px-3.5 py-3 text-sm">
-                    <Schedule class="size-5" />
-                    <span>
-                        Scheduled: <b class="font-mono">{scheduled.amount}</b> from <b class="font-mono">{scheduled.effectiveFrom}</b>
-                    </span>
-                    <button type="button" class="ml-auto font-bold underline" onclick={() => cancelScheduled(scheduled)}>Cancel</button>
-                </div>
-            {/if}
+    <div class="grid max-w-[1180px] gap-5 lg:grid-cols-[1fr_400px] lg:items-start">
+        <!-- Fees by building type -->
+        <section class="flex flex-col overflow-hidden rounded-[20px] border border-line bg-sf" aria-labelledby="fee-table">
+            <h2 id="fee-table" class="sr-only">Fees by building type</h2>
+            {#each groups as group (group.purpose)}
+                {#if group.purpose}
+                    <div class="border-b border-line bg-sf2 px-4 py-2 text-xs font-bold tracking-[0.06em] text-mut uppercase lg:px-5">{group.purpose}</div>
+                {/if}
+                {#each group.rows as row (row.key)}
+                    <div class={['flex items-center gap-3 border-b border-line px-4 py-3 last:border-b-0 lg:px-5', row.key === 'default' && 'bg-hero text-white']}>
+                        <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <b class="truncate text-[15px]">{row.label}</b>
+                            {#if row.scheduled}
+                                <span class={['flex items-center gap-1 text-[13px]', row.key === 'default' ? 'opacity-90' : 'text-info']}>
+                                    <Schedule class="size-4" />{row.scheduled.amount} from {row.scheduled.effectiveFrom}
+                                    <button type="button" class="ml-1 font-bold underline" onclick={() => row.scheduled && cancelScheduled(row.scheduled)}>Cancel</button>
+                                </span>
+                            {/if}
+                        </div>
+                        {#if row.current && !row.usesDefault}
+                            <span class="font-mono text-[15px] font-semibold">{row.current.amount}</span>
+                        {:else if row.usesDefault}
+                            <span class="text-right text-[13px] text-mut">Default<br /><span class="font-mono">{defaultFee?.amount ?? 'not set'}</span></span>
+                        {:else}
+                            <span class="text-sm font-semibold text-bad">Not set</span>
+                        {/if}
+                        <Button
+                            size="xs"
+                            variant={row.key === 'default' ? 'soft' : 'outline'}
+                            class="h-9 rounded-lg px-3 text-[13px]"
+                            onclick={() => change(row)}
+                        >
+                            {row.usesDefault ? 'Set fee' : 'Change'}
+                        </Button>
+                    </div>
+                {/each}
+            {/each}
         </section>
 
         <!-- Set a new fee -->
-        <form class="flex flex-col gap-3.5 rounded-[20px] border border-line bg-sf p-5 lg:p-6" onsubmit={submit} novalidate>
-            <h2 class="text-[17px] font-bold">Set a new fee</h2>
-            <div class="grid gap-3 sm:grid-cols-2">
-                <Field id="fee-amount" label="Amount" error={form.errors.amount}>
+        <form bind:this={formEl} class="flex scroll-mt-20 flex-col gap-3.5 rounded-[20px] border border-line bg-sf p-5 lg:sticky lg:top-6 lg:p-6" onsubmit={submit} novalidate>
+            <h2 class="text-[17px] font-bold">Set a fee</h2>
+            <Field id="fee-type" label="Building type" error={form.errors.building_type}>
+                <Select id="fee-type" size="md" options={typeOptions} placeholder="Choose" bind:value={form.building_type} />
+            </Field>
+            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                <Field id="fee-amount" label="Amount per structure" error={form.errors.amount}>
                     <div class={fieldBox('md', !!form.errors.amount, 'h-12 gap-1.5 rounded-[10px] pl-3')}>
                         <span class="font-mono text-[17px] text-mut" aria-hidden="true">₦</span>
                         <input
                             id="fee-amount"
                             bind:value={form.amount}
                             inputmode="decimal"
-                            placeholder="17,500"
+                            placeholder="3,000"
                             autocomplete="off"
                             aria-invalid={!!form.errors.amount || undefined}
                             class="h-full min-w-0 flex-1 bg-transparent pr-3 font-mono text-[17px] font-medium outline-none focus-visible:outline-none"
@@ -130,7 +198,7 @@
                 />
             </Field>
             <p class="text-[13px] leading-[1.45] text-mut">
-                Contractors pay the fee in effect at the moment they pay. Drafts show the new amount from the effective date.
+                Contractors pay the fee in effect when they pay, per structure. Drafts show the new amount from the effective date.
             </p>
             <Button type="submit" size="md" block class="h-12 rounded-xl" disabled={form.processing || !form.amount.trim()}>
                 {isToday ? 'Change fee from today' : 'Schedule fee change'}
@@ -138,10 +206,11 @@
         </form>
     </div>
 
-    <section class="flex max-w-[1040px] flex-col gap-2.5" aria-labelledby="fee-history">
+    <section class="flex max-w-[1180px] flex-col gap-2.5" aria-labelledby="fee-history">
         <h2 id="fee-history" class="eyebrow">History</h2>
         <div class="overflow-hidden rounded-2xl border border-line bg-sf" role="table" aria-label="Fee history">
             <div role="row" class="hidden gap-3 border-b border-line bg-sf2 px-5 py-3 text-xs font-bold tracking-[0.06em] text-mut lg:grid {cols}">
+                <span role="columnheader">TYPE</span>
                 <span role="columnheader">FEE</span>
                 <span role="columnheader">EFFECTIVE</span>
                 <span role="columnheader">CHANGED ON</span>
@@ -150,17 +219,15 @@
             </div>
             {#each history as fee (fee.id)}
                 <div role="row" class="flex flex-col gap-1 border-b border-line px-4 py-3 text-sm last:border-b-0 lg:grid lg:h-[50px] lg:items-center lg:gap-3 lg:px-5 lg:py-0 {cols}">
+                    <span role="cell" class="truncate font-semibold">{fee.buildingTypeLabel}</span>
                     <span role="cell" class="flex items-center gap-2 font-mono font-semibold">
                         {fee.amount}
-                        {#if fee.isScheduled}<StatusPill tone="info" label="Scheduled" class="font-sans lg:hidden" />{/if}
+                        {#if fee.isScheduled}<StatusPill tone="info" label="Scheduled" class="font-sans" />{/if}
                     </span>
                     <span role="cell" class="font-mono"><span class="text-mut lg:hidden">From </span>{fee.effectiveFrom}</span>
                     <span role="cell" class="hidden font-mono lg:block">{fee.changedOn ?? '—'}</span>
                     <span role="cell" class="text-mut lg:text-ink"><span class="lg:hidden">Set by </span>{fee.changedBy}</span>
-                    <span role="cell" class="truncate text-mut">
-                        {#if fee.isScheduled}<StatusPill tone="info" label="Scheduled" class="mr-1.5 hidden lg:inline-flex" />{/if}
-                        {fee.reason ?? ''}
-                    </span>
+                    <span role="cell" class="truncate text-mut">{fee.reason ?? ''}</span>
                 </div>
             {:else}
                 <p class="px-5 py-4 text-sm text-mut">No fee changes yet.</p>

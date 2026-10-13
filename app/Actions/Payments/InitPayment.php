@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Actions\Payments;
 
 use App\Enums\PaymentStatus;
-use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Services\Monnify\MonnifyClient;
 use App\Services\Monnify\MonnifyException;
 use App\Support\InspectionChecklist;
+use App\Support\InspectionFee;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -38,7 +38,8 @@ class InitPayment
             ]);
         }
 
-        $fee = FeeSchedule::current();
+        // Building type's fee (or the default), per structure.
+        $fee = InspectionFee::quote($inspection);
 
         if ($fee === null) {
             throw ValidationException::withMessages(['inspection' => 'The inspection fee has not been set yet. Contact the New Service Department.']);
@@ -50,7 +51,7 @@ class InitPayment
             'inspection_id' => $inspection->id,
             'contractor_id' => $contractor->id,
             'payment_reference' => 'KENS-'.now()->format('Ymd').'-'.Str::upper(Str::random(10)),
-            'amount_kobo' => $fee->amount_kobo,
+            'amount_kobo' => $fee['totalKobo'],
             'status' => PaymentStatus::Pending,
         ]);
 

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\Inspections\SaveDraft;
 use App\Actions\Inspections\StartInspection;
 use App\Actions\Reviews\ResubmitInspection;
+use App\Enums\BuildingType;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -26,6 +27,7 @@ use App\Http\Resources\InspectionReportResource;
 use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
+use App\Support\InspectionFee;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -110,7 +112,6 @@ class InspectionController extends Controller
 
         $inspection->load(['circuits', 'attachments', 'serviceArea']);
         $profile = $request->user()->contractorProfile;
-        $fee = FeeSchedule::current();
 
         return Inertia::render('contractor/InspectionForm', [
             'inspection' => DraftResource::make($inspection),
@@ -123,6 +124,7 @@ class InspectionController extends Controller
                 ->get(['id', 'name']),
             'options' => [
                 'purpose' => PropertyPurpose::options(),
+                'buildingType' => BuildingType::options(),
                 'connectionType' => ConnectionType::options(),
                 'voltageLevel' => VoltageLevel::options(),
                 'protectionType' => ProtectionType::options(),
@@ -140,10 +142,8 @@ class InspectionController extends Controller
                 'corenNo' => $profile?->coren_no,
                 'firmName' => $profile?->firm_name,
             ],
-            'fee' => $fee ? [
-                'amount' => Money::format($fee->amount_kobo),
-                'effectiveFrom' => $fee->effective_from->format('d M Y'),
-            ] : null,
+            // Per building type, per structure; the form prices it as the contractor fills in.
+            'fees' => InspectionFee::table(),
             // Sent back by NSD: the last step resubmits instead of paying.
             'changesRequested' => $inspection->needsChanges() ? [
                 'note' => $inspection->review_note,

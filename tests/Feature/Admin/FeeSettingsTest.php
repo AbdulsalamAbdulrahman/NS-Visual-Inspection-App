@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\BuildingType;
 use App\Models\FeeSchedule;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -76,7 +77,29 @@ test('the fee page shows current, scheduled and history', function () {
     $this->actingAs($this->admin)->get(route('admin.fees.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/Fees')
-            ->where('current.amount', '₦15,000.00')
-            ->where('scheduled.amount', '₦17,500.00')
+            ->where('default.amount', '₦15,000.00')
+            ->where('rows.0.key', 'default')
+            ->where('rows.0.current.amount', '₦15,000.00')
+            ->where('rows.0.scheduled.amount', '₦17,500.00')
+            ->has('rows', 1 + count(BuildingType::cases()))
+            ->where('rows.1.usesDefault', true)
             ->has('history', 2));
+});
+
+test('a building type can have its own fee; others use the default', function () {
+    $this->actingAs($this->admin)->post(route('admin.fees.store'), [
+        'building_type' => 'duplex',
+        'amount' => '25,000',
+        'effective_from' => '2026-10-07',
+    ])->assertSessionHasNoErrors();
+
+    expect(FeeSchedule::currentAmountKobo(BuildingType::Duplex))->toBe(2_500_000)
+        ->and(FeeSchedule::currentAmountKobo(BuildingType::Shop))->toBe(1_500_000)
+        ->and(FeeSchedule::currentAmountKobo())->toBe(1_500_000);
+
+    // Each fee has its own schedule: a duplex change doesn't block a default change.
+    $this->post(route('admin.fees.store'), ['building_type' => 'duplex', 'amount' => '26000', 'effective_from' => '2027-01-01'])->assertSessionHasNoErrors();
+    $this->post(route('admin.fees.store'), ['amount' => '16000', 'effective_from' => '2027-01-01'])->assertSessionHasNoErrors();
+    $this->post(route('admin.fees.store'), ['building_type' => 'duplex', 'amount' => '27000', 'effective_from' => '2027-02-01'])
+        ->assertSessionHasErrors('effective_from');
 });

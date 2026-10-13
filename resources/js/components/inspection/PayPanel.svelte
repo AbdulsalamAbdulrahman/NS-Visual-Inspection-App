@@ -6,7 +6,8 @@
     import Info from '~icons/ms/info';
 
     type Props = {
-        fee: { amount: string; effectiveFrom: string } | null;
+        /** `breakdown`: "20 structures × ₦3,000.00" for estates. */
+        fee: { amount: string; effectiveFrom: string; breakdown?: string | null } | null;
         /** Owner / area / Form 74 rows under the fee (CP-01). */
         details?: Snippet;
         /** Pay button area. */
@@ -35,6 +36,7 @@
             <span class="font-mono text-[40px] font-semibold tracking-[-0.02em] lg:text-[44px]">
                 {whole}<span class="text-[22px] text-mut">{kobo}</span>
             </span>
+            {#if fee.breakdown}<span class="font-mono text-sm font-medium">{fee.breakdown}</span>{/if}
             <span class="text-sm text-mut">Set by Kaduna Electric · effective {fee.effectiveFrom}</span>
         {:else}
             <span class="text-base font-bold text-bad">The fee hasn't been set yet. Contact the New Service Department.</span>

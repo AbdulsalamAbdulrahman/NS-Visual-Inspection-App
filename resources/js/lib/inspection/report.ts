@@ -10,11 +10,14 @@ export type Report = {
     submittedAt: string | null;
     submittedAtLong: string | null;
     a: {
+        /** "F74/KD/2026/08841 – 08860" for estates. */
         form74No: string | null;
+        structures: number;
         ownerName: string | null;
         address: string | null;
         area: string | null;
         purpose: string | null;
+        buildingType: string | null;
         connection: string | null;
         voltage: string | null;
         inspectionDate: string | null;

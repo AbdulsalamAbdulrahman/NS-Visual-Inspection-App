@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\AttachmentType;
+use App\Enums\BuildingType;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -52,7 +53,8 @@ class InspectionFactory extends Factory
             'form74_no' => 'F74/KD/2026/'.fake()->unique()->numerify('#####'),
             'owner_name' => fake()->name(),
             'property_address' => fake()->streetAddress().', Kaduna',
-            'purpose' => fake()->randomElement(PropertyPurpose::cases()),
+            'purpose' => PropertyPurpose::Residential,
+            'building_type' => BuildingType::Duplex,
             'connection_type' => ConnectionType::ThreePhase,
             'voltage_level' => VoltageLevel::V415,
             'gps_lat' => 10.5221700,

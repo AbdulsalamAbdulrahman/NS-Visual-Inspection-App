@@ -48,6 +48,11 @@ final class InspectionChecklist
         $need($filled($inspection->property_address), 'property_address', 'Property address', 1);
         $need($inspection->serviceArea?->is_active === true, 'service_area_id', 'Service area', 1);
         $need($inspection->purpose !== null, 'purpose', 'Purpose of property', 1);
+        $need(
+            $inspection->building_type !== null && $inspection->building_type->purpose() === $inspection->purpose,
+            'building_type', 'Description of building', 1,
+        );
+        $need(is_int(Form74Range::count($inspection->form74_no, $inspection->form74_last_no)), 'form74_last_no', 'Form 74 range', 1);
         $need($inspection->connection_type !== null, 'connection_type', 'Connection type', 1);
         $need($inspection->voltage_level !== null, 'voltage_level', 'Voltage level', 1);
         $need($inspection->gps_lat !== null && $inspection->gps_lng !== null, 'gps', 'GPS location', 1);

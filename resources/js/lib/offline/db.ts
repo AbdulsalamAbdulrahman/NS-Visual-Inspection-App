@@ -1,4 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import type { FeeTable } from '@/lib/inspection/fee';
 import type { Draft, FormOptions, Inspector } from '@/lib/inspection/types';
 
 /**
@@ -45,7 +46,7 @@ export type FormBootstrap = {
     areas: { id: number; name: string }[];
     options: FormOptions;
     inspector: Inspector;
-    fee: { amount: string; effectiveFrom: string } | null;
+    fees: FeeTable;
     /** Empty draft in the server's shape, for starting new inspections offline. */
     blankDraft: Draft;
     savedAt: number;

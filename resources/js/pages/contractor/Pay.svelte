@@ -10,8 +10,8 @@
     import Lock from '~icons/ms/lock';
 
     type Props = {
-        inspection: { uuid: string; ownerName: string | null; area: string | null; form74No: string | null };
-        fee: { amount: string; effectiveFrom: string } | null;
+        inspection: { uuid: string; ownerName: string | null; area: string | null; form74No: string | null; buildingType: string | null };
+        fee: { amount: string; effectiveFrom: string; breakdown: string | null } | null;
     };
 
     let { inspection, fee }: Props = $props();
@@ -42,6 +42,7 @@
                     <dt class="text-mut">Owner</dt><dd class="font-bold">{inspection.ownerName}</dd>
                     <dt class="text-mut">Area</dt><dd class="font-bold">{inspection.area}</dd>
                     <dt class="text-mut">Form 74</dt><dd class="font-mono">{inspection.form74No}</dd>
+                    {#if inspection.buildingType}<dt class="text-mut">Building</dt><dd>{inspection.buildingType}</dd>{/if}
                 </dl>
             {/snippet}
             {#snippet action()}{/snippet}

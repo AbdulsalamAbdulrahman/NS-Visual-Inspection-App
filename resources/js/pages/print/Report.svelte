@@ -24,12 +24,12 @@
     const amps = (v: number | null): string => (v === null ? '—' : `${num(v)} A`);
 
     const sectionA = $derived<[string, string | null, boolean?][]>([
-        ['Form 74 number', report.a.form74No, true],
+        [report.a.structures > 1 ? `Form 74 (${report.a.structures} structures)` : 'Form 74 number', report.a.form74No, true],
         ['Inspection date', report.a.inspectionDate, true],
         ['Property owner', report.a.ownerName],
         ['Service area', report.a.area],
         ['Property address', report.a.address],
-        ['Purpose', report.a.purpose],
+        ['Purpose · building', [report.a.purpose, report.a.buildingType].filter(Boolean).join(' · ') || null],
         ['Connection type', report.a.connection],
         ['Voltage level', report.a.voltage, true],
         ['GPS', report.a.gps ? `${formatCoords(report.a.gps.lat, report.a.gps.lng)}${report.a.gps.accuracy !== null ? ` ±${Math.round(report.a.gps.accuracy)} m` : ''}` : null, true],

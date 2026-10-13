@@ -127,10 +127,11 @@
 <div class="grid gap-2.5 lg:grid-cols-2 lg:gap-3.5">
     {#snippet customer()}
         <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm lg:grid-cols-[110px_1fr]">
-            {@render row('Form 74', draft.form74_no || '—', true)}
+            {@render row('Form 74', draft.form74_last_no ? `${draft.form74_no ?? '—'} – ${draft.form74_last_no}` : draft.form74_no || '—', true)}
             {@render row('Owner', draft.owner_name || '—')}
             {@render row('Address', draft.property_address || '—')}
             {@render row('Area · use', `${area} · ${label(options.purpose, draft.purpose)}`)}
+            {@render row('Building', draft.building_type ? label(options.buildingType, draft.building_type) : '—')}
             {@render row('Supply', `${label(options.connectionType, draft.connection_type)} · ${label(options.voltageLevel, draft.voltage_level)}`)}
             {@render row(
                 'GPS',

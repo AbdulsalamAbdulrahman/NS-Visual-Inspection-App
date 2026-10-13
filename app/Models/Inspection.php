@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\BuildingType;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
@@ -40,6 +41,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $current_step
  * @property string|null $ticket_no
  * @property string|null $form74_no
+ * @property string|null $form74_last_no Estates: the last Form 74 number of the range
+ * @property int $structure_count
+ * @property BuildingType|null $building_type
  * @property string|null $owner_name
  * @property string|null $property_address
  * @property PropertyPurpose|null $purpose
@@ -131,7 +135,7 @@ class Inspection extends Model
     /** Fields a contractor may change on a draft (SaveDraft). */
     public const DRAFT_FIELDS = [
         'current_step',
-        'form74_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'connection_type',
+        'form74_no', 'form74_last_no', 'owner_name', 'property_address', 'service_area_id', 'purpose', 'building_type', 'connection_type',
         'voltage_level', 'gps_lat', 'gps_lng', 'gps_accuracy_m', 'gps_captured_at',
         'earth_electrode_ft', 'earth_conductor_mm2', 'earth_resistance_ohm', 'earth_pit',
         'cb_available', 'cb_make', 'cb_rated_a', 'cb_standard', 'poles',
@@ -164,6 +168,8 @@ class Inspection extends Model
         'status' => InspectionStatus::class,
         'current_step' => 'integer',
         'purpose' => PropertyPurpose::class,
+        'building_type' => BuildingType::class,
+        'structure_count' => 'integer',
         'connection_type' => ConnectionType::class,
         'voltage_level' => VoltageLevel::class,
         'gps_lat' => 'float',

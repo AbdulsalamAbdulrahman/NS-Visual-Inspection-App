@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use App\Enums\NigerianState;
 use App\Models\Inspection;
+use App\Support\Form74Range;
 use App\Support\TicketQr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -30,9 +31,10 @@ class CertificateResource extends JsonResource
         return [
             'uuid' => $this->uuid,
             'certificateNo' => $ticket,
-            'form74No' => $this->form74_no,
+            'form74No' => Form74Range::label($this->form74_no, $this->form74_last_no),
             'description' => collect([
-                $this->purpose?->label(),
+                $this->building_type?->label() ?? $this->purpose?->label(),
+                $this->structure_count > 1 ? "{$this->structure_count} structures" : null,
                 $this->connection_type?->label(),
                 $this->voltage_level?->label(),
                 $this->sub_circuit_count ? "{$this->sub_circuit_count} sub-circuits" : null,

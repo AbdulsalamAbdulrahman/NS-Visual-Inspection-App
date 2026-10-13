@@ -13,6 +13,7 @@ use App\Http\Resources\InspectionRowResource;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
 use App\Models\Setting;
+use App\Support\Form74Range;
 use App\Support\InspectionFilters;
 use App\Support\Money;
 use Illuminate\Http\Request;
@@ -85,7 +86,7 @@ class InspectionController extends Controller
 
             fwrite($out, "\u{FEFF}"); // UTF-8 BOM so Excel shows ₦ correctly.
             fputcsv($out, [
-                'Ticket', 'Submitted', 'Owner', 'Address', 'Form 74 no.', 'Service area', 'Purpose', 'Connection',
+                'Ticket', 'Submitted', 'Owner', 'Address', 'Form 74 no.', 'Structures', 'Service area', 'Purpose', 'Building type', 'Connection',
                 'Voltage', 'Contractor', 'NEMSA reg. no.', 'Amount paid', 'Monnify reference', 'GPS latitude', 'GPS longitude',
                 'Review status', 'Approved',
             ]);
@@ -98,9 +99,11 @@ class InspectionController extends Controller
                     $i->submitted_at?->format('Y-m-d H:i'),
                     $i->owner_name,
                     $i->property_address ? (string) str($i->property_address)->squish() : null,
-                    $i->form74_no,
+                    Form74Range::label($i->form74_no, $i->form74_last_no),
+                    $i->structure_count,
                     $i->serviceArea?->name,
                     $i->purpose?->label(),
+                    $i->building_type?->label(),
                     $i->connection_type?->label(),
                     $i->voltage_level?->label(),
                     $i->inspector_name,

@@ -111,7 +111,7 @@ test('the CSV export streams the filtered rows newest first', function () {
 
     expect($rows)->toHaveCount(2)
         ->and($rows[0][0])->toBe($newer->ticket_no)
-        ->and($rows[0][11])->toBe('₦15,000.00')
+        ->and($rows[0][13])->toBe('₦15,000.00')
         ->and($rows[1][0])->toBe($older->ticket_no)
         ->and($rows[1][2])->toBe('Older, Owner');
 });
