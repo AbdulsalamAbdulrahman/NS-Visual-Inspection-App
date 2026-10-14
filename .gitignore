@@ -39,3 +39,6 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /.claude/settings.local.json
+
+# Client photos shared over WhatsApp: never commit or ship.
+WhatsApp Image *

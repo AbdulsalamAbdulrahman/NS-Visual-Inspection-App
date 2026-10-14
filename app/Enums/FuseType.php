@@ -8,12 +8,14 @@ enum FuseType: string
 {
     case Porcelain = 'porcelain';
     case Polymer = 'polymer';
+    case Insulated = 'insulated';
 
     public function label(): string
     {
         return match ($this) {
             self::Porcelain => 'Porcelain',
             self::Polymer => 'Polymer',
+            self::Insulated => 'Insulated',
         };
     }
 

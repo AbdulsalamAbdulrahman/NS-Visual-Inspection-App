@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 class SaveDraft
 {
@@ -21,7 +22,36 @@ class SaveDraft
      */
     public function handle(Inspection $inspection, array $data): Inspection
     {
-        DB::transaction(function () use ($inspection, $data): void {
+        $disk = Storage::disk('local');
+        $signatureChanged = array_key_exists('signature', $data);
+        $oldSignature = $inspection->signature_path;
+        // Files don't roll back with the transaction: write the new one first and
+        // delete the old one only once the save has committed.
+        $newSignature = $signatureChanged ? $this->storeSignature($inspection, $data['signature']) : null;
+
+        try {
+            $this->save($inspection, $data, $signatureChanged, $newSignature);
+        } catch (Throwable $e) {
+            if ($newSignature !== null) {
+                $disk->delete($newSignature);
+            }
+
+            throw $e;
+        }
+
+        if ($signatureChanged && $oldSignature !== null && $oldSignature !== $newSignature) {
+            $disk->delete($oldSignature);
+        }
+
+        return $inspection;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function save(Inspection $inspection, array $data, bool $signatureChanged, ?string $newSignature): void
+    {
+        DB::transaction(function () use ($inspection, $data, $signatureChanged, $newSignature): void {
             $fields = Arr::only($data, Inspection::DRAFT_FIELDS);
 
             if ($inspection->hasRepDetails()) {
@@ -34,8 +64,8 @@ class SaveDraft
                     : null;
             }
 
-            if (array_key_exists('signature', $data)) {
-                $fields['signature_path'] = $this->storeSignature($inspection, $data['signature']);
+            if ($signatureChanged) {
+                $fields['signature_path'] = $newSignature;
             }
 
             $inspection->fill($fields);
@@ -50,18 +80,10 @@ class SaveDraft
                 $this->replaceCircuits($inspection, $data['circuits'] ?? []);
             }
         });
-
-        return $inspection;
     }
 
     private function storeSignature(Inspection $inspection, ?string $dataUrl): ?string
     {
-        $disk = Storage::disk('local');
-
-        if ($inspection->signature_path) {
-            $disk->delete($inspection->signature_path);
-        }
-
         if ($dataUrl === null) {
             return null;
         }
@@ -73,7 +95,7 @@ class SaveDraft
         }
 
         $path = $inspection->storageDirectory().'/signature-'.Str::random(8).'.png';
-        $disk->put($path, $png);
+        Storage::disk('local')->put($path, $png);
 
         return $path;
     }

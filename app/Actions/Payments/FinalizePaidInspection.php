@@ -11,10 +11,12 @@ use App\Enums\ReviewStatus;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Notifications\InspectionSubmitted;
+use App\Notifications\PaymentReceipt;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * The single place a confirmed payment turns a draft into a submitted
@@ -89,6 +91,10 @@ class FinalizePaidInspection
 
             // Queued; only sent once this transaction has committed.
             $contractor->notify(new InspectionSubmitted($inspection, $locked));
+
+            if (filled($inspection->owner_email)) {
+                Notification::route('mail', $inspection->owner_email)->notify(new PaymentReceipt($inspection));
+            }
 
             return $inspection;
         }, attempts: self::DEADLOCK_ATTEMPTS);

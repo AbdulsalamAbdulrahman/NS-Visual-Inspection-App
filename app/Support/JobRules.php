@@ -56,7 +56,8 @@ final class JobRules
             'owner_name' => ['required', 'string', 'max:255'],
             'property_address' => ['required', 'string', 'max:1000'],
             'owner_phone' => ['required', 'digits:11'],
-            'owner_email' => ['nullable', 'email', 'max:255'],
+            // The customer is emailed who will inspect, the receipt and the certificate.
+            'owner_email' => ['required', 'email', 'max:255'],
             'service_area_id' => ['required', 'integer', Rule::in($rep->serviceAreas()->pluck('service_areas.id')->all())],
             'purpose' => ['required', Rule::enum(PropertyPurpose::class)],
             'building_type' => ['required', Rule::enum(BuildingType::class)],
@@ -115,6 +116,7 @@ final class JobRules
     {
         return [
             'owner_phone.digits' => 'Enter an 11-digit phone number, e.g. 08031234567.',
+            'owner_email.required' => 'Enter the owner’s email: they get the receipt and certificate.',
             'service_area_id.in' => 'Choose one of your area offices.',
             'form74_no.required' => 'Enter the Form 74 number.',
         ];

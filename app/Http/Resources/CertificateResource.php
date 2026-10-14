@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use App\Enums\NigerianState;
 use App\Models\Inspection;
+use App\Support\DocumentUrls;
 use App\Support\Form74Range;
 use App\Support\TicketQr;
 use Illuminate\Http\Request;
@@ -53,7 +54,7 @@ class CertificateResource extends JsonResource
                 'category' => $category?->label(),
                 'regNo' => $this->inspector_nemsa_reg_no ?? $profile?->nemsa_reg_no,
                 'corenNo' => $this->inspector_coren_no ?? $profile?->coren_no,
-                'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
+                'signatureUrl' => $this->signature_path ? DocumentUrls::signature($this->resource) : null,
             ],
             // First-level approval by the LECAN state chapter (name only; no signature image yet).
             'lecan' => $this->lecan_approver_name ? [
@@ -63,7 +64,7 @@ class CertificateResource extends JsonResource
             'signatory' => [
                 'name' => $this->signatory_name,
                 'title' => $this->signatory_title,
-                'signatureUrl' => $this->signatory_signature_path ? route('inspections.certificate.signature', $this->resource) : null,
+                'signatureUrl' => $this->signatory_signature_path ? DocumentUrls::signatory($this->resource) : null,
             ],
             'verifyUrl' => TicketQr::verifyUrl($ticket),
             'verifyLabel' => preg_replace('#^https?://#', '', TicketQr::verifyUrl($ticket)),

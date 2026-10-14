@@ -30,6 +30,7 @@ use App\Models\Inspection;
 use App\Models\ServiceArea;
 use App\Support\InspectionFee;
 use App\Support\Money;
+use App\Support\ReceiptLinks;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -103,6 +104,7 @@ class InspectionController extends Controller
         return Inertia::render('contractor/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
             'printUrl' => route('inspections.print', $inspection),
+            'receipt' => ReceiptLinks::for($inspection),
             'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
             'editUrl' => $inspection->needsChanges() ? route('inspections.edit', $inspection) : null,
             'paid' => $inspection->paidPayment ? Money::format($inspection->paidPayment->amount_paid_kobo ?? $inspection->paidPayment->amount_kobo) : null,

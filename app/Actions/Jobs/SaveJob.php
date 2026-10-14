@@ -56,12 +56,14 @@ class SaveJob
 
         DB::transaction(fn () => $job->save());
 
+        // The contractor and the owner both hear who is inspecting, again on reassignment.
+        // Jobs from before the email was required may have none.
         if ($isNew || $previousContractor !== $contractor->id) {
             $contractor->notify(new JobAssigned($job));
-        }
 
-        if ($isNew && filled($job->owner_email)) {
-            Notification::route('mail', $job->owner_email)->notify(new JobAssigned($job));
+            if (filled($job->owner_email)) {
+                Notification::route('mail', $job->owner_email)->notify(new JobAssigned($job));
+            }
         }
 
         return $job;

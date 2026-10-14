@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CertificateResource;
 use App\Http\Resources\InspectionReportResource;
+use App\Http\Resources\ReceiptResource;
 use App\Models\Inspection;
 use App\Models\User;
 use App\Support\TicketQr;
@@ -18,7 +19,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * A4 print pages, the same for every role (access still checked by role and
- * area): the two-page report (PR-01 / PR-02) and the one-page certificate.
+ * area): the two-page report (PR-01 / PR-02), the one-page certificate and
+ * the payment receipt.
  * Printed with the browser's own Print / Save as PDF.
  */
 class PrintController extends Controller
@@ -49,6 +51,20 @@ class PrintController extends Controller
             'certificate' => CertificateResource::make($inspection),
             'backUrl' => $this->backUrl($request->user(), $inspection),
             'reportUrl' => route('inspections.print', $inspection),
+            'autoPrint' => $request->boolean('pdf'),
+        ]);
+    }
+
+    public function receipt(Request $request, Inspection $inspection): Response
+    {
+        Gate::authorize('print', $inspection);
+
+        $inspection->load(['serviceArea', 'paidPayment', 'contractor.contractorProfile']);
+        abort_unless($inspection->paidPayment !== null, 404);
+
+        return Inertia::render('print/Receipt', [
+            'receipt' => ReceiptResource::make($inspection),
+            'backUrl' => $this->backUrl($request->user(), $inspection),
             'autoPrint' => $request->boolean('pdf'),
         ]);
     }

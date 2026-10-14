@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Inspection;
 use App\Support\Money;
+use App\Support\ReceiptLinks;
 use App\Support\TicketQr;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -38,6 +39,7 @@ class TicketController extends Controller
                 'date' => $inspection->submitted_at?->format('d M Y, H:i'),
                 'reportUrl' => route('inspections.show', $inspection),
                 'printUrl' => route('inspections.print', $inspection),
+                'receipt' => ReceiptLinks::for($inspection),
             ],
         ]);
     }
