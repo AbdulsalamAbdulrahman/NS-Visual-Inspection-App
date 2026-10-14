@@ -1,6 +1,11 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { FeeTable } from '@/lib/inspection/fee';
-import type { Draft, FormOptions, Inspector } from '@/lib/inspection/types';
+import type {
+    AttachmentType,
+    Draft,
+    FormOptions,
+    Inspector,
+} from '@/lib/inspection/types';
 
 /**
  * Everything kept on the phone so contractors can work without network:
@@ -31,7 +36,7 @@ export type QueuedUpload = {
     id: string;
     userId: string;
     inspectionUuid: string;
-    type: 'layout' | 'photo' | 'calibration';
+    type: AttachmentType;
     name: string;
     /** Already compressed; EXIF was read before compression. */
     file: Blob;

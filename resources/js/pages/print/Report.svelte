@@ -214,7 +214,7 @@
                 <div class="flex flex-col gap-0.5 rounded-md border border-[#C9D2C7] px-2.5 py-2 text-[11.5px]">
                     {#each report.attachments as file (file.uuid)}
                         <span class="flex justify-between gap-2">
-                            <span class="truncate">{file.name}{file.exifLat !== null ? ' (GPS)' : ''}</span>
+                            <span class="truncate">{file.type === 'front_view' ? 'House front view · ' : ''}{file.name}{file.exifLat !== null ? ' (GPS)' : ''}</span>
                             <span class="flex-none font-mono text-mut">{fileSize(file.size)}</span>
                         </span>
                     {:else}

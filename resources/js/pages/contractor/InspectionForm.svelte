@@ -124,7 +124,7 @@
         4: 'Tick what you saw at the mains position.',
         5: 'One row per circuit. Condition is required for each.',
         6: 'Earthing arrangement, boards, cable and wiring method.',
-        7: 'Layout drawing, site photos and the calibration certificate.',
+        7: 'Layout drawing, house front view, site photos and the calibration certificate.',
         8: 'Your licence details are added from your profile.',
         9: '',
     };

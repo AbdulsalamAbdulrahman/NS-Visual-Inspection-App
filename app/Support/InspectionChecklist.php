@@ -129,6 +129,7 @@ final class InspectionChecklist
         // 7 · Attachments
         $types = $inspection->attachments->pluck('type');
         $need($types->contains(AttachmentType::Layout), 'layout', 'Electrical layout & load schedule', 7);
+        $need($types->contains(AttachmentType::FrontView), 'front_view', 'House front view photo', 7);
         $need($types->contains(AttachmentType::Photo), 'photos', 'Photos of DB & earthing', 7);
 
         // 8 · D

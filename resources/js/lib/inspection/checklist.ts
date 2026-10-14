@@ -225,6 +225,12 @@ export function missingItems(
         7,
     );
     need(
+        d.attachments.some((a) => a.type === 'front_view'),
+        'front_view',
+        'House front view photo',
+        7,
+    );
+    need(
         d.attachments.some((a) => a.type === 'photo'),
         'photos',
         'Photos of DB & earthing',

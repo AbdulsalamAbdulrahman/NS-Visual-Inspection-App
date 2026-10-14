@@ -77,6 +77,7 @@
     );
 
     const layoutCount = $derived(draft.attachments.filter((a) => a.type === 'layout').length);
+    const frontCount = $derived(draft.attachments.filter((a) => a.type === 'front_view').length);
     const photoCount = $derived(draft.attachments.filter((a) => a.type === 'photo').length);
     const calibrationCount = $derived(draft.attachments.filter((a) => a.type === 'calibration').length);
 </script>
@@ -195,6 +196,7 @@
 
     {#snippet files()}
         {@render check(layoutCount > 0, layoutCount > 0 ? 'Layout & load schedule' : 'Layout & load schedule — required')}
+        {@render check(frontCount > 0, frontCount > 0 ? 'House front view' : 'House front view — required')}
         {@render check(photoCount > 0, photoCount > 0 ? `${photoCount} photo${photoCount === 1 ? '' : 's'} of DB & earthing` : 'DB & earthing photos — required')}
         {#if calibrationCount > 0}{@render check(true, 'Calibration certificate')}{/if}
     {/snippet}

@@ -30,6 +30,20 @@
 
 <AttachmentSection
     inspectionUuid={draft.uuid}
+    type="front_view"
+    title="House front view"
+    hint="The whole front of the building, from the road. Use a GPS-stamp camera."
+    required
+    layout="photos"
+    max={2}
+    attachments={draft.attachments}
+    error={errors.front_view}
+    onadded={added}
+    onremoved={removed}
+/>
+
+<AttachmentSection
+    inspectionUuid={draft.uuid}
     type="photo"
     title="Photos of DB & earthing"
     hint="Use a GPS-stamp camera — coordinates must be visible in the photo."

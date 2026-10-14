@@ -23,6 +23,14 @@ test('missing items point at the step to fix', function () {
     expect($keys->all())->toBe(['form74_no' => 1, 'photos' => 7, 'signature' => 8]);
 });
 
+test('the house front view photo is required', function () {
+    $inspection = Inspection::factory()->complete()->create();
+    $inspection->attachments()->where('type', 'front_view')->delete();
+
+    expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label', 'key')->all())
+        ->toBe(['front_view' => 'House front view photo']);
+});
+
 test('standard answers are only required for equipment that was seen', function () {
     $inspection = Inspection::factory()->complete()->create(['db_seen' => true, 'db_standard' => null]);
 

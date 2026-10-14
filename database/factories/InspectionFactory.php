@@ -112,7 +112,7 @@ class InspectionFactory extends Factory
                 'condition' => CircuitCondition::Satisfactory,
             ]);
 
-            foreach ([AttachmentType::Layout, AttachmentType::Photo] as $type) {
+            foreach ([AttachmentType::Layout, AttachmentType::FrontView, AttachmentType::Photo] as $type) {
                 $inspection->attachments()->create([
                     'type' => $type,
                     'path' => "{$inspection->storageDirectory()}/{$type->value}.jpg",

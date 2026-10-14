@@ -53,6 +53,23 @@ test('layouts may be PDFs but photos must be images', function () {
     ], ['Accept' => 'application/json'])->assertJsonValidationErrors('file');
 });
 
+test('the house front view takes up to two photos, not PDFs', function () {
+    $this->actingAs($this->contractor);
+
+    foreach (['front-1.jpg', 'front-2.jpg'] as $name) {
+        $this->post(route('inspections.attachments.store', $this->inspection), ['type' => 'front_view', 'file' => UploadedFile::fake()->image($name)], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->assertJsonPath('type', 'front_view');
+    }
+
+    $this->post(route('inspections.attachments.store', $this->inspection), ['type' => 'front_view', 'file' => UploadedFile::fake()->image('front-3.jpg')], ['Accept' => 'application/json'])
+        ->assertJsonValidationErrors(['type' => 'You can add up to 2 of these.']);
+
+    $this->inspection->attachments()->delete();
+    $this->post(route('inspections.attachments.store', $this->inspection), ['type' => 'front_view', 'file' => UploadedFile::fake()->create('front.pdf', 100, 'application/pdf')], ['Accept' => 'application/json'])
+        ->assertJsonValidationErrors('file');
+});
+
 test('files over 10 MB are rejected', function () {
     $this->actingAs($this->contractor)
         ->post(route('inspections.attachments.store', $this->inspection), [

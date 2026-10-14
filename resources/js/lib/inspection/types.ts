@@ -16,7 +16,7 @@ export type Circuit = {
     observation: string | null;
 };
 
-export type AttachmentType = 'layout' | 'photo' | 'calibration';
+export type AttachmentType = 'layout' | 'front_view' | 'photo' | 'calibration';
 
 export type Attachment = {
     uuid: string;

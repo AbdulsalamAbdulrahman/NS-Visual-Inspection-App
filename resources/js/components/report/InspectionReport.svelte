@@ -15,8 +15,10 @@
 
     let { report }: Props = $props();
 
-    const photos = $derived(report.attachments.filter((a) => a.type === 'photo' && a.isImage));
-    const files = $derived(report.attachments.filter((a) => !(a.type === 'photo' && a.isImage)));
+    const isPhoto = (a: Attachment): boolean => (a.type === 'photo' || a.type === 'front_view') && a.isImage;
+    // The house front view first, then the DB & earthing photos.
+    const photos = $derived([...report.attachments.filter((a) => a.type === 'front_view' && a.isImage), ...report.attachments.filter((a) => a.type === 'photo' && a.isImage)]);
+    const files = $derived(report.attachments.filter((a) => !isPhoto(a)));
 
     let lightboxOpen = $state(false);
     let lightboxIndex = $state(0);
