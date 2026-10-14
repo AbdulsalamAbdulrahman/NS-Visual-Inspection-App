@@ -5,6 +5,7 @@
     import Button from '@/components/Button.svelte';
     import { REVIEW_TONE, type Report } from '@/lib/inspection/report';
     import InspectionReport from './InspectionReport.svelte';
+    import ReceiptCard, { type ReceiptLinks } from './ReceiptCard.svelte';
     import ReviewBanner from './ReviewBanner.svelte';
     import ArrowBack from '~icons/ms/arrow-back';
     import ChevronRight from '~icons/ms/chevron-right';
@@ -24,13 +25,15 @@
         printUrl: string;
         /** One-page certificate, only once NSD has approved. */
         certificateUrl: string | null;
+        /** Print / email the payment receipt (paid reports). */
+        receipt?: ReceiptLinks | null;
         /** Contractor view (CD-01): share button, "you" wording. */
         contractorView?: boolean;
         /** Replaces the default review banner (admin review panel, contractor actions). */
         children?: Snippet;
     };
 
-    let { report, backHref, backLabel, subtitle, printUrl, certificateUrl, contractorView = false, children }: Props = $props();
+    let { report, backHref, backLabel, subtitle, printUrl, certificateUrl, receipt = null, contractorView = false, children }: Props = $props();
 
     const pillTone = { ok: 'bg-ok-bg text-ok', info: 'bg-info-bg text-info', imp: 'bg-imp-bg text-imp' } as const;
 
@@ -101,6 +104,8 @@
     {:else}
         <ReviewBanner {report} audience={contractorView ? 'contractor' : 'staff'} />
     {/if}
+
+    {#if receipt}<ReceiptCard {receipt} />{/if}
 
     <InspectionReport {report} />
 </div>

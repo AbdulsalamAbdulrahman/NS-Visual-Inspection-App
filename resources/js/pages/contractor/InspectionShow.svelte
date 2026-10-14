@@ -4,6 +4,7 @@
 
 <script lang="ts">
     import Button from '@/components/Button.svelte';
+    import type { ReceiptLinks } from '@/components/report/ReceiptCard.svelte';
     import ReportPage from '@/components/report/ReportPage.svelte';
     import ReviewBanner from '@/components/report/ReviewBanner.svelte';
     import type { Report } from '@/lib/inspection/report';
@@ -14,11 +15,12 @@
         report: Report;
         printUrl: string;
         certificateUrl: string | null;
+        receipt: ReceiptLinks | null;
         editUrl: string | null;
         paid: string | null;
     };
 
-    let { report, printUrl, certificateUrl, editUrl, paid }: Props = $props();
+    let { report, printUrl, certificateUrl, receipt, editUrl, paid }: Props = $props();
 
     const subtitle = $derived(
         [`Submitted ${report.submittedAt}`, paid ? `Paid ${paid.replace(/\.00$/, '')}` : null].filter(Boolean).join(' · '),
@@ -26,7 +28,7 @@
 </script>
 
 <!-- CD-01 -->
-<ReportPage {report} {printUrl} {certificateUrl} {subtitle} backHref={home.url()} backLabel="My inspections" contractorView>
+<ReportPage {report} {printUrl} {certificateUrl} {receipt} {subtitle} backHref={home.url()} backLabel="My inspections" contractorView>
     <ReviewBanner {report} audience="contractor">
         {#if editUrl}
             <Button size="sm" class="mt-1.5 h-11 w-fit" href={editUrl}><EditNote />Fix and resubmit</Button>

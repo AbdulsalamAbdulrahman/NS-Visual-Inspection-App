@@ -37,7 +37,7 @@
                 {whole}<span class="text-[22px] text-mut">{kobo}</span>
             </span>
             {#if fee.breakdown}<span class="font-mono text-sm font-medium">{fee.breakdown}</span>{/if}
-            <span class="text-sm text-mut">Set by Kaduna Electric · effective {fee.effectiveFrom}</span>
+            <span class="text-sm text-mut">Price set by LECAN, reviewed by Kaduna Electric · effective {fee.effectiveFrom}</span>
         {:else}
             <span class="text-base font-bold text-bad">The fee hasn't been set yet. Contact the New Service Department.</span>
         {/if}

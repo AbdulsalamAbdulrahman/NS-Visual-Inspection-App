@@ -136,7 +136,7 @@
                     <TextInput id="owner_phone" type="tel" inputmode="tel" mono size="md" placeholder="08031234567" bind:value={form.owner_phone} invalid={!!form.errors.owner_phone} />
                 </Field>
                 <Field id="owner_email" error={form.errors.owner_email}>
-                    {#snippet labelAside()}<label for="owner_email" class={label}>Email <span class="font-normal text-mut">optional</span></label>{/snippet}
+                    {#snippet labelAside()}<label for="owner_email" class={label}>Email <Required /></label>{/snippet}
                     <TextInput id="owner_email" type="email" size="md" bind:value={form.owner_email} autocomplete="off" invalid={!!form.errors.owner_email} />
                 </Field>
             </div>
@@ -256,7 +256,7 @@
                 <div class="flex gap-2.5 rounded-xl bg-info-bg p-3.5 text-sm leading-[1.45]">
                     <Mail class="size-[22px] flex-none text-info" />
                     <span>
-                        We’ll email the contractor the job{form.owner_email.trim() ? ', and tell the owner who will inspect' : ''}.
+                        We’ll email the contractor the job, and tell the owner who will inspect. The owner also gets the payment receipt and, once approved, the certificate.
                     </span>
                 </div>
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Models\InspectionAttachment;
+use App\Support\DocumentUrls;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,7 +26,7 @@ class AttachmentResource extends JsonResource
             'mime' => $this->mime,
             'size' => $this->size_bytes,
             'isImage' => $this->isImage(),
-            'url' => route('attachments.show', $this->resource),
+            'url' => DocumentUrls::attachment($this->resource),
             'exifLat' => $this->exif_lat,
             'exifLng' => $this->exif_lng,
             'takenAt' => $this->taken_at?->toIso8601String(),

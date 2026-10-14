@@ -12,7 +12,8 @@
         title: string;
         /** e.g. "KE-NSD-2026-000123 · A4 · 2 pages". */
         subtitle: string;
-        backUrl: string;
+        /** Null on the building owner's copies (emailed links): there's no app to go back to. */
+        backUrl: string | null;
         pageCount: number;
         /** `?pdf=1`: open the print dialog once fonts and images have loaded. */
         autoPrint?: boolean;
@@ -82,9 +83,13 @@
 <div class="flex h-dvh flex-col bg-[#E4E8E2] text-ink max-md:bg-[#1A221D] max-md:text-[#EEF4EF] print:block print:h-auto print:bg-white">
     <!-- Desktop toolbar -->
     <header class="print-chrome hidden h-16 flex-none items-center gap-3 border-b border-line bg-sf px-6 md:flex">
-        <Link href={backUrl} class="flex h-10 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold text-ink no-underline hover:bg-sf2">
-            <ArrowBack class="size-5" />Back
-        </Link>
+        {#if backUrl}
+            <Link href={backUrl} class="flex h-10 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold text-ink no-underline hover:bg-sf2">
+                <ArrowBack class="size-5" />Back
+            </Link>
+        {:else}
+            <img src="/images/ke-logo.png" alt="Kaduna Electric" class="h-8 w-auto" />
+        {/if}
         <div class="flex min-w-0 flex-col">
             <b class="truncate text-[15px]">{title}</b>
             <span class="truncate font-mono text-xs text-mut">{subtitle}</span>
@@ -104,9 +109,13 @@
 
     <!-- Phone header (PR-03) -->
     <header class="print-chrome flex h-14 flex-none items-center gap-1 px-2 pt-[env(safe-area-inset-top)] md:hidden">
-        <Link href={backUrl} class="flex size-12 items-center justify-center rounded-xl text-inherit" aria-label="Close preview">
-            <Close class="size-6" />
-        </Link>
+        {#if backUrl}
+            <Link href={backUrl} class="flex size-12 items-center justify-center rounded-xl text-inherit" aria-label="Close preview">
+                <Close class="size-6" />
+            </Link>
+        {:else}
+            <span class="w-2"></span>
+        {/if}
         <div class="flex min-w-0 flex-1 flex-col">
             <b class="text-base">Print preview</b>
             <span class="truncate font-mono text-xs text-[#A2B3A8]">{subtitle}</span>

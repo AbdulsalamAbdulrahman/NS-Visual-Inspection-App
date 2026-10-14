@@ -38,7 +38,7 @@ function jobPayload(array $overrides = []): array
         'owner_name' => 'Amina Sule',
         'property_address' => '14 Ahmadu Bello Way, Barnawa',
         'owner_phone' => '+234 803 123 4567',
-        'owner_email' => '',
+        'owner_email' => 'amina.sule@example.com',
         'service_area_id' => test()->barnawa->id,
         'purpose' => 'residential',
         'building_type' => 'duplex',
@@ -64,14 +64,17 @@ test('a rep creates a job assigned to a contractor in the area\'s state and the 
         ->and($job->inspection_date)->toBeNull();
 
     Notification::assertSentTo($contractor, JobAssigned::class);
-    Notification::assertSentTimes(JobAssigned::class, 1);
+    Notification::assertSentTimes(JobAssigned::class, 2);
 });
 
-test('the owner is emailed only when an email is given', function () {
+test('the owner\'s email is required and the owner is told who will inspect', function () {
     $contractor = contractorIn(NigerianState::Kaduna);
 
     $this->actingAs($this->rep)
-        ->post(route('rep.jobs.store'), jobPayload(['contractor' => $contractor->uuid, 'owner_email' => 'Amina@Example.com']))
+        ->post(route('rep.jobs.store'), jobPayload(['contractor' => $contractor->uuid, 'owner_email' => '']))
+        ->assertSessionHasErrors('owner_email');
+
+    $this->post(route('rep.jobs.store'), jobPayload(['contractor' => $contractor->uuid, 'owner_email' => 'Amina@Example.com']))
         ->assertRedirect();
 
     Notification::assertSentOnDemand(JobAssigned::class, fn ($n, array $channels, AnonymousNotifiable $notifiable) => $notifiable->routes['mail'] === 'amina@example.com');
@@ -162,6 +165,7 @@ test('reassigning a job that has not started emails the new contractor', functio
         ->owner_name->toBe('Amina S. Sule');
     Notification::assertSentTo($second, JobAssigned::class);
     Notification::assertNotSentTo($first, JobAssigned::class);
+    Notification::assertSentOnDemand(JobAssigned::class, fn ($n, array $channels, AnonymousNotifiable $notifiable) => $notifiable->routes['mail'] === 'amina.sule@example.com');
 });
 
 test('a job cannot be changed or cancelled once the contractor has started it', function () {

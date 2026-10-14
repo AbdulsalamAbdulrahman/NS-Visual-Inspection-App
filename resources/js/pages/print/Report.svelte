@@ -10,7 +10,7 @@
         report: Report;
         qr: string;
         generatedAt: string;
-        backUrl: string;
+        backUrl: string | null;
         certificateUrl: string | null;
         autoPrint: boolean;
     };

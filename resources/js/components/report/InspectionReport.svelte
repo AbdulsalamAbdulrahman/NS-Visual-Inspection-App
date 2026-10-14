@@ -118,13 +118,19 @@
 {/snippet}
 
 {#snippet system()}
-    {@render kv([
-        ['Earthing', report.c.earthingSystem, true],
-        ['Boards', `${report.c.dbCount ?? '—'} DBs · ${report.c.subCircuitCount ?? '—'} sub-circuits`],
-        ['Main cable', `${num(report.c.mainCableMm2)} mm² ${(report.c.conductorType ?? '').toLowerCase()}`],
-        ['Method', report.c.wiringMethod],
-        ['Insulation', report.c.cableInsulation],
-    ])}
+    <!-- One heading per result, as on the form (client feedback). -->
+    {@render kv(
+        [
+            ['Earthing system type', report.c.earthingSystem, true],
+            ['Distribution boards', report.c.dbCount === null ? null : String(report.c.dbCount), true],
+            ['Sub-circuits', report.c.subCircuitCount === null ? null : String(report.c.subCircuitCount), true],
+            ['Main cable size', report.c.mainCableMm2 === null ? null : `${num(report.c.mainCableMm2)} mm²`, true],
+            ['Conductor type', report.c.conductorType],
+            ['Wiring method', report.c.wiringMethod],
+            ['Cable insulation type', report.c.cableInsulation],
+        ],
+        'grid-cols-[auto_1fr] lg:grid-cols-[170px_1fr]',
+    )}
 {/snippet}
 
 {#snippet attestation()}

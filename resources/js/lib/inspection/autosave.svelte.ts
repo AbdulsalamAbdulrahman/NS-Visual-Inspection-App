@@ -57,6 +57,12 @@ export class Autosave {
     #inflight: Promise<void> | null = null;
     #next: Record<string, unknown> | null = null;
     #lastSent = '';
+    /**
+     * Mirrors status === 'rejected' without reading reactive state: schedule()
+     * runs inside the form's $effect, and reading `status` there re-ran the
+     * effect on every status change, re-sending a failing save every ~2 s.
+     */
+    #rejected = false;
     #onSaved: (response: SaveResponse, sentAt: number) => void;
 
     constructor(
@@ -83,7 +89,7 @@ export class Autosave {
     /** Call on every change; saves after a pause in editing. Returns false when nothing changed. */
     schedule(payload: Record<string, unknown>): boolean {
         // The server won't take this report any more; nothing to save or keep.
-        if (this.status === 'rejected') {
+        if (this.#rejected) {
             return false;
         }
 
@@ -149,6 +155,7 @@ export class Autosave {
                     REJECTED.has(error.status)
                 ) {
                     this.#next = null;
+                    this.#rejected = true;
                     this.status = 'rejected';
                 } else if (
                     error instanceof HttpError &&
@@ -189,7 +196,7 @@ export class Autosave {
     }
 
     #retry = (): void => {
-        if (this.#next && this.status !== 'rejected') {
+        if (this.#next && !this.#rejected) {
             void this.flush();
         }
     };

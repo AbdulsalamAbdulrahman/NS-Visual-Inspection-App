@@ -3,14 +3,15 @@
 </script>
 
 <script lang="ts">
+    import type { ReceiptLinks } from '@/components/report/ReceiptCard.svelte';
     import ReportPage from '@/components/report/ReportPage.svelte';
     import ReviewPanel from '@/components/report/ReviewPanel.svelte';
     import type { Report } from '@/lib/inspection/report';
     import { approve, index, requestChanges } from '@/routes/lecan/inspections';
 
-    type Props = { report: Report; printUrl: string; certificateUrl: string | null; canReview: boolean };
+    type Props = { report: Report; printUrl: string; certificateUrl: string | null; receipt: ReceiptLinks | null; canReview: boolean };
 
-    let { report, printUrl, certificateUrl, canReview }: Props = $props();
+    let { report, printUrl, certificateUrl, receipt, canReview }: Props = $props();
 </script>
 
 <!-- LECAN first-level review (no payment section: never sent to LECAN). -->
@@ -18,6 +19,7 @@
     {report}
     {printUrl}
     {certificateUrl}
+    {receipt}
     subtitle={[report.a.ownerName, report.a.area].filter(Boolean).join(' · ')}
     backHref={index.url()}
     backLabel="Reports"

@@ -18,12 +18,14 @@ use App\Http\Controllers\Admin\RepController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\CustomerDocumentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\Lecan\InspectionController as LecanInspectionController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrintController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
 use App\Http\Controllers\Rep\JobController;
 use App\Http\Controllers\TicketController;
@@ -37,6 +39,16 @@ Route::get('verify/{ticket}', VerifyController::class)
     ->middleware('throttle:30,1')
     ->where('ticket', '[A-Za-z0-9-]{1,40}')
     ->name('verify');
+
+// The building owner's copies from emailed links: signed, no account (see DocumentUrls).
+Route::middleware(['signed', 'throttle:60,1'])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('inspections/{inspection}/receipt', [CustomerDocumentController::class, 'receipt'])->name('receipt');
+    Route::get('inspections/{inspection}/certificate', [CustomerDocumentController::class, 'certificate'])->name('certificate');
+    Route::get('inspections/{inspection}/report', [CustomerDocumentController::class, 'report'])->name('report');
+    Route::get('inspections/{inspection}/signature', [CustomerDocumentController::class, 'signature'])->name('files.signature');
+    Route::get('inspections/{inspection}/signatory', [CustomerDocumentController::class, 'signatory'])->name('files.signatory');
+    Route::get('attachments/{attachment}', [CustomerDocumentController::class, 'attachment'])->name('files.attachment');
+});
 
 // Monnify payment notifications (CSRF-exempt, see bootstrap/app.php).
 Route::post('webhooks/monnify', MonnifyWebhookController::class)
@@ -78,6 +90,8 @@ Route::middleware('auth')->group(function () {
     Route::get('inspections/{inspection}/print', [PrintController::class, 'report'])->name('inspections.print');
     Route::get('inspections/{inspection}/certificate', [PrintController::class, 'certificate'])->name('inspections.certificate');
     Route::get('inspections/{inspection}/certificate/signatory', [PrintController::class, 'signatorySignature'])->name('inspections.certificate.signature');
+    Route::get('inspections/{inspection}/receipt', [PrintController::class, 'receipt'])->name('inspections.receipt');
+    Route::post('inspections/{inspection}/receipt/send', [ReceiptController::class, 'send'])->middleware('throttle:6,1')->name('inspections.receipt.send');
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', OverviewController::class)->name('overview');

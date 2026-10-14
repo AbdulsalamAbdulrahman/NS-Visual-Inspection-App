@@ -5,6 +5,7 @@
 <script lang="ts">
     import Button from '@/components/Button.svelte';
     import Logo from '@/components/Logo.svelte';
+    import ReceiptCard, { type ReceiptLinks } from '@/components/report/ReceiptCard.svelte';
     import { index as home } from '@/routes/inspections';
     import Check from '~icons/ms/check';
     import Description from '~icons/ms/description';
@@ -26,6 +27,7 @@
             date: string | null;
             reportUrl: string | null;
             printUrl: string | null;
+            receipt: ReceiptLinks | null;
         };
     };
 
@@ -59,7 +61,7 @@
 {#snippet actions()}
     <p class="flex items-start gap-2 rounded-xl bg-info-bg px-3.5 py-3 text-sm text-ink">
         <HourglassTop class="size-5 flex-none text-info" />
-        <span><b>Next: NSD review.</b> You'll get an email when the certificate is issued, or if anything needs changing.</span>
+        <span><b>Next: LECAN and NSD review.</b> You and the owner get an email when the certificate is issued; you'll also hear if anything needs changing.</span>
     </p>
     <div class="grid grid-cols-2 gap-2.5 lg:flex lg:gap-3">
         {#if ticket.reportUrl}
@@ -69,6 +71,7 @@
             <Button href={ticket.printUrl} class="text-base lg:h-[52px]"><Print />Print report</Button>
         {/if}
     </div>
+    {#if ticket.receipt}<ReceiptCard receipt={ticket.receipt} />{/if}
     <Button variant="ghost" href={home.url()} class="text-[15px] text-brand lg:h-[52px] lg:text-base">Back to my inspections</Button>
 {/snippet}
 

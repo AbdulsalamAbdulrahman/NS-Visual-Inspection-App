@@ -10,6 +10,7 @@ use App\Enums\WiringMethod;
 use App\Models\Inspection;
 use App\Models\InspectionCircuit;
 use App\Models\InspectionReview;
+use App\Support\DocumentUrls;
 use App\Support\Form74Range;
 use App\Support\InspectionChecklist;
 use App\Support\Money;
@@ -121,7 +122,7 @@ class InspectionReportResource extends JsonResource
                 'firmName' => $this->inspector_firm_name ?? $this->contractor->contractorProfile?->firm_name,
                 'engineerName' => $this->inspector_engineer_name ?? $this->contractor->contractorProfile?->engineer_name,
                 'declaredAt' => $this->declaration_accepted_at?->format('d M Y'),
-                'signatureUrl' => $this->signature_path ? route('inspections.signature', $this->resource) : null,
+                'signatureUrl' => $this->signature_path ? DocumentUrls::signature($this->resource) : null,
             ],
 
             'attachments' => AttachmentResource::collection($this->attachments),

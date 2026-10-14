@@ -16,6 +16,7 @@ use App\Models\Setting;
 use App\Support\Form74Range;
 use App\Support\InspectionFilters;
 use App\Support\Money;
+use App\Support\ReceiptLinks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -61,6 +62,7 @@ class InspectionController extends Controller
         return Inertia::render('admin/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
             'printUrl' => route('inspections.print', $inspection),
+            'receipt' => ReceiptLinks::for($inspection),
             'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
             'canReview' => Gate::allows('review', $inspection),
             'signatoryReady' => Setting::signatory() !== null,

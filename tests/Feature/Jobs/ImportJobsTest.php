@@ -37,7 +37,7 @@ test('an upload is previewed with each row\'s problems and nothing is saved', fu
 
     $this->actingAs($this->rep)
         ->post(route('rep.jobs.import.upload'), ['file' => jobsCsv(
-            'Amina Sule,"14 Ahmadu Bello Way",08031234567,,barnawa,Residential,Duplex,F74/KD/2026/08841,,Y.Bello@bellopower.ng',
+            'Amina Sule,"14 Ahmadu Bello Way",08031234567,amina@example.com,barnawa,Residential,Duplex,F74/KD/2026/08841,,Y.Bello@bellopower.ng',
             'Musa Garba,"3 Kachia Road",0803,,Kawo,Residential,Castle,F74/KD/2026/08842,,nobody@example.com',
         )])
         ->assertRedirect(route('rep.jobs.import'));
@@ -54,7 +54,8 @@ test('an upload is previewed with each row\'s problems and nothing is saved', fu
             ->where('rows.1.line', 3)
             ->where('rows.1.errors', fn ($errors) => collect($errors)->contains('“Kawo” isn\'t one of your area offices.')
                 && collect($errors)->contains('Building type “Castle” isn\'t recognised.')
-                && collect($errors)->contains('Enter an 11-digit phone number, e.g. 08031234567.')));
+                && collect($errors)->contains('Enter an 11-digit phone number, e.g. 08031234567.')
+                && collect($errors)->contains('Enter the owner’s email: they get the receipt and certificate.')));
 });
 
 test('confirming creates the valid rows as assigned jobs and skips the rest', function () {
@@ -62,7 +63,7 @@ test('confirming creates the valid rows as assigned jobs and skips the rest', fu
 
     $this->actingAs($this->rep)->post(route('rep.jobs.import.upload'), ['file' => jobsCsv(
         'Amina Sule,"14 Ahmadu Bello Way",08031234567,amina@example.com,Barnawa,Residential,Duplex,F74/KD/2026/08841,,y.bello@bellopower.ng',
-        'Estate Ltd,"Plot 3",08059876543,,Barnawa,Residential,Block of flats,F74/KD/2026/09001,F74/KD/2026/09020,y.bello@bellopower.ng',
+        'Estate Ltd,"Plot 3",08059876543,estates@example.com,Barnawa,Residential,Block of flats,F74/KD/2026/09001,F74/KD/2026/09020,y.bello@bellopower.ng',
         'Bad Row,"Somewhere",08059876543,,Barnawa,Residential,Duplex,,,y.bello@bellopower.ng',
     )]);
 
@@ -75,7 +76,7 @@ test('confirming creates the valid rows as assigned jobs and skips the rest', fu
         ->and($jobs->pluck('status')->unique()->all())->toBe([InspectionStatus::Assigned])
         ->and($jobs[1]->structure_count)->toBe(20);
     Notification::assertSentTo($contractor, JobAssigned::class, 2);
-    Notification::assertSentOnDemandTimes(JobAssigned::class, 1);
+    Notification::assertSentOnDemandTimes(JobAssigned::class, 2);
 });
 
 test('a file without the template columns is refused', function () {

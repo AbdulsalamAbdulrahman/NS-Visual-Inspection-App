@@ -9,8 +9,10 @@ use App\Enums\ReviewStatus;
 use App\Models\Inspection;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\CertificateIssuedToOwner;
 use App\Notifications\InspectionApproved;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -61,6 +63,10 @@ class ApproveInspection
         });
 
         $approved->contractor->notify(new InspectionApproved($approved));
+
+        if (filled($approved->owner_email)) {
+            Notification::route('mail', $approved->owner_email)->notify(new CertificateIssuedToOwner($approved));
+        }
 
         return $approved;
     }

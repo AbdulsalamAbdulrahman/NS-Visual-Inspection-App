@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\CircuitCondition;
+use App\Enums\CircuitDescription;
+use App\Enums\FuseType;
 use App\Models\Inspection;
+use App\Models\InspectionCircuit;
 use App\Models\ServiceArea;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -85,6 +88,38 @@ test('circuits are replaced as a whole and numbered by position', function () {
         ->and($saved[0]->label())->toBe('C1')
         ->and($saved[0]->condition)->toBe(CircuitCondition::ImprovementRequired)
         ->and($saved[0]->descriptionLabel())->toBe('Other · Perimeter lights');
+});
+
+test('ceiling fan circuits and insulated cut-out fuses save (client additions)', function () {
+    $inspection = Inspection::factory()->forContractor($this->contractor)->create();
+
+    $this->actingAs($this->contractor)
+        ->putJson(route('inspections.draft', $inspection->uuid), [
+            'fuse_type' => 'insulated',
+            'circuits' => [['uuid' => (string) Str::uuid(), 'description' => 'ceiling_fan', 'rating_a' => 6, 'conductor_mm2' => 1.5, 'condition' => 'satisfactory']],
+        ])
+        ->assertOk();
+
+    $inspection->refresh();
+    expect($inspection->fuse_type)->toBe(FuseType::Insulated)
+        ->and($inspection->circuits()->sole()->description)->toBe(CircuitDescription::CeilingFan);
+});
+
+test('a failed save keeps the old signature file and leaves no new one behind', function () {
+    $inspection = Inspection::factory()->forContractor($this->contractor)->create(['signature_path' => 'inspections/old/signature-old.png']);
+    Storage::disk('local')->put('inspections/old/signature-old.png', "\x89PNG old");
+    $png = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('apple-touch-icon.png')));
+    InspectionCircuit::creating(fn () => throw new RuntimeException('database refused the circuit'));
+
+    $this->withoutExceptionHandling();
+    expect(fn () => $this->actingAs($this->contractor)->putJson(route('inspections.draft', $inspection->uuid), [
+        'signature' => $png,
+        'circuits' => [['uuid' => (string) Str::uuid(), 'description' => 'lighting']],
+    ]))->toThrow(RuntimeException::class);
+
+    expect($inspection->fresh()->signature_path)->toBe('inspections/old/signature-old.png')
+        ->and(Storage::disk('local')->files("inspections/{$inspection->uuid}"))->toBe([]);
+    Storage::disk('local')->assertExists('inspections/old/signature-old.png');
 });
 
 test('a drawn signature is stored as a private PNG', function () {

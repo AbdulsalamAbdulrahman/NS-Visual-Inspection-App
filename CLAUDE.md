@@ -30,7 +30,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 | 8 | Production readiness | Done |
 
 ## Conventions
-- declare(strict_types=1); backed enums for every enum column; model config via class properties ($fillable, $casts).
+- declare(strict_types=1); backed enums for every enum value, stored in string columns (`$table->string(..., 40)`), never `$table->enum()`: a MySQL enum list is fixed at migration time, so a new PHP case breaks production saves. Model config via class properties ($fillable, $casts).
 - Thin controllers + Form Requests; business logic in single-purpose Action classes (app/Actions).
 - Inertia props via dedicated Resource/DTO classes; never send full models.
 - Pest feature tests for every access rule and money/ticket path; Http::fake for Monnify (tests/Feature/Payments/MonnifyFake.php). Row-locking tests live in tests/Concurrency and run against MySQL `kens_testing` with parallel processes.

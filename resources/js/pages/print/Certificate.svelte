@@ -28,7 +28,7 @@
 
     type Props = {
         certificate: Certificate;
-        backUrl: string;
+        backUrl: string | null;
         reportUrl: string;
         autoPrint: boolean;
     };

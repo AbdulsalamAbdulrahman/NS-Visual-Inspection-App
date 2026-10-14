@@ -186,10 +186,14 @@
 
     {#snippet system()}
         <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-            {@render row('Earthing', label(options.earthingSystemType, draft.earthing_system_type), true)}
-            {@render row('Boards', `${draft.db_count ?? '—'} DBs · ${draft.sub_circuit_count ?? '—'} sub-circuits`)}
-            {@render row('Main cable', `${num(draft.main_cable_mm2)} mm² ${label(options.conductorType, draft.conductor_type).toLowerCase()} · ${draft.cable_insulation || '—'}`)}
-            {@render row('Method', draft.wiring_method === 'other' ? draft.wiring_method_other || 'Other' : label(options.wiringMethod, draft.wiring_method))}
+            <!-- One heading per result, as on the form (client feedback). -->
+            {@render row('Earthing system type', label(options.earthingSystemType, draft.earthing_system_type), true)}
+            {@render row('Distribution boards', draft.db_count === null ? '—' : String(draft.db_count), true)}
+            {@render row('Sub-circuits', draft.sub_circuit_count === null ? '—' : String(draft.sub_circuit_count), true)}
+            {@render row('Main cable size', draft.main_cable_mm2 === null ? '—' : `${num(draft.main_cable_mm2)} mm²`, true)}
+            {@render row('Conductor type', label(options.conductorType, draft.conductor_type))}
+            {@render row('Wiring method', draft.wiring_method === 'other' ? draft.wiring_method_other || 'Other' : label(options.wiringMethod, draft.wiring_method))}
+            {@render row('Cable insulation type', draft.cable_insulation || '—')}
         </dl>
     {/snippet}
     {@render card('C · System details', [6], system)}
