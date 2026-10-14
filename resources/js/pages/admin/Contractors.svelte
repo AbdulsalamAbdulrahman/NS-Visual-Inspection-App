@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
+    import { Link, page, router } from '@inertiajs/svelte';
     import AccountActions from '@/components/admin/AccountActions.svelte';
     import ContractorDrawer, { type ContractorRow } from '@/components/admin/ContractorDrawer.svelte';
     import DeleteConfirmRow from '@/components/admin/DeleteConfirmRow.svelte';
@@ -16,11 +16,11 @@
     import Engineering from '~icons/ms/engineering';
     import PersonAdd from '~icons/ms/person-add';
     import UploadFile from '~icons/ms/upload-file';
-    import { importMethod as importPage } from '@/routes/admin/contractors';
+    import { importMethod as importPage, index } from '@/routes/admin/contractors';
 
     type Props = {
         contractors: { data: ContractorRow[]; meta: PageMeta; links: PageLinks };
-        filters: { search: string };
+        filters: { search: string; licence: 'issues' | null };
         summary: { total: number; active: number; invited: number; suspended: number };
         categories: { value: string; label: string }[];
         states: { value: string; label: string }[];
@@ -53,12 +53,32 @@
         drawerOpen = true;
     }
 
+    /** Only contractors whose licence is expired, expiring soon or whose documents are missing. */
+    function toggleLicenceIssues(): void {
+        router.get(index.url({ query: { search: filters.search || undefined, licence: filters.licence ? undefined : 'issues' } }), {}, { preserveState: true, preserveScroll: true, replace: true, only: ['contractors', 'filters'] });
+    }
+
     const cols = 'grid-cols-[minmax(0,1.4fr)_100px_170px_140px_70px_110px_120px_40px]';
 </script>
 
 <svelte:head>
     <title>Contractors · KENS</title>
 </svelte:head>
+
+{#snippet licenceNote(c: ContractorRow)}
+    <span class={['truncate text-xs font-bold', c.licence.state === 'expired' ? 'text-bad' : 'text-imp']}>{c.licence.label}</span>
+{/snippet}
+
+{#snippet licenceFilter(extra = '')}
+    <button
+        type="button"
+        aria-pressed={filters.licence === 'issues'}
+        class={['flex h-10 flex-none items-center gap-1.5 rounded-full px-3.5 text-sm', filters.licence === 'issues' ? 'bg-pri font-bold text-on-pri' : 'border border-line bg-sf font-semibold', extra]}
+        onclick={toggleLicenceIssues}
+    >
+        Licence issues
+    </button>
+{/snippet}
 
 <!-- Phone header (AM-05) -->
 <header class="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-sf px-4 pt-[calc(12px+env(safe-area-inset-top))] pb-3.5 lg:hidden">
@@ -80,6 +100,7 @@
         </button>
     </div>
     <SearchField tone="filled" value={filters.search} placeholder="Name, NEMSA or phone" only={['contractors', 'filters']} />
+    <div class="flex">{@render licenceFilter()}</div>
 </header>
 
 <div class="flex flex-col gap-[18px] px-4 py-3 lg:px-10 lg:py-8">
@@ -89,7 +110,8 @@
             <h1 class="text-[28px] font-extrabold">Contractors</h1>
             <span class="text-sm text-mut">{summaryLine}</span>
         </div>
-        <SearchField class="ml-auto w-[300px]" value={filters.search} placeholder="Name, NEMSA or phone" only={['contractors', 'filters']} />
+        <span class="ml-auto">{@render licenceFilter()}</span>
+        <SearchField class="w-[300px]" value={filters.search} placeholder="Name, NEMSA or phone" only={['contractors', 'filters']} />
         <Button href={importPage.url()} variant="outline" size="sm" class="h-11 rounded-xl"><UploadFile />Upload CSV</Button>
         <Button size="sm" class="h-11 rounded-xl" onclick={() => openDrawer(null)}>
             <PersonAdd />Add contractor
@@ -128,7 +150,10 @@
                         highlight === c.uuid && 'bg-soft',
                     ]}
                 >
-                    <b role="cell" class="truncate">{c.name}</b>
+                    <span role="cell" class="flex min-w-0 flex-col">
+                        <b class="truncate">{c.name}</b>
+                        {#if c.licence.state !== 'valid'}{@render licenceNote(c)}{/if}
+                    </span>
                     <span role="cell">{c.categoryLabel ?? '—'}</span>
                     <span role="cell" class="truncate font-mono text-[13px]">{c.regNo ?? '—'}</span>
                     <span role="cell" class="truncate font-mono text-[13px]">{c.phone ?? '—'}</span>
@@ -176,6 +201,7 @@
                             <StatusPill tone={accountTone[c.status]} label={c.statusLabel} />
                             <span class="text-mut">{c.inspectionsCount} inspections</span>
                         </span>
+                        {#if c.licence.state !== 'valid'}{@render licenceNote(c)}{/if}
                     </div>
                     <AccountActions
                         account={{ ...c, subtitle: [c.categoryLabel, c.regNo].filter(Boolean).join(' · ') }}

@@ -144,7 +144,10 @@
                     <span role="cell" class="truncate text-mut">{job.address}</span>
                     <span role="cell">{job.area}</span>
                     <span role="cell" class="truncate">{job.building}{job.structures > 1 ? ` × ${job.structures}` : ''}</span>
-                    <span role="cell" class="truncate">{job.contractor}</span>
+                    <span role="cell" class="flex min-w-0 flex-col">
+                        <span class="truncate">{job.contractor}</span>
+                        {#if job.contractorLicenceExpired && job.progress === 'not_started'}<span class="text-xs font-bold text-bad">Licence expired · reassign</span>{/if}
+                    </span>
                     <span role="cell" class="font-mono">{job.assignedAt}</span>
                     <span role="cell">{@render progress(job)}</span>
                     <span role="cell" class="flex justify-end text-mut">
@@ -175,6 +178,7 @@
                         </span>
                         <span class="truncate text-sm text-mut">{job.address}</span>
                         <span class="truncate text-[13px] text-mut">{job.area} · {job.contractor} · <span class="font-mono">{job.assignedAt}</span></span>
+                        {#if job.contractorLicenceExpired && job.progress === 'not_started'}<span class="text-[13px] font-bold text-bad">Contractor’s licence expired · reassign</span>{/if}
                     </span>
                     {#if href}<ChevronRight class="size-6 flex-none text-mut" aria-hidden="true" />{/if}
                 {/snippet}

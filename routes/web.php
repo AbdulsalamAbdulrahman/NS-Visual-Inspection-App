@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\ContractorDocumentController;
 use App\Http\Controllers\Account\FirstPasswordController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Account\ProfileController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
 use App\Http\Controllers\Rep\JobController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerifyController;
+use App\Models\ContractorProfile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -67,6 +69,9 @@ Route::middleware('auth')->group(function () {
         ->name('password.change');
 
     Route::middleware('role:contractor')->group(function () {
+        Route::post('profile/documents', [ContractorDocumentController::class, 'store'])->middleware('throttle:30,1')->name('profile.documents.store');
+        Route::get('profile/documents/{document}', [ContractorDocumentController::class, 'show'])->whereIn('document', ContractorProfile::DOCUMENTS)->name('profile.documents.show');
+
         Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
         Route::get('inspections/{inspection}', [InspectionController::class, 'show'])->name('inspections.show');
         Route::post('inspections/{inspection}/start', [InspectionController::class, 'start'])->name('inspections.start');
@@ -118,6 +123,7 @@ Route::middleware('auth')->group(function () {
         Route::post('contractors/import/confirm', [ContractorImportController::class, 'confirm'])->name('contractors.import.confirm');
         Route::delete('contractors/import', [ContractorImportController::class, 'discard'])->name('contractors.import.discard');
         Route::put('contractors/{contractor}', [ContractorController::class, 'update'])->name('contractors.update');
+        Route::get('contractors/{contractor}/documents/{document}', [ContractorDocumentController::class, 'forAdmin'])->whereIn('document', ContractorProfile::DOCUMENTS)->name('contractors.documents.show');
 
         Route::get('lecan', [LecanController::class, 'index'])->name('lecan.index');
         Route::post('lecan', [LecanController::class, 'store'])->name('lecan.store');

@@ -1,4 +1,6 @@
 <script lang="ts" module>
+    import type { LicenceStatus } from '@/components/account/ContractorDocuments.svelte';
+
     export type ContractorRow = {
         uuid: string;
         name: string;
@@ -17,6 +19,9 @@
         engineerRegNo: string | null;
         state: string | null;
         stateLabel: string | null;
+        /** Uploaded by the contractor on Profile; admins view only. */
+        licence: LicenceStatus;
+        documents: { licence: string | null; passport: string | null; signature: string | null };
     };
 </script>
 
@@ -88,6 +93,31 @@
 </script>
 
 <Drawer bind:open title={editing ? 'Edit contractor' : 'Add contractor'}>
+    {#if contractor}
+        <!-- Documents the contractor uploaded on their Profile (view only). -->
+        <section class="flex flex-col gap-2.5 rounded-xl border border-line p-3.5" aria-label="Licence and documents">
+            <div class="flex items-center gap-3">
+                {#if contractor.documents.passport}
+                    <img src={contractor.documents.passport} alt="Passport photograph of {contractor.name}" class="size-16 flex-none rounded-lg border border-line object-cover" />
+                {/if}
+                <div class="flex min-w-0 flex-col gap-0.5">
+                    <b class="text-sm">Licence &amp; documents</b>
+                    <span class={['text-sm font-semibold', contractor.licence.state === 'valid' ? 'text-ok' : contractor.licence.state === 'expired' ? 'text-bad' : 'text-imp']}>
+                        {contractor.licence.label}
+                    </span>
+                    {#if contractor.licence.missing.length > 0}
+                        <span class="text-[13px] text-mut">Missing: {contractor.licence.missing.join(', ')}</span>
+                    {/if}
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
+                {#if contractor.documents.licence}<a href={contractor.documents.licence} target="_blank" rel="noopener" class="text-brand">View licence</a>{/if}
+                {#if contractor.documents.signature}<a href={contractor.documents.signature} target="_blank" rel="noopener" class="text-brand">View signature</a>{/if}
+            </div>
+            <span class="text-[13px] text-mut">The contractor uploads these on their Profile.</span>
+        </section>
+    {/if}
+
     <form id="contractor-form" class="contents" onsubmit={submit} novalidate>
         <Field id="c-name" label="Full name" error={form.errors.name}>
             <TextInput id="c-name" size="md" class={compact} bind:value={form.name} autocomplete="off" invalid={!!form.errors.name} />

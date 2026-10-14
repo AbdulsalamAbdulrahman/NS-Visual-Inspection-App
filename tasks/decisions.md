@@ -130,3 +130,9 @@ Decisions with the user (13 Oct): LECAN officials as a new role; owner notified 
 - **Production bug:** saves with a "Ceiling fan" circuit failed with 500 (MariaDB strict mode, `inspection_circuits.description` enum never widened). All DB enum columns became `varchar(40)` (migration `convert_enum_columns_to_strings`); values are checked by `Rule::enum` and casts. New enum cases need no migration.
 - **Signature files** are written before the draft transaction and the old one deleted only after commit; `clear_missing_signature_paths` nulls drafts whose file was lost to failed saves.
 - **Owner documents:** owner email is required on rep jobs. The owner is emailed on assignment and reassignment, gets a receipt when the fee is paid (resend from the report or ticket), and gets the certificate + report on approval. Links are permanent signed URLs (`customer.*`, `DocumentUrls`); images on those pages use 24-hour signed links. No PDF library (client choice: links, not attachments).
+
+## 14 Oct: contractor documents and licence expiry
+- Contractors upload their licence copy, passport photograph, signature (upload or draw) and licence expiry on **Profile**; admins view them in the contractor drawer (`admin.contractors.documents.show`), nobody else.
+- **Expiry is computed, not a status:** past `licence_expires_at` (valid through that day) blocks start, pay and resubmit (`LicenceExpiredException` → toast; policies too) and hides the contractor from reps' lists. Sign-in still works; a later date lifts the block at once. No expiry recorded = not blocked ("Documents missing" reminder).
+- `contractors:licence-check` (daily 07:00) emails once at ≤30 days and once when expired; flags reset when the expiry date changes.
+- The profile signature is copied into a report when the job starts (a copy, so profile changes never alter reports).

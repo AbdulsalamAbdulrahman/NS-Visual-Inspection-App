@@ -34,12 +34,12 @@ class InspectionPolicy
     /** Paying submits a draft; a report sent back for changes is resubmitted without paying again. */
     public function pay(User $user, Inspection $inspection): bool
     {
-        return $this->owns($user, $inspection) && $inspection->isDraft();
+        return $this->ownsLicensed($user, $inspection) && $inspection->isDraft();
     }
 
     public function resubmit(User $user, Inspection $inspection): bool
     {
-        return $this->owns($user, $inspection) && $inspection->needsChanges();
+        return $this->ownsLicensed($user, $inspection) && $inspection->needsChanges();
     }
 
     /**
@@ -70,7 +70,7 @@ class InspectionPolicy
     /** The assigned contractor turns a job into a draft when they're at the property. */
     public function start(User $user, Inspection $inspection): bool
     {
-        return $this->owns($user, $inspection) && $inspection->isAssigned();
+        return $this->ownsLicensed($user, $inspection) && $inspection->isAssigned();
     }
 
     /** A rep changes, reassigns or cancels a job in their areas until it's started. */
@@ -86,5 +86,11 @@ class InspectionPolicy
     private function owns(User $user, Inspection $inspection): bool
     {
         return $user->isContractor() && $inspection->contractor_id === $user->id;
+    }
+
+    /** Owner whose licence hasn't expired: needed to start, pay and resubmit. */
+    private function ownsLicensed(User $user, Inspection $inspection): bool
+    {
+        return $this->owns($user, $inspection) && $user->contractorProfile?->isLicenceExpired() !== true;
     }
 }

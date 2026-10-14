@@ -48,7 +48,7 @@ class JobController extends Controller
             ->when($progress === 'in_progress', fn ($q) => $q->where('status', InspectionStatus::Draft))
             ->when($progress === 'submitted', fn ($q) => $q->where('status', InspectionStatus::Submitted))
             ->search($request->string('search')->toString())
-            ->with(['serviceArea:id,name', 'contractor:id,uuid,name', 'assigner:id,name'])
+            ->with(['serviceArea:id,name', 'contractor:id,uuid,name', 'contractor.contractorProfile:id,user_id,licence_expires_at', 'assigner:id,name'])
             ->latest('assigned_at')
             ->paginate(25)
             ->withQueryString();
@@ -198,7 +198,7 @@ class JobController extends Controller
         $contractors = User::query()
             ->role(Role::Contractor)
             ->where('status', UserStatus::Active)
-            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states))
+            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states)->licensed())
             ->with('contractorProfile')
             ->withCount(['inspections as open_jobs' => fn ($q) => $q->whereIn('status', [InspectionStatus::Assigned, InspectionStatus::Draft])])
             ->orderBy('name')

@@ -57,6 +57,9 @@ class JobResource extends JsonResource
             'structures' => $this->structure_count,
             'contractorUuid' => $this->contractor->uuid,
             'contractor' => $this->contractor->name,
+            // Not started yet and the contractor's licence has lapsed: the rep should reassign.
+            'contractorLicenceExpired' => $this->contractor->relationLoaded('contractorProfile')
+                && $this->contractor->contractorProfile?->isLicenceExpired() === true,
             'assignedBy' => $this->assigner?->name,
             'assignedAt' => $this->assigned_at?->format('d M Y'),
         ];

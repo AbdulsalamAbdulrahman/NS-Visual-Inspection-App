@@ -14,6 +14,7 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ContractorRequest;
 use App\Http\Resources\Admin\ContractorResource;
+use App\Models\ContractorProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +27,7 @@ class ContractorController extends Controller
     public function index(Request $request): Response
     {
         $search = trim($request->string('search')->toString());
+        $licenceIssues = $request->input('licence') === 'issues';
 
         $contractors = User::query()
             ->role(Role::Contractor)
@@ -40,6 +42,13 @@ class ContractorController extends Controller
                     ->orWhere('phone', 'like', $like)
                     ->orWhereHas('contractorProfile', fn (Builder $p) => $p->where('nemsa_reg_no', 'like', $like)));
             })
+            // Expired, expiring within the reminder window, or documents missing.
+            ->when($licenceIssues, fn (Builder $query) => $query->where(fn (Builder $q) => $q
+                ->doesntHave('contractorProfile')
+                ->orWhereHas('contractorProfile', fn (Builder $p) => $p
+                    ->whereNull('licence_path')->orWhereNull('passport_path')->orWhereNull('signature_path')
+                    ->orWhereNull('licence_expires_at')
+                    ->orWhereDate('licence_expires_at', '<=', today()->addDays(ContractorProfile::REMINDER_DAYS)))))
             ->latest('id')
             ->paginate(25)
             ->withQueryString();
@@ -51,7 +60,7 @@ class ContractorController extends Controller
 
         return Inertia::render('admin/Contractors', [
             'contractors' => ContractorResource::collection($contractors),
-            'filters' => ['search' => $search],
+            'filters' => ['search' => $search, 'licence' => $licenceIssues ? 'issues' : null],
             'summary' => [
                 'total' => (int) $counts->sum(),
                 'active' => (int) ($counts[UserStatus::Active->value] ?? 0),

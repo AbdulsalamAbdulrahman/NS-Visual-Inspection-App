@@ -26,6 +26,8 @@ export type Job = {
     structures: number;
     contractorUuid: string;
     contractor: string;
+    /** Job not started and the contractor's licence has expired: reassign it. */
+    contractorLicenceExpired: boolean;
     assignedBy: string | null;
     assignedAt: string | null;
 };

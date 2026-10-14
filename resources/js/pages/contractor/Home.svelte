@@ -17,12 +17,14 @@
     import { getBootstrap, getLocalDraft, listLocalDrafts, offlineSupported, type LocalDraft } from '@/lib/offline/db';
     import { offlineSync } from '@/lib/offline/sync.svelte';
     import { onMount } from 'svelte';
+    import type { LicenceStatus } from '@/components/account/ContractorDocuments.svelte';
     import { edit, show, start as startRoute } from '@/routes/inspections';
     import { show as profile } from '@/routes/profile';
     import ArrowForward from '~icons/ms/arrow-forward';
     import AssignmentInd from '~icons/ms/assignment-ind';
     import Call from '~icons/ms/call';
     import PlayArrow from '~icons/ms/play-arrow';
+    import Badge from '~icons/ms/badge';
     import ChevronRight from '~icons/ms/chevron-right';
     import CloudOff from '~icons/ms/cloud-off';
     import PhoneAndroid from '~icons/ms/phone-android';
@@ -57,9 +59,13 @@
         submittedTotal: number;
         filters: { search: string };
         fee: string | null;
+        /** Expired blocks starting jobs; missing documents or expiring soon is a reminder. */
+        licence: LicenceStatus;
     };
 
-    let { assigned, drafts, returned, submitted, submittedTotal, filters, fee }: Props = $props();
+    let { assigned, drafts, returned, submitted, submittedTotal, filters, fee, licence }: Props = $props();
+
+    const licenceExpired = $derived(licence.state === 'expired');
 
     const user = $derived(page.props.auth.user!);
     /** uuid of the job being started. */
@@ -194,6 +200,29 @@
         </div>
     </div>
 
+    {#if licence.state !== 'valid'}
+        <Link
+            href={profile.url()}
+            class={['flex items-start gap-2.5 rounded-[14px] px-4 py-3 text-sm text-ink no-underline', licenceExpired ? 'bg-bad-bg' : 'bg-imp-bg']}
+            role={licenceExpired ? 'alert' : 'status'}
+        >
+            <Badge class={['size-5 flex-none', licenceExpired ? 'text-bad' : 'text-imp']} />
+            <span class="flex flex-1 flex-col gap-0.5">
+                <b class={licenceExpired ? 'text-bad' : 'text-imp'}>{licence.label}</b>
+                <span>
+                    {#if licenceExpired}
+                        You can’t start, pay for or resubmit inspections until you upload the renewed licence on Profile.
+                    {:else if licence.state === 'expiring'}
+                        Upload the renewed licence and its new expiry date on Profile before then.
+                    {:else}
+                        Add on Profile: {licence.missing.join(', ')}.
+                    {/if}
+                </span>
+            </span>
+            <ChevronRight class="size-5 flex-none text-mut" />
+        </Link>
+    {/if}
+
     {#if !online || offlineSync.queued.length > 0 || offlineSync.needsSignIn || unsynced.size > 0 || offlineNotice}
         <div class="flex flex-col gap-1.5 rounded-[14px] bg-info-bg px-4 py-3 text-sm" role="status">
             {#if !online}
@@ -249,8 +278,8 @@
                                         <Call class="size-5" />{job.ownerPhone}
                                     </a>
                                 {/if}
-                                <Button size="lg" class="flex-1 lg:h-11 lg:rounded-[10px] lg:text-[15px]" onclick={() => startJob(job.uuid)} disabled={starting !== null}>
-                                    <PlayArrow />{starting === job.uuid ? 'Starting…' : 'Start inspection'}
+                                <Button size="lg" class="flex-1 lg:h-11 lg:rounded-[10px] lg:text-[15px]" onclick={() => startJob(job.uuid)} disabled={starting !== null || licenceExpired}>
+                                    <PlayArrow />{starting === job.uuid ? 'Starting…' : licenceExpired ? 'Licence expired' : 'Start inspection'}
                                 </Button>
                             </div>
                         </li>

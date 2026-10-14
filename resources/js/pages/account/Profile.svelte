@@ -5,6 +5,7 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
     import Avatar from '@/components/Avatar.svelte';
+    import ContractorDocuments, { type ContractorDocumentsData } from '@/components/account/ContractorDocuments.svelte';
     import Button from '@/components/Button.svelte';
     import MobileHeader from '@/components/MobileHeader.svelte';
     import ThemeSwitcher from '@/components/ThemeSwitcher.svelte';
@@ -38,6 +39,7 @@
             engineerRegNo: string | null;
         } | null;
         areas: string[];
+        documents: ContractorDocumentsData | null;
     };
 
     let { profile }: { profile: Profile } = $props();
@@ -135,6 +137,10 @@
         <p class="px-1 text-sm leading-[1.45] text-mut">
             Licence details are managed by Kaduna Electric. Contact the New Service Department to update them.
         </p>
+    {/if}
+
+    {#if profile.documents}
+        <ContractorDocuments documents={profile.documents} />
     {/if}
 
     {#if profile.areas.length > 0}
