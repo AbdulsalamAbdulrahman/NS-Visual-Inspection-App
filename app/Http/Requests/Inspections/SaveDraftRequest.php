@@ -16,7 +16,9 @@ use App\Enums\ProtectionType;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
 use App\Models\Inspection;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 /**
@@ -118,5 +120,17 @@ class SaveDraftRequest extends FormRequest
             'circuits.*.condition' => ['nullable', Rule::enum(CircuitCondition::class)],
             'circuits.*.observation' => ['nullable', 'string', 'max:1000'],
         ];
+    }
+
+    /** Logged so a phone stuck resending a draft can be traced: field names only, never values. */
+    protected function failedValidation(Validator $validator): void
+    {
+        Log::warning('Draft save rejected', [
+            'user' => $this->user()?->id,
+            'inspection' => $this->route('uuid'),
+            'fields' => array_keys($validator->errors()->messages()),
+        ]);
+
+        parent::failedValidation($validator);
     }
 }
