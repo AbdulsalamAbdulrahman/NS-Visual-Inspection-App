@@ -13,8 +13,8 @@ test('the reference seeder adds the official area offices and the launch fee onc
     $this->seed(DatabaseSeeder::class);
     $this->seed(DatabaseSeeder::class);
 
-    expect(ServiceArea::query()->count())->toBe(23)
-        ->and(ServiceArea::query()->where('is_active', true)->count())->toBe(23)
+    expect(ServiceArea::query()->count())->toBe(26)
+        ->and(ServiceArea::query()->where('is_active', true)->count())->toBe(26)
         ->and(ServiceArea::query()->pluck('name')->sort()->values()->all())->toBe(collect(ServiceAreaSeeder::AREAS)->sort()->values()->all())
         ->and(FeeSchedule::query()->count())->toBe(1)
         ->and(FeeSchedule::currentAmountKobo())->toBe(1_500_000)
@@ -28,15 +28,15 @@ test('re-seeding keeps deactivated areas and an existing fee', function () {
     $this->seed(DatabaseSeeder::class);
 
     expect(ServiceArea::query()->where('name', 'Barnawa')->sole()->is_active)->toBeFalse()
-        ->and(ServiceArea::query()->count())->toBe(23)
+        ->and(ServiceArea::query()->count())->toBe(26)
         ->and(FeeSchedule::currentAmountKobo())->toBe(2_000_000);
 });
 
-test('the area seeder on its own adds just the 23 area offices', function () {
+test('the area seeder on its own adds just the 26 area offices', function () {
     $this->seed(ServiceAreaSeeder::class);
     $this->seed(ServiceAreaSeeder::class);
 
-    expect(ServiceArea::query()->count())->toBe(23)
+    expect(ServiceArea::query()->count())->toBe(26)
         ->and(FeeSchedule::query()->count())->toBe(0);
 });
 
@@ -45,6 +45,6 @@ test('area offices get their franchise state', function () {
 
     $states = ServiceArea::query()->get()->groupBy(fn (ServiceArea $a) => $a->state->value)->map->count()->sortKeys()->all();
 
-    expect($states)->toBe(['kaduna' => 14, 'kebbi' => 3, 'sokoto' => 3, 'zamfara' => 3])
+    expect($states)->toBe(['kaduna' => 15, 'kebbi' => 4, 'sokoto' => 4, 'zamfara' => 3])
         ->and(ServiceArea::query()->where('name', 'Zamfara West')->sole()->state)->toBe(NigerianState::Zamfara);
 });
