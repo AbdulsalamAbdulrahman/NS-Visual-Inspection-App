@@ -34,6 +34,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -172,9 +173,19 @@ class InspectionController extends Controller
     {
         abort_unless(Str::isUuid($uuid), 404);
 
-        $inspection = Inspection::query()->where('uuid', $uuid)->firstOrFail();
+        $inspection = Inspection::query()->where('uuid', $uuid)->first();
 
-        Gate::authorize('update', $inspection);
+        // Logged so a phone stuck resending a draft can be traced (no values).
+        if (! $inspection || Gate::denies('update', $inspection)) {
+            Log::warning('Draft save refused', [
+                'user' => $request->user()?->id,
+                'inspection' => $uuid,
+                'status' => $inspection?->status->value,
+                'reason' => $inspection ? 'forbidden' : 'not_found',
+            ]);
+
+            abort($inspection ? 403 : 404);
+        }
 
         $save->handle($inspection, $request->validated());
 

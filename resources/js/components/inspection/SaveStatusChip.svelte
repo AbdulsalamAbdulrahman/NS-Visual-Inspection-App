@@ -18,7 +18,7 @@
         status === 'saved' && 'text-ok',
         (status === 'saving' || status === 'pending') && 'text-mut',
         status === 'offline' && 'text-info',
-        (status === 'error' || status === 'signin') && 'text-bad',
+        (status === 'error' || status === 'signin' || status === 'rejected') && 'text-bad',
     ]}
     role="status"
     aria-live="polite"
@@ -29,6 +29,8 @@
         <PhoneAndroid class="size-[18px]" />On device
     {:else if status === 'signin'}
         <ErrorIcon class="size-[18px]" />Sign in to sync
+    {:else if status === 'rejected'}
+        <ErrorIcon class="size-[18px]" />Can't save
     {:else if status === 'error'}
         <ErrorIcon class="size-[18px]" />Not saved
     {:else}

@@ -10,7 +10,7 @@
     import ThemeSwitcher from '@/components/ThemeSwitcher.svelte';
     import { shellClasses } from '@/lib/breakpoints';
     import { home } from '@/routes';
-    import { unsyncedCount } from '@/lib/offline/db';
+    import { clearOfflineData, unsyncedCount } from '@/lib/offline/db';
     import { signOut } from '@/lib/offline/signout';
     import admin from '@/routes/admin';
     import { edit as editPassword } from '@/routes/password';
@@ -20,6 +20,7 @@
     import Key from '~icons/ms/key';
     import Logout from '~icons/ms/logout';
     import MapIcon from '~icons/ms/map';
+    import PhoneAndroid from '~icons/ms/phone-android';
 
     type Profile = {
         name: string;
@@ -56,6 +57,22 @@
         }
 
         signOut();
+    }
+
+    /**
+     * Support's fix for a phone stuck on an old copy: clears this app's drafts,
+     * queued files and saved pages here (the server's copies are untouched).
+     * Asks first, with the number of unsynced items it would lose.
+     */
+    let phoneData = $state<{ step: 'idle' | 'confirm' | 'done'; unsynced: number }>({ step: 'idle', unsynced: 0 });
+
+    async function askClearPhone(): Promise<void> {
+        phoneData = { step: 'confirm', unsynced: await unsyncedCount(page.props.auth.user!.uuid).catch(() => 0) };
+    }
+
+    async function clearPhone(): Promise<void> {
+        await clearOfflineData().catch(() => undefined);
+        phoneData = { step: 'done', unsynced: 0 };
     }
 
     const licenceRows = $derived(
@@ -146,6 +163,35 @@
             <b class="flex-1 text-base">Theme</b>
             <ThemeSwitcher />
         </div>
+        {#if profile.role === 'contractor'}
+            <div class="flex flex-col gap-2.5 border-t border-line py-3 pr-3 pl-4">
+                <div class="flex items-center gap-3">
+                    <PhoneAndroid class="size-[22px] text-mut" />
+                    <span class="flex min-w-0 flex-1 flex-col">
+                        <b class="text-base">Saved data on this phone</b>
+                        <span class="text-[13px] text-mut">
+                            {phoneData.step === 'done' ? 'Cleared. Drafts open from the server again.' : 'Clear it if a draft won’t save or shows old details.'}
+                        </span>
+                    </span>
+                    {#if phoneData.step === 'idle'}
+                        <Button variant="outline" size="sm" onclick={askClearPhone}>Clear</Button>
+                    {/if}
+                </div>
+                {#if phoneData.step === 'confirm'}
+                    <div class="flex flex-col gap-2.5 rounded-xl bg-sf2 p-3" role="alert">
+                        <span class="text-sm">
+                            {phoneData.unsynced > 0
+                                ? `${phoneData.unsynced} item${phoneData.unsynced === 1 ? '' : 's'} on this phone haven’t synced and will be lost.`
+                                : 'Everything on this phone is already saved on the server.'}
+                        </span>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <Button variant="outline" class="bg-sf" onclick={() => (phoneData = { step: 'idle', unsynced: 0 })}>Cancel</Button>
+                            <Button variant={phoneData.unsynced > 0 ? 'danger' : 'primary'} onclick={clearPhone}>Clear this phone</Button>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        {/if}
     </div>
 
     {#if unsynced > 0}

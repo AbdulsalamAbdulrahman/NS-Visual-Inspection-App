@@ -6,6 +6,7 @@ use App\Enums\CircuitCondition;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -186,4 +187,19 @@ test('draft saves leave the rep\'s customer details alone but keep the contracto
     expect($job->owner_name)->toBe('Amina Sule')
         ->and($job->form74_no)->toBe('F74/KD/2026/08841')
         ->and($job->connection_type?->value)->toBe('three_phase');
+});
+
+test('refused and rejected draft saves are logged with field names but no values', function () {
+    Log::spy();
+    $submitted = Inspection::factory()->forContractor($this->contractor)->submitted()->create();
+    $draft = Inspection::factory()->forContractor($this->contractor)->create();
+    $unknown = (string) Str::uuid();
+
+    $this->actingAs($this->contractor)->putJson(route('inspections.draft', $submitted->uuid), ['owner_name' => 'Changed'])->assertForbidden();
+    $this->putJson(route('inspections.draft', $unknown), ['owner_name' => 'Changed'])->assertNotFound();
+    $this->putJson(route('inspections.draft', $draft->uuid), ['purpose' => 'castle'])->assertUnprocessable();
+
+    Log::shouldHaveReceived('warning')->with('Draft save refused', Mockery::subset(['inspection' => $submitted->uuid, 'reason' => 'forbidden', 'status' => 'submitted']))->once();
+    Log::shouldHaveReceived('warning')->with('Draft save refused', Mockery::subset(['inspection' => $unknown, 'reason' => 'not_found']))->once();
+    Log::shouldHaveReceived('warning')->with('Draft save rejected', ['user' => $this->contractor->id, 'inspection' => $draft->uuid, 'fields' => ['purpose']])->once();
 });

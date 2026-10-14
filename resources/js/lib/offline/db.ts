@@ -29,6 +29,12 @@ export type LocalDraft = {
     signature?: string | null;
     /** Created on this phone and never seen by the server yet. */
     localOnly: boolean;
+    /**
+     * The server's updated_at this copy was based on (server clock, ms).
+     * Compared with the page's updated_at so a phone clock that's wrong can't
+     * make an old copy win. Missing on copies saved before it was added.
+     */
+    serverSavedAt?: number;
 };
 
 /** A file waiting for network. */
@@ -110,6 +116,7 @@ export async function listLocalDrafts(userId: string): Promise<LocalDraft[]> {
 export async function markDraftSynced(
     uuid: string,
     sentAt: number,
+    serverSavedAt: number,
 ): Promise<void> {
     const database = await db();
     const row = await database.get('drafts', uuid);
@@ -121,10 +128,34 @@ export async function markDraftSynced(
             dirty: false,
             localOnly: false,
             signature: undefined,
+            serverSavedAt,
         });
     } else if (row) {
-        await database.put('drafts', { ...row, localOnly: false });
+        await database.put('drafts', {
+            ...row,
+            localOnly: false,
+            serverSavedAt,
+        });
     }
+}
+
+/**
+ * Whether the form should open the phone copy instead of the page it got.
+ * Only server timestamps are compared, never the phone's clock:
+ * - the copy is based on a newer server save than the page (the page came
+ *   from the offline cache), or
+ * - it has unsynced edits made on top of the version the page shows.
+ * Copies from before `serverSavedAt` existed only win with unsynced edits.
+ */
+export function shouldRestore(local: LocalDraft, pageSavedAt: number): boolean {
+    if (local.serverSavedAt === undefined) {
+        return local.dirty && local.updatedAt > pageSavedAt;
+    }
+
+    return (
+        local.serverSavedAt > pageSavedAt ||
+        (local.dirty && local.serverSavedAt >= pageSavedAt)
+    );
 }
 
 export async function deleteLocalDraft(uuid: string): Promise<void> {

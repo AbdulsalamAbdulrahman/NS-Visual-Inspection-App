@@ -2,6 +2,7 @@ import { HttpError, sendJson, upload } from '@/lib/http';
 import { draftPayload } from '@/lib/inspection/autosave.svelte';
 import type { Attachment } from '@/lib/inspection/types';
 import {
+    deleteLocalDraft,
     listLocalDrafts,
     listUploads,
     markDraftSynced,
@@ -118,14 +119,25 @@ class OfflineSync {
             const sentAt = Date.now();
 
             try {
-                await sendJson(
+                const response = await sendJson<{ saved_at: string | null }>(
                     'PUT',
                     `/inspections/${local.uuid}/draft`,
                     payload,
                 );
-                await markDraftSynced(local.uuid, sentAt);
+                await markDraftSynced(
+                    local.uuid,
+                    sentAt,
+                    response.saved_at ? Date.parse(response.saved_at) : sentAt,
+                );
             } catch (error) {
-                if (!this.#keepGoing(error)) {
+                // Submitted, reassigned or removed (or started on the phone before
+                // jobs came from NSD): it can never save, so stop resending it.
+                if (
+                    error instanceof HttpError &&
+                    [403, 404, 409, 410].includes(error.status)
+                ) {
+                    await deleteLocalDraft(local.uuid);
+                } else if (!this.#keepGoing(error)) {
                     return false;
                 }
             }

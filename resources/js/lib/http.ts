@@ -28,7 +28,37 @@ export function xsrfToken(): string {
     return match ? decodeURIComponent(match[1]) : '';
 }
 
+/** Get a fresh XSRF-TOKEN cookie: every web response sets it. */
+async function refreshXsrfToken(): Promise<void> {
+    await fetch(window.location.href, {
+        credentials: 'same-origin',
+        cache: 'no-store',
+    }).catch(() => undefined);
+}
+
+/**
+ * A 419 is retried once with a fresh token: a stale XSRF cookie causes it even
+ * while the session is still valid. A second 419 (or a 401) means sign in again.
+ */
 export async function sendJson<T>(
+    method: 'PUT' | 'POST' | 'DELETE',
+    url: string,
+    body?: unknown,
+): Promise<T> {
+    try {
+        return await sendJsonOnce<T>(method, url, body);
+    } catch (error) {
+        if (!(error instanceof HttpError) || error.status !== 419) {
+            throw error;
+        }
+
+        await refreshXsrfToken();
+
+        return sendJsonOnce<T>(method, url, body);
+    }
+}
+
+async function sendJsonOnce<T>(
     method: 'PUT' | 'POST' | 'DELETE',
     url: string,
     body?: unknown,

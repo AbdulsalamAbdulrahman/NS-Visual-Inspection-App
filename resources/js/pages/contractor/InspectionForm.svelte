@@ -19,7 +19,7 @@
     import { STEP_COUNT, STEPS, backLabel, nextLabel } from '@/lib/inspection/steps';
     import { form74Count, quote, type FeeTable } from '@/lib/inspection/fee';
     import type { Attachment, Draft, FormOptions, Inspector } from '@/lib/inspection/types';
-    import { getLocalDraft, markDraftSynced, offlineSupported, putLocalDraft, saveBootstrap, type FormBootstrap } from '@/lib/offline/db';
+    import { deleteLocalDraft, getLocalDraft, markDraftSynced, offlineSupported, putLocalDraft, saveBootstrap, shouldRestore, type FormBootstrap } from '@/lib/offline/db';
     import { ATTACHMENT_UPLOADED, offlineSync, type AttachmentUploadedDetail } from '@/lib/offline/sync.svelte';
     import { index as home, pay as payPage, resubmit as resubmitRoute } from '@/routes/inspections';
     import { store as payStore } from '@/routes/inspections/pay';
@@ -65,6 +65,11 @@
     /** Started on this phone and not yet on the server (no server timestamp). */
     // svelte-ignore state_referenced_locally
     let localOnly = !inspection.updated_at;
+    /** The server's last save of this draft (server clock), kept with the phone copy. */
+    // svelte-ignore state_referenced_locally
+    let serverSavedAt = inspection.updated_at ? Date.parse(inspection.updated_at) : 0;
+    /** Opened from the copy on this phone; the server may hold a different version. */
+    let restored = $state(false);
 
     // svelte-ignore state_referenced_locally
     const saver = new Autosave(inspection.uuid, inspection.updated_at, (response, sentAt) => {
@@ -74,7 +79,8 @@
         }
 
         localOnly = false;
-        void markDraftSynced(draft.uuid, sentAt);
+        serverSavedAt = Date.parse(response.saved_at);
+        void markDraftSynced(draft.uuid, sentAt, serverSavedAt);
     });
     // svelte-ignore state_referenced_locally
     saver.prime(draftPayload($state.snapshot(inspection) as Draft));
@@ -158,6 +164,7 @@
             dirty,
             signature: pendingSignature,
             localOnly,
+            serverSavedAt,
         });
     }
 
@@ -184,23 +191,26 @@
     });
 
     /**
-     * The newer copy wins (last write wins): an unsynced edit on this phone, or
-     * a phone copy newer than a page served from the offline cache.
+     * The phone copy wins when it has unsynced edits on top of this version, or
+     * the page came from the offline cache (see shouldRestore: server clock only).
      */
     async function restoreFromPhone(): Promise<void> {
         const local = await getLocalDraft(draft.uuid, userId);
         const serverTime = inspection.updated_at ? Date.parse(inspection.updated_at) : 0;
 
-        if (local && local.updatedAt > serverTime) {
+        if (local && shouldRestore(local, serverTime)) {
             localOnly = local.localOnly;
+            restored = true;
+            serverSavedAt = Math.max(serverTime, local.serverSavedAt ?? 0);
 
             // Unsynced changes: make sure the next save sends them.
             if (local.dirty) {
                 saver.prime({});
             }
 
+            // Over the page's draft, so fields added since the copy was kept are there.
             // Attachments always come from the server (queued files show separately).
-            draft = { ...local.draft, attachments: draft.attachments };
+            draft = { ...draft, ...local.draft, attachments: draft.attachments };
             step = local.step;
 
             if (local.signature !== undefined) {
@@ -209,6 +219,20 @@
         } else {
             keepOnPhone(undefined, false, serverTime);
         }
+    }
+
+    // Rejected for good (submitted, reassigned or removed): don't keep resending it.
+    $effect(() => {
+        if (saver.status === 'rejected' && offlineSupported()) {
+            void deleteLocalDraft(draft.uuid);
+        }
+    });
+
+    /** Drop this phone's copy and open the version saved on the server. */
+    async function useServerVersion(): Promise<void> {
+        saver.destroy();
+        await deleteLocalDraft(draft.uuid);
+        window.location.reload();
     }
 
     onDestroy(() => {
@@ -234,6 +258,8 @@
 
         void goTo(step + 1);
     }
+
+    const saveErrors = $derived(Object.values(saver.errors));
 
     function back(): void {
         if (step === 1) {
@@ -324,6 +350,31 @@
 </svelte:head>
 
 {#snippet stepBody()}
+    {#if saver.status === 'rejected'}
+        <div class="flex items-start gap-2.5 rounded-[14px] bg-bad-bg px-4 py-3.5" role="alert">
+            <ErrorIcon class="size-6 flex-none text-bad" />
+            <div class="flex min-w-0 flex-col gap-1">
+                <b class="text-base text-bad">This report can't be changed any more</b>
+                <span class="text-sm leading-[1.45]">It was submitted, assigned to someone else, or removed. The copy on this phone has been cleared.</span>
+                <Button href={home.url()} variant="outline" size="sm" class="mt-1 self-start">Go to my inspections</Button>
+            </div>
+        </div>
+    {:else if saver.status === 'error'}
+        <div class="flex items-start gap-2.5 rounded-[14px] bg-bad-bg px-4 py-3.5" role="alert">
+            <ErrorIcon class="size-6 flex-none text-bad" />
+            <div class="flex min-w-0 flex-col gap-1">
+                <b class="text-base text-bad">Not saved</b>
+                <span class="text-sm leading-[1.45]">
+                    {saveErrors.length > 0 ? saveErrors.join(' · ') : 'The server could not save this draft. It will try again on your next change.'}
+                </span>
+                {#if restored}
+                    <span class="text-[13px] text-mut">This was opened from the copy on this phone.</span>
+                    <Button variant="outline" size="sm" class="mt-1 self-start" onclick={useServerVersion}>Use the saved version</Button>
+                {/if}
+            </div>
+        </div>
+    {/if}
+
     {#if changesRequested}
         <div class="flex items-start gap-2.5 rounded-[14px] border border-imp bg-imp-bg px-4 py-3.5" role="note">
             <Warning class="size-6 flex-none text-imp" />

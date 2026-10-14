@@ -1,14 +1,22 @@
 import { HttpError, sendJson } from '@/lib/http';
 import type { Draft } from './types';
 
-/** `signin`: the session expired; the draft stays on the phone until they sign in again. */
+/**
+ * `signin`: the session expired; the draft stays on the phone until they sign in again.
+ * `rejected`: the server won't take saves for this report any more (submitted,
+ * reassigned or removed), so retrying can never succeed.
+ */
 export type SaveStatus =
     | 'saved'
     | 'pending'
     | 'saving'
     | 'offline'
     | 'error'
-    | 'signin';
+    | 'signin'
+    | 'rejected';
+
+/** Answers that retrying the same save can't change. */
+const REJECTED = new Set([403, 404, 409, 410]);
 
 type SaveResponse = {
     uuid: string;
@@ -74,6 +82,11 @@ export class Autosave {
 
     /** Call on every change; saves after a pause in editing. Returns false when nothing changed. */
     schedule(payload: Record<string, unknown>): boolean {
+        // The server won't take this report any more; nothing to save or keep.
+        if (this.status === 'rejected') {
+            return false;
+        }
+
         // A new signature is sent once; it doesn't count towards "changed" afterwards.
         if (
             this.#key(payload) === this.#lastSent &&
@@ -133,6 +146,12 @@ export class Autosave {
                     this.status = 'error';
                 } else if (
                     error instanceof HttpError &&
+                    REJECTED.has(error.status)
+                ) {
+                    this.#next = null;
+                    this.status = 'rejected';
+                } else if (
+                    error instanceof HttpError &&
                     (error.status === 401 || error.status === 419)
                 ) {
                     // Session expired: keep it (it's on the phone) and ask them to sign in.
@@ -170,7 +189,7 @@ export class Autosave {
     }
 
     #retry = (): void => {
-        if (this.#next) {
+        if (this.#next && this.status !== 'rejected') {
             void this.flush();
         }
     };
