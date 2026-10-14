@@ -15,6 +15,7 @@ class StoreAttachmentRequest extends FormRequest
     /** Per-type limits on how many files an inspection can hold. */
     public const LIMITS = [
         'layout' => 3,
+        'front_view' => 2,
         'photo' => 12,
         'calibration' => 3,
     ];
@@ -35,7 +36,7 @@ class StoreAttachmentRequest extends FormRequest
         $type = AttachmentType::tryFrom((string) $this->input('type'));
 
         // Server-side MIME sniffing (fileinfo), max 10 MB after browser compression.
-        $mimes = $type === AttachmentType::Photo
+        $mimes = $type?->isPhoto() === true
             ? 'mimetypes:image/jpeg,image/png,image/webp'
             : 'mimetypes:application/pdf,image/jpeg,image/png,image/webp';
 
