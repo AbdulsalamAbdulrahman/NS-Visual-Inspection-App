@@ -160,7 +160,7 @@ class DemoSeeder extends Seeder
             }
 
             if ($i % 11 === 5) {
-                $note = 'Earth resistance reading is above 2 Ω. Improve the electrode, re-test and attach a photo of the meter.';
+                $note = 'Earth resistance reading is above 5 Ω. Improve the electrode, re-test and attach a photo of the meter.';
                 $inspection->forceFill([
                     'review_status' => ReviewStatus::ChangesRequested,
                     'reviewed_by' => $admin?->id,

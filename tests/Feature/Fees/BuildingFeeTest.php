@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Actions\Payments\InitPayment;
 use App\Enums\BuildingType;
+use App\Enums\ConnectionType;
 use App\Enums\PropertyPurpose;
 use App\Models\FeeSchedule;
 use App\Models\Inspection;
@@ -10,6 +12,8 @@ use App\Models\User;
 use App\Support\Form74Range;
 use App\Support\InspectionChecklist;
 use App\Support\InspectionFee;
+use Database\Seeders\FeeScheduleSeeder;
+use Illuminate\Validation\ValidationException;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
@@ -105,5 +109,37 @@ test('the form gets the fee table to price any building type offline', function 
         ->assertInertia(fn (Assert $page) => $page
             ->where('fees.default', 1_500_000)
             ->where('fees.types', ['block_of_flats' => 300_000])
+            ->where('fees.cells', [])
             ->has('options.buildingType', count(BuildingType::cases())));
+});
+
+test('the fee sheet prices by supply and premises, per structure', function () {
+    FeeScheduleSeeder::seedSheet();
+    $inspection = fn (array $attributes): Inspection => Inspection::factory()->complete()->create(['building_type' => BuildingType::Duplex, ...$attributes]);
+
+    expect(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase]))['totalKobo'])->toBe(1_500_000)
+        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::ThreePhase]))['totalKobo'])->toBe(2_000_000)
+        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase, 'structure_count' => 10]))['totalKobo'])->toBe(7_500_000)
+        ->and(InspectionFee::quote(Inspection::factory()->complete()->create([
+            'purpose' => PropertyPurpose::Commercial, 'building_type' => BuildingType::LargePlaza, 'connection_type' => ConnectionType::SinglePhase, 'structure_count' => 20,
+        ]))['totalKobo'])->toBe(20 * 400_000);
+});
+
+test('a building and supply the sheet does not offer cannot be paid for', function () {
+    FeeScheduleSeeder::seedSheet();
+    $contractor = User::factory()->contractor()->create();
+    $inspection = Inspection::factory()->complete()->forContractor($contractor)->create([
+        'purpose' => PropertyPurpose::Commercial,
+        'building_type' => BuildingType::FillingStation,
+        'connection_type' => ConnectionType::SinglePhase,
+    ]);
+
+    expect(InspectionFee::quote($inspection))->toBeNull();
+
+    $this->actingAs($contractor)->get(route('inspections.pay', $inspection))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('fee', null)
+            ->where('feeUnavailable', fn (string $message) => str_contains($message, 'No fee is set for a Single phase Filling station')));
+
+    expect(fn () => app(InitPayment::class)->handle($inspection))->toThrow(ValidationException::class, 'No fee is set');
 });

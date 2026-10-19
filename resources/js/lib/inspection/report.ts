@@ -15,7 +15,7 @@ export type Report = {
     submittedAt: string | null;
     submittedAtLong: string | null;
     a: {
-        /** "F74/KD/2026/08841 – 08860" for estates. */
+        /** "084123 – 084142" for estates. */
         form74No: string | null;
         structures: number;
         ownerName: string | null;
@@ -64,6 +64,9 @@ export type Report = {
         description: string | null;
         rating: number | null;
         conductor: number | null;
+        earthConductor: number | null;
+        /** "Red / Black / Green-Yellow" (live / neutral / earth). */
+        colours: string | null;
         condition: CircuitCondition | null;
         observation: string | null;
     }[];

@@ -8,7 +8,6 @@
     import Button from '@/components/Button.svelte';
     import Field from '@/components/form/Field.svelte';
     import { fieldBox } from '@/components/form/inputClasses';
-    import Select from '@/components/form/Select.svelte';
     import StatusPill from '@/components/StatusPill.svelte';
     import admin from '@/routes/admin';
     import { destroy, store } from '@/routes/admin/fees';
@@ -18,8 +17,10 @@
     type Fee = {
         id: number;
         buildingType: string | null;
+        /** "Duplex · Three phase · Stand-alone", or "Default fee". */
         buildingTypeLabel: string;
         amountKobo: number;
+        notOffered: boolean;
         amount: string;
         effectiveFrom: string;
         changedOn: string | null;
@@ -28,39 +29,59 @@
         isScheduled: boolean;
     };
 
-    type Row = {
-        /** "default" or a building type value. */
+    type Cell = {
         key: string;
+        buildingType: string | null;
+        connectionType: string | null;
+        premises: string | null;
         label: string;
-        purpose: string | null;
         current: Fee | null;
-        usesDefault: boolean;
         scheduled: Fee | null;
     };
 
+    type Row = {
+        key: string;
+        label: string;
+        purpose: string;
+        cells: Cell[];
+    };
+
     type Props = {
-        default: Fee | null;
+        default: Cell;
+        columns: { connectionType: string; premises: string }[];
         rows: Row[];
         history: Fee[];
     };
 
-    let { default: defaultFee, rows, history }: Props = $props();
+    let { default: defaultCell, columns, rows, history }: Props = $props();
 
     const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 
-    const form = useForm({ building_type: 'default', amount: '', effective_from: today, reason: '' });
+    const form = useForm({
+        building_type: null as string | null,
+        connection_type: null as string | null,
+        premises: null as string | null,
+        not_offered: false,
+        amount: '',
+        effective_from: today,
+        reason: '',
+    });
 
+    /** Key of the fee being changed ("default" or "type|supply|premises"). */
+    let selectedKey = $state('default');
+
+    const allCells = $derived([defaultCell, ...rows.flatMap((r) => r.cells)]);
+    const selected = $derived(allCells.find((c) => c.key === selectedKey) ?? defaultCell);
+    const isCell = $derived(selected.connectionType !== null);
     const isToday = $derived(form.effective_from === today);
-    const typeOptions = $derived(rows.map((r) => ({ value: r.key, label: r.purpose ? `${r.purpose} · ${r.label}` : r.label })));
     const groups = $derived(
         rows.reduce<{ purpose: string; rows: Row[] }[]>((all, row) => {
-            const purpose = row.purpose ?? '';
-            const group = all.find((g) => g.purpose === purpose);
+            const group = all.find((g) => g.purpose === row.purpose);
 
             if (group) {
                 group.rows.push(row);
             } else {
-                all.push({ purpose, rows: [row] });
+                all.push({ purpose: row.purpose, rows: [row] });
             }
 
             return all;
@@ -69,8 +90,12 @@
 
     let formEl: HTMLFormElement | undefined = $state();
 
-    async function change(row: Row): Promise<void> {
-        form.building_type = row.key;
+    async function change(cell: Cell): Promise<void> {
+        selectedKey = cell.key;
+        form.building_type = cell.buildingType;
+        form.connection_type = cell.connectionType;
+        form.premises = cell.premises;
+        form.not_offered = false;
         form.amount = '';
         form.clearErrors();
         await tick();
@@ -80,11 +105,12 @@
 
     function submit(event: SubmitEvent): void {
         event.preventDefault();
-        form.transform((data) => ({ ...data, building_type: data.building_type === 'default' ? null : data.building_type })).post(store.url(), {
+        form.post(store.url(), {
             preserveScroll: true,
             onSuccess: () => {
                 form.amount = '';
                 form.reason = '';
+                form.not_offered = false;
                 form.effective_from = today;
             },
         });
@@ -94,7 +120,8 @@
         router.delete(destroy.url(fee.id), { preserveScroll: true });
     }
 
-    const cols = 'grid-cols-[150px_120px_120px_120px_minmax(0,1fr)_minmax(0,1.3fr)]';
+    const matrix = 'lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))]';
+    const cols = 'grid-cols-[minmax(0,1.6fr)_120px_120px_110px_minmax(0,1fr)_minmax(0,1.1fr)]';
 </script>
 
 <svelte:head>
@@ -111,69 +138,82 @@
 <div class="flex flex-col gap-5 px-4 py-4 lg:px-10 lg:py-8">
     <div class="hidden flex-col gap-1 lg:flex">
         <h1 class="text-[28px] font-extrabold">Inspection fees</h1>
-        <p class="text-[15px] text-mut">Per structure. A building type without its own fee uses the default. Estates pay the fee × the number of structures.</p>
+        <p class="text-[15px] text-mut">Per structure, by building type, supply and premises (LECAN fee sheet). Multiple premises pay the fee × the number of structures.</p>
     </div>
 
-    <div class="grid max-w-[1180px] gap-5 lg:grid-cols-[1fr_400px] lg:items-start">
-        <!-- Fees by building type -->
+    <div class="grid max-w-[1320px] gap-5 xl:grid-cols-[1fr_380px] xl:items-start">
+        <!-- Fee sheet -->
         <section class="flex flex-col overflow-hidden rounded-[20px] border border-line bg-sf" aria-labelledby="fee-table">
-            <h2 id="fee-table" class="sr-only">Fees by building type</h2>
+            <h2 id="fee-table" class="sr-only">Fees by building type, supply and premises</h2>
+            <div class="hidden gap-2 border-b border-line bg-sf2 px-5 py-2.5 text-xs font-bold tracking-[0.04em] text-mut lg:grid {matrix}">
+                <span>BUILDING TYPE</span>
+                {#each columns as column (column.premises + column.connectionType)}
+                    <span class="flex flex-col"><span>{column.premises.toUpperCase()}</span><span class="font-semibold">{column.connectionType}</span></span>
+                {/each}
+            </div>
             {#each groups as group (group.purpose)}
-                {#if group.purpose}
-                    <div class="border-b border-line bg-sf2 px-4 py-2 text-xs font-bold tracking-[0.06em] text-mut uppercase lg:px-5">{group.purpose}</div>
-                {/if}
+                <div class="border-b border-line bg-sf2 px-4 py-2 text-xs font-bold tracking-[0.06em] text-mut uppercase lg:px-5">{group.purpose}</div>
                 {#each group.rows as row (row.key)}
-                    <div class={['flex items-center gap-3 border-b border-line px-4 py-3 last:border-b-0 lg:px-5', row.key === 'default' && 'bg-hero text-white']}>
-                        <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <b class="truncate text-[15px]">{row.label}</b>
-                            {#if row.scheduled}
-                                <span class={['flex items-center gap-1 text-[13px]', row.key === 'default' ? 'opacity-90' : 'text-info']}>
-                                    <Schedule class="size-4" />{row.scheduled.amount} from {row.scheduled.effectiveFrom}
-                                    <button type="button" class="ml-1 font-bold underline" onclick={() => row.scheduled && cancelScheduled(row.scheduled)}>Cancel</button>
-                                </span>
-                            {/if}
+                    <div class="flex flex-col gap-2 border-b border-line px-4 py-3 last:border-b-0 lg:grid lg:items-center lg:gap-2 lg:px-5 lg:py-2 {matrix}">
+                        <b class="text-[15px]">{row.label}</b>
+                        <div class="grid grid-cols-2 gap-2 lg:contents">
+                            {#each row.cells as cell, i (cell.key)}
+                                {@render cellButton(cell, columns[i])}
+                            {/each}
                         </div>
-                        {#if row.current && !row.usesDefault}
-                            <span class="font-mono text-[15px] font-semibold">{row.current.amount}</span>
-                        {:else if row.usesDefault}
-                            <span class="text-right text-[13px] text-mut">Default<br /><span class="font-mono">{defaultFee?.amount ?? 'not set'}</span></span>
-                        {:else}
-                            <span class="text-sm font-semibold text-bad">Not set</span>
-                        {/if}
-                        <Button
-                            size="xs"
-                            variant={row.key === 'default' ? 'soft' : 'outline'}
-                            class="h-9 rounded-lg px-3 text-[13px]"
-                            onclick={() => change(row)}
-                        >
-                            {row.usesDefault ? 'Set fee' : 'Change'}
-                        </Button>
                     </div>
                 {/each}
             {/each}
+            <div class="flex items-center gap-3 bg-sf2 px-4 py-3 lg:px-5">
+                <div class="flex min-w-0 flex-1 flex-col">
+                    <b class="text-[15px]">Default fee</b>
+                    <span class="text-[13px] text-mut">Used only if a building has no fee above.</span>
+                </div>
+                <div class="w-40">{@render cellButton(defaultCell, null)}</div>
+            </div>
         </section>
 
-        <!-- Set a new fee -->
-        <form bind:this={formEl} class="flex scroll-mt-20 flex-col gap-3.5 rounded-[20px] border border-line bg-sf p-5 lg:sticky lg:top-6 lg:p-6" onsubmit={submit} novalidate>
-            <h2 class="text-[17px] font-bold">Set a fee</h2>
-            <Field id="fee-type" label="Building type" error={form.errors.building_type}>
-                <Select id="fee-type" size="md" options={typeOptions} placeholder="Choose" bind:value={form.building_type} />
-            </Field>
-            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <Field id="fee-amount" label="Amount per structure" error={form.errors.amount}>
-                    <div class={fieldBox('md', !!form.errors.amount, 'h-12 gap-1.5 rounded-[10px] pl-3')}>
-                        <span class="font-mono text-[17px] text-mut" aria-hidden="true">₦</span>
-                        <input
-                            id="fee-amount"
-                            bind:value={form.amount}
-                            inputmode="decimal"
-                            placeholder="3,000"
-                            autocomplete="off"
-                            aria-invalid={!!form.errors.amount || undefined}
-                            class="h-full min-w-0 flex-1 bg-transparent pr-3 font-mono text-[17px] font-medium outline-none focus-visible:outline-none"
-                        />
-                    </div>
-                </Field>
+        <!-- Set a fee -->
+        <form bind:this={formEl} class="flex scroll-mt-20 flex-col gap-3.5 rounded-[20px] border border-line bg-sf p-5 xl:sticky xl:top-6 xl:p-6" onsubmit={submit} novalidate>
+            <div class="flex flex-col gap-0.5">
+                <h2 class="text-[17px] font-bold">Change a fee</h2>
+                <span class="text-sm text-mut">{selectedKey === 'default' ? 'Default fee · choose a building fee in the table to change it' : selected.label}</span>
+                {#if form.errors.building_type || form.errors.connection_type || form.errors.premises}
+                    <span class="text-sm font-semibold text-bad" role="alert">{form.errors.building_type ?? form.errors.connection_type ?? form.errors.premises}</span>
+                {/if}
+            </div>
+            <div class="flex flex-col gap-1 rounded-xl bg-sf2 px-3.5 py-2.5 text-sm">
+                <span>Now: <b class="font-mono">{selected.current ? (selected.current.notOffered ? 'Not offered' : selected.current.amount) : 'Not set'}</b></span>
+                {#if selected.scheduled}
+                    <span class="flex flex-wrap items-center gap-1 text-info">
+                        <Schedule class="size-4" />{selected.scheduled.notOffered ? 'Not offered' : selected.scheduled.amount} from {selected.scheduled.effectiveFrom}
+                        <button type="button" class="ml-1 font-bold underline" onclick={() => selected.scheduled && cancelScheduled(selected.scheduled)}>Cancel</button>
+                    </span>
+                {/if}
+            </div>
+            {#if isCell}
+                <label class="flex min-h-12 items-center gap-3 rounded-xl border-[1.5px] border-line px-3.5 text-[15px] font-semibold">
+                    <input type="checkbox" class="size-5 accent-pri" bind:checked={form.not_offered} />
+                    Not offered for this building and supply
+                </label>
+            {/if}
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                {#if !form.not_offered}
+                    <Field id="fee-amount" label="Amount per structure" error={form.errors.amount}>
+                        <div class={fieldBox('md', !!form.errors.amount, 'h-12 gap-1.5 rounded-[10px] pl-3')}>
+                            <span class="font-mono text-[17px] text-mut" aria-hidden="true">₦</span>
+                            <input
+                                id="fee-amount"
+                                bind:value={form.amount}
+                                inputmode="decimal"
+                                placeholder="15,000"
+                                autocomplete="off"
+                                aria-invalid={!!form.errors.amount || undefined}
+                                class="h-full min-w-0 flex-1 bg-transparent pr-3 font-mono text-[17px] font-medium outline-none focus-visible:outline-none"
+                            />
+                        </div>
+                    </Field>
+                {/if}
                 <Field id="fee-date" label="Effective date" error={form.errors.effective_from}>
                     <input
                         id="fee-date"
@@ -200,17 +240,17 @@
             <p class="text-[13px] leading-[1.45] text-mut">
                 Contractors pay the fee in effect when they pay, per structure. Drafts show the new amount from the effective date.
             </p>
-            <Button type="submit" size="md" block class="h-12 rounded-xl" disabled={form.processing || !form.amount.trim()}>
+            <Button type="submit" size="md" block class="h-12 rounded-xl" disabled={form.processing || (!form.not_offered && !form.amount.trim())}>
                 {isToday ? 'Change fee from today' : 'Schedule fee change'}
             </Button>
         </form>
     </div>
 
-    <section class="flex max-w-[1180px] flex-col gap-2.5" aria-labelledby="fee-history">
+    <section class="flex max-w-[1320px] flex-col gap-2.5" aria-labelledby="fee-history">
         <h2 id="fee-history" class="eyebrow">History</h2>
         <div class="overflow-hidden rounded-2xl border border-line bg-sf" role="table" aria-label="Fee history">
             <div role="row" class="hidden gap-3 border-b border-line bg-sf2 px-5 py-3 text-xs font-bold tracking-[0.06em] text-mut lg:grid {cols}">
-                <span role="columnheader">TYPE</span>
+                <span role="columnheader">FEE FOR</span>
                 <span role="columnheader">FEE</span>
                 <span role="columnheader">EFFECTIVE</span>
                 <span role="columnheader">CHANGED ON</span>
@@ -219,9 +259,9 @@
             </div>
             {#each history as fee (fee.id)}
                 <div role="row" class="flex flex-col gap-1 border-b border-line px-4 py-3 text-sm last:border-b-0 lg:grid lg:h-[50px] lg:items-center lg:gap-3 lg:px-5 lg:py-0 {cols}">
-                    <span role="cell" class="truncate font-semibold">{fee.buildingTypeLabel}</span>
+                    <span role="cell" class="font-semibold lg:truncate">{fee.buildingTypeLabel}</span>
                     <span role="cell" class="flex items-center gap-2 font-mono font-semibold">
-                        {fee.amount}
+                        {fee.notOffered ? 'Not offered' : fee.amount}
                         {#if fee.isScheduled}<StatusPill tone="info" label="Scheduled" class="font-sans" />{/if}
                     </span>
                     <span role="cell" class="font-mono"><span class="text-mut lg:hidden">From </span>{fee.effectiveFrom}</span>
@@ -235,3 +275,27 @@
         </div>
     </section>
 </div>
+
+{#snippet cellButton(cell: Cell, column: { connectionType: string; premises: string } | null)}
+    {@const on = selectedKey === cell.key}
+    <button
+        type="button"
+        aria-pressed={on}
+        aria-label="{cell.label}: {cell.current ? (cell.current.notOffered ? 'not offered' : cell.current.amount) : 'not set'}. Change"
+        class={[
+            'flex min-h-12 flex-col items-start justify-center rounded-[10px] border px-2.5 py-1.5 text-left',
+            on ? 'border-2 border-pri bg-soft' : 'border-line hover:bg-sf2',
+        ]}
+        onclick={() => change(cell)}
+    >
+        {#if column}<span class="text-[11px] font-semibold text-mut lg:hidden">{column.premises} · {column.connectionType}</span>{/if}
+        {#if cell.current && !cell.current.notOffered}
+            <span class="font-mono text-[15px] font-semibold">{cell.current.amount.replace(/\.00$/, '')}</span>
+        {:else}
+            <span class="text-[13px] font-semibold text-mut">{cell.current ? 'Not offered' : 'Not set'}</span>
+        {/if}
+        {#if cell.scheduled}
+            <span class="flex items-center gap-0.5 text-[11px] font-semibold text-info"><Schedule class="size-3.5" aria-hidden="true" />{cell.scheduled.notOffered ? 'Not offered' : cell.scheduled.amount.replace(/\.00$/, '')} · {cell.scheduled.effectiveFrom}</span>
+        {/if}
+    </button>
+{/snippet}

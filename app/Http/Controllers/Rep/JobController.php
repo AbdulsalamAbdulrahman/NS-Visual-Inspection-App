@@ -121,8 +121,8 @@ class JobController extends Controller
             }
 
             fputcsv($out, ImportJobs::COLUMNS, escape: '');
-            fputcsv($out, ['Amina Sule', '14 Ahmadu Bello Way, Kaduna', '08031234567', 'amina.sule@example.com', 'Barnawa', 'Residential', 'Duplex', 'F74/KD/2026/08841', '', 'contractor@example.com'], escape: '');
-            fputcsv($out, ['Sabon Gari Estate Ltd', 'Plot 3, Sabon Gari Estate', '08059876543', 'estates@example.com', 'Barnawa', 'Residential', 'Block of flats', 'F74/KD/2026/09001', 'F74/KD/2026/09020', 'contractor@example.com'], escape: '');
+            fputcsv($out, ['Amina Sule', '14 Ahmadu Bello Way, Kaduna', '08031234567', 'amina.sule@example.com', 'Barnawa', 'Residential', 'Duplex', '084123', '', 'contractor@example.com'], escape: '');
+            fputcsv($out, ['Sabon Gari Estate Ltd', 'Plot 3, Sabon Gari Estate', '08059876543', 'estates@example.com', 'Barnawa', 'Residential', 'Block of flats', '090001', '090020', 'contractor@example.com'], escape: '');
             fclose($out);
         }, 'kens-jobs-template.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }

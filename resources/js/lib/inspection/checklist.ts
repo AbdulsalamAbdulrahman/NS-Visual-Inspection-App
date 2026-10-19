@@ -8,7 +8,7 @@ import type { Circuit, Draft } from './types';
 export const LIMITS = {
     minElectrodeFt: 6,
     minEarthConductorMm2: 10,
-    maxEarthResistanceOhm: 2,
+    maxEarthResistanceOhm: 5,
     goodGpsAccuracyM: 20,
 } as const;
 
@@ -23,6 +23,10 @@ export function circuitComplete(c: Circuit): boolean {
         (c.description !== 'other' || filled(c.description_other?.trim())) &&
         filled(c.rating_a) &&
         filled(c.conductor_mm2) &&
+        filled(c.earth_conductor_mm2) &&
+        filled(c.live_colour) &&
+        filled(c.neutral_colour) &&
+        filled(c.earth_colour) &&
         filled(c.condition)
     );
 }
@@ -153,7 +157,7 @@ export function missingItems(
                 filled(d.db_main_breaker_poles) &&
                 filled(d.db_main_breaker_standard)),
         'db_main_breaker',
-        'DB main breaker switch',
+        'DB main isolator',
         4,
     );
     need(

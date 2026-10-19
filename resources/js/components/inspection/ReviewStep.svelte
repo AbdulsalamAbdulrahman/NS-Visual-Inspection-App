@@ -2,7 +2,7 @@
     import type { Snippet } from 'svelte';
     import { CONDITIONS, CONDITION_ORDER } from '@/lib/inspection/conditions';
     import { STEPS } from '@/lib/inspection/steps';
-    import { warnings, type MissingItem } from '@/lib/inspection/checklist';
+    import { LIMITS, warnings, type MissingItem } from '@/lib/inspection/checklist';
     import type { Draft, FormOptions, Inspector } from '@/lib/inspection/types';
     import { formatCoords, num } from '@/lib/format';
     import CheckCircle from '~icons/ms/check-circle';
@@ -49,7 +49,7 @@
             draft.db_seen && draft.db_standard === false && 'Distribution board',
             draft.changeover_seen && draft.changeover_standard === false && 'Change-over switch',
             draft.main_switch_standard === false && 'Main switch',
-            draft.db_main_breaker_seen && draft.db_main_breaker_standard === false && 'DB main breaker switch',
+            draft.db_main_breaker_seen && draft.db_main_breaker_standard === false && 'DB main isolator',
             draft.cb_type_standard === false && 'Circuit breaker type',
             draft.secondary_standard === false && 'Secondary protection',
             draft.socket_outlets_standard === false && 'Socket outlets',
@@ -151,7 +151,7 @@
             <dd class="font-mono">
                 <span class={warn.electrode && 'font-semibold text-imp'}>{num(draft.earth_electrode_ft)} ft</span> ·
                 <span class={warn.conductor && 'font-semibold text-imp'}>{num(draft.earth_conductor_mm2)} mm²</span> ·
-                <span class={warn.resistance && 'font-semibold text-imp'}>{num(draft.earth_resistance_ohm)} Ω{warn.resistance ? ' · above 2 Ω' : ''}</span>
+                <span class={warn.resistance && 'font-semibold text-imp'}>{num(draft.earth_resistance_ohm)} Ω{warn.resistance ? ` · above ${LIMITS.maxEarthResistanceOhm} Ω` : ''}</span>
             </dd>
             {@render row('Earth pit', yes(draft.earth_pit, 'Yes', 'No'))}
             {@render row('Circuit breaker', device(draft.cb_available, [draft.cb_make, amps(draft.cb_rated_a), poles(draft.poles)], draft.cb_standard), true)}

@@ -6,8 +6,13 @@ export type FeeTable = {
     /** Default fee per structure (kobo), for types without their own. */
     default: number | null;
     types: Record<string, number>;
+    /** Fee sheet cells, "type|supply|premises" → kobo per structure; 0 = not offered. */
+    cells?: Record<string, number>;
     effectiveFrom: string | null;
 };
+
+export const NOT_OFFERED =
+    'No fee is set for this building type and supply. Contact the New Service Department.';
 
 export const MAX_STRUCTURES = 500;
 
@@ -24,7 +29,7 @@ export function form74Count(
     }
 
     if (!a) {
-        return 'The first Form 74 number must end in digits, e.g. F74/KD/2026/08841.';
+        return 'The first Form 74 number must end in digits, e.g. 084123.';
     }
 
     const b = end.includes('/')
@@ -48,7 +53,7 @@ export function form74Count(
         : count;
 }
 
-/** "F74/KD/2026/08841 – 08860" for display (Form74Range::label). */
+/** "084123 – 084142" for display (Form74Range::label). */
 export function form74Label(first: string | null, last: string | null): string {
     if (!first) {
         return '';
@@ -71,16 +76,46 @@ export type Quote = {
     breakdown: string | null;
 };
 
-/** Fee for a building type (or the default) × structures. */
+/** Per-structure fee in kobo: the sheet's cell, else the type's own, else the default. */
+function unitFee(
+    fees: FeeTable,
+    buildingType: string | null,
+    connectionType: string | null,
+    structures: number,
+): number | null {
+    const premises = structures > 1 ? 'multiple' : 'stand_alone';
+    const cell =
+        buildingType && connectionType
+            ? fees.cells?.[`${buildingType}|${connectionType}|${premises}`]
+            : undefined;
+
+    return (
+        cell ??
+        (buildingType ? fees.types[buildingType] : undefined) ??
+        fees.default
+    );
+}
+
+/** True when the sheet says this building and supply isn't offered (₦0). */
+export function notOffered(
+    fees: FeeTable,
+    buildingType: string | null,
+    connectionType: string | null,
+    structures: number,
+): boolean {
+    return unitFee(fees, buildingType, connectionType, structures) === 0;
+}
+
+/** Fee for the building × structures (InspectionFee::quote). */
 export function quote(
     fees: FeeTable,
     buildingType: string | null,
+    connectionType: string | null,
     structures: number,
 ): Quote | null {
-    const unit =
-        (buildingType ? fees.types[buildingType] : undefined) ?? fees.default;
+    const unit = unitFee(fees, buildingType, connectionType, structures);
 
-    if (unit === null || unit === undefined) {
+    if (unit === null || unit === undefined || unit === 0) {
         return null;
     }
 

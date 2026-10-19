@@ -182,7 +182,7 @@
             <div class={['grid gap-4', estate && 'sm:grid-cols-2']}>
                 <Field id="form74_no" error={form.errors.form74_no}>
                     {#snippet labelAside()}<label for="form74_no" class={label}>{estate ? 'First Form 74 number' : 'Form 74 number'} <Required /></label>{/snippet}
-                    <TextInput id="form74_no" mono size="md" bind:value={form.form74_no} placeholder="F74/KD/2026/08841" autocapitalize="characters" invalid={!!form.errors.form74_no} />
+                    <TextInput id="form74_no" mono size="md" bind:value={form.form74_no} placeholder="084123" autocapitalize="characters" invalid={!!form.errors.form74_no} />
                 </Field>
                 {#if estate}
                     <Field
@@ -191,7 +191,7 @@
                         hint={typeof count === 'number' && count > 1 ? `${count} structures, charged per structure.` : 'Full number or just its last digits.'}
                     >
                         {#snippet labelAside()}<label for="form74_last_no" class={label}>Last Form 74 number <Required /></label>{/snippet}
-                        <TextInput id="form74_last_no" mono size="md" bind:value={form.form74_last_no} placeholder="F74/KD/2026/08860" autocapitalize="characters" />
+                        <TextInput id="form74_last_no" mono size="md" bind:value={form.form74_last_no} placeholder="084142" autocapitalize="characters" />
                     </Field>
                 {/if}
             </div>

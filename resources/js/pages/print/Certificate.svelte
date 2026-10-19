@@ -89,8 +89,8 @@
             <!-- Title -->
             <div class="flex flex-col items-center">
                 <span class="serif text-[22px] text-[#8A6A12] italic">Certificate of</span>
-                <h1 class="serif mt-1 text-[27px] leading-[1.15] font-bold tracking-[0.05em] whitespace-nowrap text-[#0B5A33]">
-                    BUILDING ELECTRICAL INSPECTION
+                <h1 class="serif mt-1 text-[23px] leading-[1.15] font-bold tracking-[0.04em] whitespace-nowrap text-[#0B5A33]">
+                    BUILDING VISUAL ELECTRICAL INSPECTION
                 </h1>
                 <span class="serif mt-1 text-[18px] tracking-[0.18em] text-ink">AND COMPLIANCE</span>
                 <svg viewBox="0 0 220 16" class="mt-3 h-4 w-[220px]" aria-hidden="true">

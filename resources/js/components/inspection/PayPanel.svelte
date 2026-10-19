@@ -8,6 +8,8 @@
     type Props = {
         /** `breakdown`: "20 structures × ₦3,000.00" for estates. */
         fee: { amount: string; effectiveFrom: string; breakdown?: string | null } | null;
+        /** Why there is no fee (e.g. not offered for this building and supply). */
+        unavailable?: string | null;
         /** Owner / area / Form 74 rows under the fee (CP-01). */
         details?: Snippet;
         /** Pay button area. */
@@ -16,7 +18,7 @@
         variant?: 'card' | 'page';
     };
 
-    let { fee, details, action, variant = 'card' }: Props = $props();
+    let { fee, unavailable, details, action, variant = 'card' }: Props = $props();
 
     // "₦15,000.00" → big "₦15,000" + small ".00", as in the designs.
     const whole = $derived(fee?.amount.replace(/\.\d{2}$/, '') ?? '');
@@ -39,7 +41,7 @@
             {#if fee.breakdown}<span class="font-mono text-sm font-medium">{fee.breakdown}</span>{/if}
             <span class="text-sm text-mut">Price set by LECAN, reviewed by Kaduna Electric · effective {fee.effectiveFrom}</span>
         {:else}
-            <span class="text-base font-bold text-bad">The fee hasn't been set yet. Contact the New Service Department.</span>
+            <span class="text-base font-bold text-bad">{unavailable ?? "The fee hasn't been set yet. Contact the New Service Department."}</span>
         {/if}
 
         {#if details}

@@ -2,6 +2,7 @@
     import ChoiceGroup from '@/components/form/ChoiceGroup.svelte';
     import Field from '@/components/form/Field.svelte';
     import NumberInput from '@/components/form/NumberInput.svelte';
+    import Select from '@/components/form/Select.svelte';
     import TextInput from '@/components/form/TextInput.svelte';
     import type { Draft, FormOptions } from '@/lib/inspection/types';
 
@@ -47,5 +48,5 @@
 </Field>
 
 <Field id="cable_insulation" label="Cable insulation type" error={errors.cable_insulation}>
-    <TextInput id="cable_insulation" size="md" placeholder="e.g. PVC, XLPE" bind:value={draft.cable_insulation} invalid={!!errors.cable_insulation} />
+    <Select id="cable_insulation" size="md" options={options.cableInsulation} placeholder="Choose" bind:value={draft.cable_insulation} invalid={!!errors.cable_insulation} />
 </Field>

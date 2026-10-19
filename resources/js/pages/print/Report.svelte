@@ -99,16 +99,18 @@
     <div class="flex flex-col gap-1.5">
         {@render title('B4 · DESCRIPTION OF WIRING')}
         <div class="overflow-hidden rounded-md border border-[#C9D2C7] text-[11.5px]">
-            <div class="grid grid-cols-[34px_1.3fr_58px_74px_150px_1fr] bg-bg text-[10px] font-bold tracking-[0.05em] text-mut">
-                <span class="px-2 py-1.5">#</span><span class="px-2 py-1.5">CIRCUIT</span><span class="px-2 py-1.5">RATING</span><span class="px-2 py-1.5">CONDUCTOR</span><span class="px-2 py-1.5">CONDITION</span><span class="px-2 py-1.5">OBSERVATION</span>
+            <div class="grid grid-cols-[28px_1.1fr_48px_70px_66px_112px_126px_1fr] bg-bg text-[10px] font-bold tracking-[0.05em] text-mut">
+                <span class="px-2 py-1.5">#</span><span class="px-2 py-1.5">CIRCUIT</span><span class="px-2 py-1.5">RATING</span><span class="px-2 py-1.5">CABLE</span><span class="px-2 py-1.5">EARTH</span><span class="px-2 py-1.5">L / N / E</span><span class="px-2 py-1.5">CONDITION</span><span class="px-2 py-1.5">OBSERVATION</span>
             </div>
             {#each report.b4 as c (c.n)}
                 {@const cond = c.condition ? CONDITIONS[c.condition] : null}
-                <div class="grid grid-cols-[34px_1.3fr_58px_74px_150px_1fr] items-center border-t border-[#E1E6DF]">
+                <div class="grid grid-cols-[28px_1.1fr_48px_70px_66px_112px_126px_1fr] items-center border-t border-[#E1E6DF]">
                     <span class="px-2 py-1.5 font-mono text-mut">{c.n}</span>
                     <span class="px-2 py-1.5 font-semibold">{c.description ?? '—'}</span>
                     <span class="px-2 py-1.5 font-mono">{amps(c.rating)}</span>
-                    <span class="px-2 py-1.5 font-mono">{c.conductor === null ? '—' : `${num(c.conductor)} mm²`}</span>
+                    <span class="px-2 py-1.5 font-mono whitespace-nowrap">{c.conductor === null ? '—' : `${num(c.conductor)} mm²`}</span>
+                    <span class="px-2 py-1.5 font-mono whitespace-nowrap">{c.earthConductor === null ? '—' : `${num(c.earthConductor)} mm²`}</span>
+                    <span class="px-2 py-1.5 text-[10.5px]">{c.colours ?? '—'}</span>
                     <span class="px-2 py-1">
                         {#if cond}
                             {@const Icon = cond.icon}
@@ -148,7 +150,7 @@
             <div class="flex flex-col gap-1.5">
                 {@render title('B1 · EARTHING SYSTEM')}
                 <div class="overflow-hidden rounded-md border border-[#C9D2C7] text-[11.5px]">
-                    {#each [['Earth electrode size (min 6 ft)', report.b1.electrodeFt === null ? '—' : `${num(report.b1.electrodeFt)} ft`, report.b1.warnings.electrode], ['Earth conductor size (min 10 mm²)', report.b1.conductorMm2 === null ? '—' : `${num(report.b1.conductorMm2)} mm²`, report.b1.warnings.conductor], ['Earth resistance (≤ 2 Ω advised)', report.b1.resistanceOhm === null ? '—' : `${num(report.b1.resistanceOhm)} Ω`, report.b1.warnings.resistance], ['Earth inspection pit available', yes(report.b1.pit), false]] as [k, v, warn] (k)}
+                    {#each [['Earth electrode size (min 6 ft)', report.b1.electrodeFt === null ? '—' : `${num(report.b1.electrodeFt)} ft`, report.b1.warnings.electrode], ['Earth conductor size (min 10 mm²)', report.b1.conductorMm2 === null ? '—' : `${num(report.b1.conductorMm2)} mm²`, report.b1.warnings.conductor], ['Earth resistance (≤ 5 Ω advised)', report.b1.resistanceOhm === null ? '—' : `${num(report.b1.resistanceOhm)} Ω`, report.b1.warnings.resistance], ['Earth inspection pit available', yes(report.b1.pit), false]] as [k, v, warn] (k)}
                         <div class="grid grid-cols-[1fr_110px] border-b border-[#E1E6DF] last:border-b-0">
                             <span class="bg-bg px-2 py-1.5 text-mut">{k}</span>
                             <span class={['px-2 py-1.5 font-mono', warn ? 'font-bold text-imp' : '']}>{v}{warn ? ' ⚠' : ''}</span>

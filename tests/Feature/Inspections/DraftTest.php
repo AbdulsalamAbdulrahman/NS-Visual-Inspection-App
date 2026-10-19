@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\CableColour;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\FuseType;
@@ -103,6 +104,25 @@ test('ceiling fan circuits and insulated cut-out fuses save (client additions)',
     $inspection->refresh();
     expect($inspection->fuse_type)->toBe(FuseType::Insulated)
         ->and($inspection->circuits()->sole()->description)->toBe(CircuitDescription::CeilingFan);
+});
+
+test('circuits save their earthing cable size and colours; insulation is PVC only (LECAN)', function () {
+    $inspection = Inspection::factory()->forContractor($this->contractor)->create();
+    $circuit = ['uuid' => (string) Str::uuid(), 'description' => 'lighting', 'earth_conductor_mm2' => 1.5, 'live_colour' => 'red', 'neutral_colour' => 'black', 'earth_colour' => 'green_yellow', 'condition' => 'satisfactory'];
+
+    $this->actingAs($this->contractor)
+        ->putJson(route('inspections.draft', $inspection->uuid), ['cable_insulation' => 'pvc', 'circuits' => [$circuit]])
+        ->assertOk();
+
+    $saved = $inspection->fresh()->circuits()->sole();
+    expect($saved->earth_conductor_mm2)->toBe(1.5)
+        ->and($saved->live_colour)->toBe(CableColour::Red)
+        ->and($saved->earth_colour)->toBe(CableColour::GreenYellow)
+        ->and($inspection->fresh()->cable_insulation)->toBe('pvc');
+
+    $this->putJson(route('inspections.draft', $inspection->uuid), ['cable_insulation' => 'xlpe', 'circuits' => [[...$circuit, 'live_colour' => 'purple']]])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['cable_insulation', 'circuits.0.live_colour']);
 });
 
 test('a failed save keeps the old signature file and leaves no new one behind', function () {

@@ -21,6 +21,7 @@ enum BuildingType: string
     // Commercial
     case Shop = 'shop';
     case Plaza = 'plaza';
+    case LargePlaza = 'large_plaza';
     case FillingStation = 'filling_station';
     case Market = 'market';
     // Industrial
@@ -48,7 +49,8 @@ enum BuildingType: string
             self::BoysQuarters => "Boys' quarters",
             self::MixedStructure => 'Mixed structure',
             self::Shop => 'Shop',
-            self::Plaza => 'Plaza',
+            self::Plaza => 'Plaza (up to 15 shops)',
+            self::LargePlaza => 'Plaza (above 15 shops)',
             self::FillingStation => 'Filling station',
             self::Market => 'Market',
             self::SmallFactory => 'Small factory',
@@ -69,7 +71,7 @@ enum BuildingType: string
         return match ($this) {
             self::SingleRoom, self::TwoBedroomFlat, self::ThreeBedroomFlat, self::Duplex,
             self::BlockOfFlats, self::BoysQuarters, self::MixedStructure => PropertyPurpose::Residential,
-            self::Shop, self::Plaza, self::FillingStation, self::Market => PropertyPurpose::Commercial,
+            self::Shop, self::Plaza, self::LargePlaza, self::FillingStation, self::Market => PropertyPurpose::Commercial,
             self::SmallFactory, self::MediumFactory, self::LargeFactory, self::Fabricators => PropertyPurpose::Industrial,
             self::Mda, self::Institution, self::Offices => PropertyPurpose::Government,
             self::Hospital, self::School, self::WorshipCentre => PropertyPurpose::EssentialService,

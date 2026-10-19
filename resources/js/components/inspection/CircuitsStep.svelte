@@ -2,9 +2,10 @@
     import Button from '@/components/Button.svelte';
     import NumberInput from '@/components/form/NumberInput.svelte';
     import Select from '@/components/form/Select.svelte';
+    import { CABLE_COLOURS, colourSummary, DEFAULT_COLOURS } from '@/lib/inspection/cableColours';
     import { circuitComplete } from '@/lib/inspection/checklist';
     import { CONDITIONS, CONDITION_ORDER } from '@/lib/inspection/conditions';
-    import type { Circuit, Option } from '@/lib/inspection/types';
+    import type { CableColour, Circuit, Option } from '@/lib/inspection/types';
     import { num } from '@/lib/format';
     import CircuitSheet from './CircuitSheet.svelte';
     import ConditionPill from './ConditionPill.svelte';
@@ -19,10 +20,11 @@
     type Props = {
         circuits: Circuit[];
         descriptions: Option[];
+        colours: Option<CableColour>[];
         showErrors: boolean;
     };
 
-    let { circuits = $bindable(), descriptions, showErrors }: Props = $props();
+    let { circuits = $bindable(), descriptions, colours, showErrors }: Props = $props();
 
     let sheetOpen = $state(false);
     /** Working copy; committed on save so Cancel leaves the list untouched. */
@@ -38,7 +40,7 @@
         return c.description === 'other' && c.description_other ? `Other · ${c.description_other}` : base;
     };
 
-    const spec = (c: Circuit): string => `${num(c.rating_a)} A · ${num(c.conductor_mm2)} mm²`;
+    const spec = (c: Circuit): string => `${num(c.rating_a)} A · ${num(c.conductor_mm2)} mm² · earth ${num(c.earth_conductor_mm2)} mm²`;
 
     function blank(): Circuit {
         return {
@@ -47,6 +49,8 @@
             description_other: null,
             rating_a: null,
             conductor_mm2: null,
+            earth_conductor_mm2: null,
+            ...DEFAULT_COLOURS,
             condition: null,
             observation: null,
         };
@@ -115,7 +119,7 @@
     }
 
     const conditionOptions = CONDITION_ORDER.map((k) => ({ value: k, label: CONDITIONS[k].short }));
-    const cols = 'grid-cols-[48px_minmax(0,1.4fr)_96px_110px_210px_minmax(0,1.3fr)_88px]';
+    const cols = 'grid-cols-[48px_minmax(0,1.4fr)_96px_110px_110px_200px_minmax(0,1.1fr)_88px]';
 </script>
 
 <!-- Phone: cards + bottom sheet (CF-08 / CF-09) -->
@@ -140,6 +144,7 @@
                 <span class="flex min-w-0 flex-1 flex-col gap-0.5">
                     <b class="truncate text-base">{descriptionLabel(c)}</b>
                     <span class="font-mono text-sm font-medium text-mut">{spec(c)}</span>
+                    <span class="text-[13px] text-mut">L/N/E {colourSummary(c)}</span>
                 </span>
                 <MoreVert class="size-6 flex-none text-mut" aria-hidden="true" />
             </span>
@@ -148,6 +153,9 @@
                     <ConditionPill condition={c.condition} />
                 {:else}
                     <span class="flex items-center gap-1 text-[13px] font-semibold text-bad"><ErrorIcon class="size-4" />Condition required</span>
+                {/if}
+                {#if incomplete && c.condition}
+                    <span class="flex items-center gap-1 text-[13px] font-semibold text-bad"><ErrorIcon class="size-4" />Details missing, tap to complete</span>
                 {/if}
                 {#if c.observation}<span class="text-sm leading-[1.4] text-mut">{c.observation}</span>{/if}
             </span>
@@ -176,6 +184,7 @@
             <span role="columnheader">CIRCUIT</span>
             <span role="columnheader">BREAKER (A)</span>
             <span role="columnheader">CONDUCTOR (mm²)</span>
+            <span role="columnheader">EARTH (mm²)</span>
             <span role="columnheader">CONDITION</span>
             <span role="columnheader">OBSERVATION</span>
             <span role="columnheader"><span class="sr-only">Actions</span></span>
@@ -197,6 +206,7 @@
                     </div>
                     <span role="cell"><NumberInput id="ci-rating" size="md" unit="A" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.rating_a} /></span>
                     <span role="cell"><NumberInput id="ci-cond" size="md" unit="mm²" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.conductor_mm2} /></span>
+                    <span role="cell"><NumberInput id="ci-earth" size="md" unit="mm²" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.earth_conductor_mm2} /></span>
                     <span role="cell"><Select id="ci-condition" size="md" class="h-[42px] rounded-[10px] text-sm" options={conditionOptions} placeholder="Select condition" bind:value={working.condition} /></span>
                     <input
                         role="cell"
@@ -213,14 +223,28 @@
                             <Close class="size-5" />
                         </button>
                     </span>
+                    <div role="cell" class="col-span-full col-start-2 grid grid-cols-3 gap-3">
+                        {#each [['live_colour', 'Live'], ['neutral_colour', 'Neutral'], ['earth_colour', 'Earth']] as const as [key, label] (key)}
+                            {@const value = working[key]}
+                            <label class="flex items-center gap-2 text-[13px] font-semibold">
+                                <span class="size-3.5 flex-none rounded-full border border-line" style:background={value ? CABLE_COLOURS[value].swatch : 'transparent'} aria-hidden="true"></span>
+                                <span class="w-14 flex-none">{label}</span>
+                                <Select id="ci-{key}" size="md" class="h-[42px] flex-1 rounded-[10px] text-sm" options={colours} placeholder="Colour" bind:value={working[key]} />
+                            </label>
+                        {/each}
+                    </div>
                 </div>
             {:else}
                 {@const incomplete = showErrors && !circuitComplete(c)}
                 <div role="row" class={['grid min-h-[60px] items-center gap-3 border-b px-[18px] text-sm last:border-b-0', cols, incomplete ? 'border-bad bg-bad-bg/40' : 'border-line']}>
                     <span role="cell" class="font-mono text-[13px] font-semibold text-mut">C{i + 1}</span>
-                    <b role="cell" class="truncate">{descriptionLabel(c)}</b>
+                    <span role="cell" class="flex min-w-0 flex-col">
+                        <b class="truncate">{descriptionLabel(c)}</b>
+                        <span class="truncate text-xs text-mut">L/N/E {colourSummary(c)}</span>
+                    </span>
                     <span role="cell" class="font-mono">{num(c.rating_a)} A</span>
                     <span role="cell" class="font-mono">{num(c.conductor_mm2)} mm²</span>
+                    <span role="cell" class="font-mono">{num(c.earth_conductor_mm2)} mm²</span>
                     <span role="cell">
                         {#if c.condition}
                             <ConditionPill condition={c.condition} length="short" />
@@ -240,7 +264,7 @@
                 </div>
             {/if}
         {:else}
-            <p class="px-[18px] py-6 text-sm text-mut">No circuits yet. Add one row per circuit; condition is required for each.</p>
+            <p class="px-[18px] py-6 text-sm text-mut">No circuits yet. Add one row per circuit; condition, earthing cable size and colours are required for each.</p>
         {/each}
     </div>
 </div>
@@ -251,6 +275,7 @@
     label="C{workingIndex + 1}"
     {isNew}
     {descriptions}
+    {colours}
     onsave={commit}
     onremove={remove}
 />

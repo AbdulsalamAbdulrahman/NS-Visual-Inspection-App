@@ -99,7 +99,7 @@
                         bind:value={changesForm.reason}
                         rows="4"
                         maxlength="2000"
-                        placeholder="e.g. Earth resistance of 2.6 Ω is above the 2 Ω limit — improve the electrode and re-test, then attach a photo of the reading."
+                        placeholder="e.g. Earth resistance of 6.2 Ω is above the 5 Ω limit — improve the electrode and re-test, then attach a photo of the reading."
                         aria-invalid={!!changesForm.errors.reason || undefined}
                         aria-describedby={changesForm.errors.reason ? 'reason-error' : undefined}
                         class="rounded-[10px] border-[1.5px] border-line bg-sf p-3 text-[15px] outline-none focus:border-pri"

@@ -115,6 +115,10 @@ class SaveDraft
                 'description_other' => $circuit['description_other'] ?? null,
                 'rating_a' => $circuit['rating_a'] ?? null,
                 'conductor_mm2' => $circuit['conductor_mm2'] ?? null,
+                'earth_conductor_mm2' => $circuit['earth_conductor_mm2'] ?? null,
+                'live_colour' => $circuit['live_colour'] ?? null,
+                'neutral_colour' => $circuit['neutral_colour'] ?? null,
+                'earth_colour' => $circuit['earth_colour'] ?? null,
                 'condition' => $circuit['condition'] ?? null,
                 'observation' => $circuit['observation'] ?? null,
             ]);

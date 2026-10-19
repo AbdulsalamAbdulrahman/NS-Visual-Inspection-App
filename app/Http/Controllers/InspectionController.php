@@ -8,6 +8,8 @@ use App\Actions\Inspections\SaveDraft;
 use App\Actions\Inspections\StartInspection;
 use App\Actions\Reviews\ResubmitInspection;
 use App\Enums\BuildingType;
+use App\Enums\CableColour;
+use App\Enums\CableInsulation;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -151,6 +153,8 @@ class InspectionController extends Controller
                 'earthingSystemType' => EarthingSystemType::options(),
                 'conductorType' => ConductorType::options(),
                 'wiringMethod' => WiringMethod::options(),
+                'cableInsulation' => CableInsulation::options(),
+                'cableColour' => CableColour::options(),
                 'circuitDescription' => CircuitDescription::options(),
                 'circuitCondition' => CircuitCondition::options(),
             ],

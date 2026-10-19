@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\CircuitDescription;
+use App\Http\Resources\InspectionReportResource;
 use App\Models\Inspection;
 use App\Models\User;
 use App\Support\InspectionChecklist;
@@ -95,3 +96,24 @@ test('poles are limited to 4 when saving a draft', function () {
 
     expect($inspection->fresh()->circuits->first()->description)->toBe(CircuitDescription::CeilingFan);
 });
+
+test('each circuit needs its earthing cable size and live, neutral and earth colours', function () {
+    $inspection = Inspection::factory()->complete()->create();
+    $inspection->circuits()->update(['neutral_colour' => null]);
+
+    expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label'))->toContain('Circuit C1 details');
+
+    $inspection->circuits()->update(['neutral_colour' => 'black', 'earth_conductor_mm2' => null]);
+
+    expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label'))->toContain('Circuit C1 details');
+});
+
+test('earth resistance is flagged above 5 Ω', function (float $ohms, bool $flagged) {
+    $inspection = Inspection::factory()->complete()->create(['earth_resistance_ohm' => $ohms]);
+
+    expect((new InspectionReportResource($inspection))->toArray(request())['b1']['warnings']['resistance'])->toBe($flagged);
+})->with([
+    '4.8 Ω' => [4.8, false],
+    '5 Ω' => [5.0, false],
+    '5.2 Ω' => [5.2, true],
+]);

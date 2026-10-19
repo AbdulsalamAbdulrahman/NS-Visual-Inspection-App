@@ -12,9 +12,10 @@
     type Props = {
         inspection: { uuid: string; ownerName: string | null; area: string | null; form74No: string | null; buildingType: string | null };
         fee: { amount: string; effectiveFrom: string; breakdown: string | null } | null;
+        feeUnavailable: string | null;
     };
 
-    let { inspection, fee }: Props = $props();
+    let { inspection, fee, feeUnavailable }: Props = $props();
 
     let paying = $state(false);
 
@@ -36,7 +37,7 @@
     <MobileHeader title="Pay & submit" backHref={edit.url(inspection.uuid, { query: { step: 9 } })} />
 
     <div class="mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-4 px-4 py-5">
-        <PayPanel {fee} variant="page">
+        <PayPanel {fee} unavailable={feeUnavailable} variant="page">
             {#snippet details()}
                 <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-sm">
                     <dt class="text-mut">Owner</dt><dd class="font-bold">{inspection.ownerName}</dd>

@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Enums\BuildingType;
+use App\Enums\ConnectionType;
+use App\Enums\Premises;
 use App\Models\FeeSchedule;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -77,13 +79,44 @@ test('the fee page shows current, scheduled and history', function () {
     $this->actingAs($this->admin)->get(route('admin.fees.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/Fees')
-            ->where('default.amount', '₦15,000.00')
-            ->where('rows.0.key', 'default')
-            ->where('rows.0.current.amount', '₦15,000.00')
-            ->where('rows.0.scheduled.amount', '₦17,500.00')
-            ->has('rows', 1 + count(BuildingType::cases()))
-            ->where('rows.1.usesDefault', true)
+            ->where('default.key', 'default')
+            ->where('default.current.amount', '₦15,000.00')
+            ->where('default.scheduled.amount', '₦17,500.00')
+            ->has('rows', count(BuildingType::cases()))
+            ->has('rows.0.cells', 4)
+            ->where('rows.0.cells.1.key', 'single_room|three_phase|stand_alone')
+            ->where('rows.0.cells.1.current', null)
             ->has('history', 2));
+});
+
+test('a fee sheet cell can be changed or marked not offered, one schedule per cell', function () {
+    $cell = ['building_type' => 'filling_station', 'connection_type' => 'three_phase', 'premises' => 'stand_alone'];
+
+    $this->actingAs($this->admin)->post(route('admin.fees.store'), [...$cell, 'amount' => '25,000', 'effective_from' => '2026-10-07'])
+        ->assertSessionHasNoErrors();
+    $this->post(route('admin.fees.store'), [...$cell, 'premises' => 'multiple', 'not_offered' => true, 'effective_from' => '2026-10-07'])
+        ->assertSessionHasNoErrors();
+
+    expect(FeeSchedule::forCell(BuildingType::FillingStation, ConnectionType::ThreePhase, Premises::StandAlone)->amount_kobo)->toBe(2_500_000)
+        ->and(FeeSchedule::forCell(BuildingType::FillingStation, ConnectionType::ThreePhase, Premises::Multiple)->amount_kobo)->toBe(0);
+
+    $this->post(route('admin.fees.store'), [...$cell, 'amount' => '26,000', 'effective_from' => '2027-01-01'])->assertSessionHasNoErrors();
+    $this->post(route('admin.fees.store'), [...$cell, 'amount' => '27,000', 'effective_from' => '2027-02-01'])->assertSessionHasErrors('effective_from');
+});
+
+test('only a fee sheet cell can be marked not offered, with supply and premises together', function () {
+    $this->actingAs($this->admin)->post(route('admin.fees.store'), ['not_offered' => true, 'effective_from' => '2026-10-07'])
+        ->assertSessionHasErrors('not_offered');
+    $this->post(route('admin.fees.store'), ['building_type' => 'duplex', 'connection_type' => 'single_phase', 'amount' => '1000', 'effective_from' => '2026-10-07'])
+        ->assertSessionHasErrors('premises');
+    $this->post(route('admin.fees.store'), ['connection_type' => 'single_phase', 'premises' => 'stand_alone', 'amount' => '1000', 'effective_from' => '2026-10-07'])
+        ->assertSessionHasErrors('connection_type');
+});
+
+test('only admins can change fees', function () {
+    $this->actingAs(User::factory()->contractor()->create())
+        ->post(route('admin.fees.store'), ['amount' => '1000', 'effective_from' => '2026-10-07'])
+        ->assertForbidden();
 });
 
 test('a building type can have its own fee; others use the default', function () {

@@ -83,7 +83,7 @@
 
 <Field id="form74_no" error={errors.form74_no}>
     {#snippet labelAside()}<label for="form74_no" class="text-[15px] font-semibold">{estate ? 'First Form 74 number' : 'Form 74 number'} <Required /></label>{/snippet}
-    <TextInput id="form74_no" mono bind:value={draft.form74_no} placeholder="e.g. F74/KD/2026/08841" autocapitalize="characters" invalid={!!errors.form74_no} />
+    <TextInput id="form74_no" mono bind:value={draft.form74_no} placeholder="e.g. 084123" autocapitalize="characters" invalid={!!errors.form74_no} />
 </Field>
 
 {#if estate}
@@ -93,7 +93,7 @@
         hint={typeof count === 'number' && count > 1 ? `${count} structures — the fee is charged per structure.` : 'The full number, or just its last digits (e.g. 08860).'}
     >
         {#snippet labelAside()}<label for="form74_last_no" class="text-[15px] font-semibold">Last Form 74 number <Required /></label>{/snippet}
-        <TextInput id="form74_last_no" mono bind:value={draft.form74_last_no} placeholder="e.g. F74/KD/2026/08860" autocapitalize="characters" />
+        <TextInput id="form74_last_no" mono bind:value={draft.form74_last_no} placeholder="e.g. 084142" autocapitalize="characters" />
     </Field>
 {/if}
 

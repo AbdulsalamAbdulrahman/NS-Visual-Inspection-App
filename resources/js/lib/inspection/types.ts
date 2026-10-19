@@ -6,12 +6,18 @@ export type CircuitCondition =
     | 'urgent_attention_required'
     | 'non_compliant';
 
+export type CableColour = 'red' | 'yellow' | 'black' | 'blue' | 'green_yellow';
+
 export type Circuit = {
     uuid: string;
     description: string | null;
     description_other: string | null;
     rating_a: number | null;
     conductor_mm2: number | null;
+    earth_conductor_mm2: number | null;
+    live_colour: CableColour | null;
+    neutral_colour: CableColour | null;
+    earth_colour: CableColour | null;
     condition: CircuitCondition | null;
     observation: string | null;
 };
@@ -123,6 +129,8 @@ export type FormOptions = {
     earthingSystemType: Option[];
     conductorType: Option[];
     wiringMethod: Option[];
+    cableInsulation: Option[];
+    cableColour: Option<CableColour>[];
     circuitDescription: Option[];
     circuitCondition: Option<CircuitCondition>[];
 };

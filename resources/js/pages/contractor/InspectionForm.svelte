@@ -17,7 +17,7 @@
     import { Autosave, draftPayload } from '@/lib/inspection/autosave.svelte';
     import { missingItems } from '@/lib/inspection/checklist';
     import { STEP_COUNT, STEPS, backLabel, nextLabel } from '@/lib/inspection/steps';
-    import { form74Count, quote, type FeeTable } from '@/lib/inspection/fee';
+    import { form74Count, NOT_OFFERED, notOffered, quote, type FeeTable } from '@/lib/inspection/fee';
     import type { Attachment, Draft, FormOptions, Inspector } from '@/lib/inspection/types';
     import { deleteLocalDraft, getLocalDraft, markDraftSynced, offlineSupported, putLocalDraft, saveBootstrap, shouldRestore, type FormBootstrap } from '@/lib/offline/db';
     import { ATTACHMENT_UPLOADED, offlineSync, type AttachmentUploadedDetail } from '@/lib/offline/sync.svelte';
@@ -92,7 +92,8 @@
 
         return typeof count === 'number' ? count : 1;
     });
-    const fee = $derived(quote(fees, draft.building_type, structures));
+    const fee = $derived(quote(fees, draft.building_type, draft.connection_type, structures));
+    const feeUnavailable = $derived(notOffered(fees, draft.building_type, draft.connection_type, structures) ? NOT_OFFERED : null);
     const missing = $derived(missingItems(draft, activeAreas));
     const meta = $derived(STEPS[step - 1]);
     const isReview = $derived(step === STEP_COUNT);
@@ -412,7 +413,7 @@
         {#if errors.circuits}
             <span class="flex items-center gap-1 text-sm font-semibold text-bad"><ErrorIcon class="size-[18px]" />Add at least one circuit.</span>
         {/if}
-        <CircuitsStep bind:circuits={draft.circuits} descriptions={options.circuitDescription} {showErrors} />
+        <CircuitsStep bind:circuits={draft.circuits} descriptions={options.circuitDescription} colours={options.cableColour} {showErrors} />
     {:else if step === 6}
         <StepC bind:draft {options} {errors} />
     {:else if step === 7}
@@ -437,7 +438,7 @@
             {:else}
                 <!-- CK-03 payment panel -->
                 <div class="hidden lg:sticky lg:top-0 lg:block">
-                    <PayPanel {fee}>
+                    <PayPanel {fee} unavailable={feeUnavailable}>
                         {#snippet action()}
                             <Button block class="font-extrabold" disabled={payDisabled} onclick={() => pay(true)}>
                                 <Lock />{payLabel ?? (paying ? 'Opening Monnify…' : 'Pay with Monnify & submit')}

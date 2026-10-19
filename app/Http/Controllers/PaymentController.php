@@ -56,6 +56,7 @@ class PaymentController extends Controller
                 'effectiveFrom' => $fee['effectiveFrom'],
                 'breakdown' => $fee['breakdown'],
             ] : null,
+            'feeUnavailable' => $fee ? null : InspectionFee::unavailableMessage($inspection),
         ]);
     }
 

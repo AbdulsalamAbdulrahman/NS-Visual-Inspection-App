@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Enums\BuildingType;
+use App\Enums\ConnectionType;
 use App\Enums\NigerianState;
+use App\Enums\Premises;
 use App\Models\FeeSchedule;
 use App\Models\ServiceArea;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\FeeScheduleSeeder;
 use Database\Seeders\ServiceAreaSeeder;
 
 test('the reference seeder adds the official area offices and the launch fee once', function () {
@@ -16,8 +20,9 @@ test('the reference seeder adds the official area offices and the launch fee onc
     expect(ServiceArea::query()->count())->toBe(26)
         ->and(ServiceArea::query()->where('is_active', true)->count())->toBe(26)
         ->and(ServiceArea::query()->pluck('name')->sort()->values()->all())->toBe(collect(ServiceAreaSeeder::AREAS)->sort()->values()->all())
-        ->and(FeeSchedule::query()->count())->toBe(1)
+        ->and(FeeSchedule::query()->count())->toBe(1 + 4 * count(FeeScheduleSeeder::SHEET))
         ->and(FeeSchedule::currentAmountKobo())->toBe(1_500_000)
+        ->and(FeeSchedule::forCell(BuildingType::Hospital, ConnectionType::ThreePhase, Premises::StandAlone)->amount_kobo)->toBe(3_500_000)
         ->and(User::query()->count())->toBe(0);
 });
 

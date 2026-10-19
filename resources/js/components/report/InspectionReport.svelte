@@ -75,7 +75,7 @@
         </dd>
         <dt class="text-mut">Resistance</dt>
         <dd class={['font-mono', report.b1.warnings.resistance && 'font-semibold text-imp']}>
-            {num(report.b1.resistanceOhm)} Ω{report.b1.warnings.resistance ? ' ⚠ > 2 Ω' : ''}
+            {num(report.b1.resistanceOhm)} Ω{report.b1.warnings.resistance ? ' ⚠ > 5 Ω' : ''}
         </dd>
         <dt class="text-mut">Pit</dt>
         <dd>{yes(report.b1.pit)}</dd>
@@ -104,7 +104,12 @@
             <div class="flex flex-col gap-1.5 border-b border-line px-3.5 py-2.5 text-[13px] last:border-b-0 lg:grid lg:min-h-[42px] lg:grid-cols-[36px_minmax(0,1.3fr)_64px_76px_196px_minmax(0,1fr)] lg:items-center lg:gap-2.5 lg:py-1.5">
                 <span class="flex items-baseline gap-2 lg:contents">
                     <span class="font-mono text-mut">{c.n}</span>
-                    <b>{c.description ?? '—'}</b>
+                    <span class="flex min-w-0 flex-col">
+                        <b>{c.description ?? '—'}</b>
+                        {#if c.earthConductor !== null || c.colours}
+                            <span class="text-xs text-mut">Earth <span class="font-mono">{num(c.earthConductor)} mm²</span> · L/N/E {c.colours ?? '—'}</span>
+                        {/if}
+                    </span>
                     <span class="ml-auto font-mono lg:ml-0">{num(c.rating)} A</span>
                     <span class="font-mono">{num(c.conductor)} mm²</span>
                 </span>

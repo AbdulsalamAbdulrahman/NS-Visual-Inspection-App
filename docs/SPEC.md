@@ -153,7 +153,7 @@ Drafts can be incomplete. **Full validation runs only on Review and at payment.*
 **Step 2 · B1: Earthing system**
 - **Earth electrode size** in ft. Hint "Minimum 6 ft"; warn if below.
 - **Earth conductor size** in mm². Hint "Minimum 10 mm²"; warn if below.
-- **Earth resistance** in Ω. Warn if above 2 Ω, and highlight the value on the report.
+- **Earth resistance** in Ω. Warn if above 5 Ω, and highlight the value on the report.
 - **Earth inspection pit available?** yes / no
 
 **Step 3 · B2: Primary supply over-current protection**

@@ -100,7 +100,7 @@
 {@render card('Main switch', 'BS EN 60947-3', errors.main_switch, mainSwitchBody)}
 
 {#snippet mainBreakerBody()}
-    <ChoiceGroup label="DB main breaker switch" variant="segmented" compact options={SEEN} bind:value={draft.db_main_breaker_seen} onchange={mainBreakerSeen} />
+    <ChoiceGroup label="DB main isolator" variant="segmented" compact options={SEEN} bind:value={draft.db_main_breaker_seen} onchange={mainBreakerSeen} />
     {#if draft.db_main_breaker_seen}
         <div class="flex flex-col gap-1.5">
             <label for="db_main_breaker_rated_a" class={label}>Rated current</label>
@@ -108,12 +108,12 @@
         </div>
         <div class={row}>
             <span id="db_main_breaker_poles-label" class="text-[15px] font-semibold">Number of poles <span class="text-sm font-normal text-mut">max 4</span></span>
-            <Stepper id="db_main_breaker_poles" label="DB main breaker poles" bind:value={draft.db_main_breaker_poles} min={1} max={4} />
+            <Stepper id="db_main_breaker_poles" label="DB main isolator poles" bind:value={draft.db_main_breaker_poles} min={1} max={4} />
         </div>
-        <ChoiceGroup label="DB main breaker switch standard" compact options={STANDARD} bind:value={draft.db_main_breaker_standard} />
+        <ChoiceGroup label="DB main isolator standard" compact options={STANDARD} bind:value={draft.db_main_breaker_standard} />
     {/if}
 {/snippet}
-{@render card('DB main breaker switch', null, errors.db_main_breaker, mainBreakerBody)}
+{@render card('DB main isolator', null, errors.db_main_breaker, mainBreakerBody)}
 
 {#snippet cbTypeBody()}
     <ChoiceGroup label="Circuit breaker type" compact options={STANDARD} bind:value={draft.cb_type_standard} />

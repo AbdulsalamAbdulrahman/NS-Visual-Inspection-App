@@ -1,4 +1,4 @@
-# KENS: Kaduna Electric Building Electrical Inspection & Certification
+# KENS: Kaduna Electric Building Visual Electrical Inspection and Compliance
 
 ## Project overview
 Web app for Kaduna Electric's New Service Department. Contractors fill the building electrical inspection report on site (mostly on phones), pay a fee via Monnify, and get a ticket (KE-NSD-YYYY-000123). NSD admins review each paid report and either approve it (issuing a certificate whose number is the ticket) or send it back for changes. Admins see and manage everything; service reps view and print submissions in their 1–3 assigned service areas only. Full spec: docs/SPEC.md. UI designs: docs/design/ (source of truth for layout, copy and states).

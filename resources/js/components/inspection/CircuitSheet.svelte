@@ -5,8 +5,9 @@
     import NumberInput from '@/components/form/NumberInput.svelte';
     import Select from '@/components/form/Select.svelte';
     import TextInput from '@/components/form/TextInput.svelte';
+    import { CABLE_COLOURS } from '@/lib/inspection/cableColours';
     import { CONDITIONS, CONDITION_ORDER } from '@/lib/inspection/conditions';
-    import type { Circuit, Option } from '@/lib/inspection/types';
+    import type { CableColour, Circuit, Option } from '@/lib/inspection/types';
     import Close from '~icons/ms/close';
     import Delete from '~icons/ms/delete';
     import RadioButtonChecked from '~icons/ms/radio-button-checked';
@@ -20,23 +21,32 @@
         label: string;
         isNew: boolean;
         descriptions: Option[];
+        colours: Option<CableColour>[];
         onsave: (circuit: Circuit) => void;
         onremove: (uuid: string) => void;
     };
 
-    let { open = $bindable(false), circuit, label, isNew, descriptions, onsave, onremove }: Props = $props();
+    let { open = $bindable(false), circuit, label, isNew, descriptions, colours, onsave, onremove }: Props = $props();
 
     let tried = $state(false);
 
     const conditionMissing = $derived(tried && !circuit?.condition);
+    const earthMissing = $derived(tried && circuit?.earth_conductor_mm2 === null);
+    const coloursMissing = $derived(tried && !(circuit?.live_colour && circuit.neutral_colour && circuit.earth_colour));
+
+    const colourFields = [
+        { key: 'live_colour', label: 'Live' },
+        { key: 'neutral_colour', label: 'Neutral' },
+        { key: 'earth_colour', label: 'Earth' },
+    ] as const;
 
     function save(): void {
         if (!circuit) {
             return;
         }
 
-        // Condition is the one thing a card can't do without.
-        if (!circuit.condition) {
+        // Condition, earthing cable size and colours (LECAN) can't be left out.
+        if (!circuit.condition || circuit.earth_conductor_mm2 === null || !circuit.live_colour || !circuit.neutral_colour || !circuit.earth_colour) {
             tried = true;
 
             return;
@@ -93,7 +103,34 @@
                         <Field id="circuit-conductor" label="Conductor size">
                             <NumberInput id="circuit-conductor" unit="mm²" bind:value={circuit.conductor_mm2} />
                         </Field>
+                        <Field id="circuit-earth" error={earthMissing ? 'Enter the earthing cable size.' : undefined}>
+                            {#snippet labelAside()}
+                                <label for="circuit-earth" class="text-[15px] font-semibold">Earthing cable <span class="text-bad" aria-hidden="true">*</span></label>
+                            {/snippet}
+                            <NumberInput id="circuit-earth" unit="mm²" bind:value={circuit.earth_conductor_mm2} invalid={earthMissing} />
+                        </Field>
                     </div>
+
+                    <fieldset class="flex flex-col gap-2">
+                        <legend class="mb-2 text-[15px] font-semibold">Cable colours <span class="text-bad" aria-hidden="true">*</span></legend>
+                        {#each colourFields as f (f.key)}
+                            {@const value = circuit[f.key]}
+                            <div class="grid grid-cols-[76px_1fr] items-center gap-2.5">
+                                <label for="circuit-{f.key}" class="flex items-center gap-2 text-[15px] font-semibold">
+                                    <span
+                                        class="size-4 flex-none rounded-full border border-line"
+                                        style:background={value ? CABLE_COLOURS[value].swatch : 'transparent'}
+                                        aria-hidden="true"
+                                    ></span>
+                                    {f.label}
+                                </label>
+                                <Select id="circuit-{f.key}" size="md" options={colours} placeholder="Choose colour" bind:value={circuit[f.key]} invalid={coloursMissing && !value} />
+                            </div>
+                        {/each}
+                        {#if coloursMissing}
+                            <span class="text-sm font-semibold text-bad" role="alert">Choose the live, neutral and earth colours.</span>
+                        {/if}
+                    </fieldset>
 
                     <fieldset class="flex flex-col gap-2">
                         <legend class="mb-2 text-[15px] font-semibold">Condition <span class="text-bad" aria-hidden="true">*</span></legend>
