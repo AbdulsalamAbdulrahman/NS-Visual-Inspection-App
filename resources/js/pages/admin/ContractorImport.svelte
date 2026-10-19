@@ -18,6 +18,8 @@
         category: string | null;
         regNo: string | null;
         firm: string | null;
+        /** Licence expiry, "14 Jan 2028". */
+        expires: string | null;
         errors: string[];
     };
 
@@ -54,12 +56,14 @@
         noun={['contractor', 'contractors']}
         verb="Register"
         rowMeaning="contractor"
-        headers={['NAME', 'STATE', 'CATEGORY', 'NEMSA REG. NO.']}
-        cols="grid-cols-[56px_minmax(0,1.4fr)_100px_110px_minmax(0,1fr)_minmax(0,1.6fr)]"
+        headers={['NAME', 'STATE', 'CATEGORY', 'NEMSA REG. NO.', 'LICENCE EXPIRES']}
+        cols="grid-cols-[56px_minmax(0,1.4fr)_100px_110px_minmax(0,1fr)_120px_minmax(0,1.5fr)]"
     >
         {#snippet guide()}
-            <b>state</b> is Kaduna, Kebbi, Sokoto or Zamfara (where they work; reps assign them jobs there); <b>nemsa_category</b> is Cat A, Cat B, Cat C or
-            Corporate. Corporate rows need <b>firm_name</b> and <b>engineer_name</b>. <b>phone</b>, <b>coren_no</b> and <b>engineer_reg_no</b> are optional.
+            <b>resident_state</b> is Kaduna, Kebbi, Sokoto or Zamfara (where they work; reps assign them jobs there); <b>nemsa_category</b> is Cat A, Cat B, Cat
+            C or Corporate. Corporate rows need <b>firm_name</b> and <b>engineer_name</b>. <b>phone</b>, <b>coren_no</b>, <b>engineer_reg_no</b> and the
+            licence dates (<b>licence_issued_on</b>, <b>licence_expires_on</b>, as DD/MM/YYYY) are optional. Contractors add their passport photograph, licence copy
+            and signature (and any missing dates) when they first sign in, before they can take jobs.
         {/snippet}
         {#snippet note()}
             <p class="flex items-start gap-2 rounded-xl bg-info-bg px-3.5 py-3 text-sm">
@@ -74,6 +78,7 @@
             <span role="cell">{row.state ?? '—'}</span>
             <span role="cell">{row.category ?? '—'}</span>
             <span role="cell" class="truncate font-mono">{row.regNo ?? '—'}</span>
+            <span role="cell" class="font-mono">{row.expires ?? '—'}</span>
         {/snippet}
     </CsvImport>
 </div>

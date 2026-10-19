@@ -9,7 +9,8 @@
 
     export type ContractorDocumentsData = {
         status: LicenceStatus;
-        /** Y-m-d, for the date input. */
+        /** Y-m-d, for the date inputs. */
+        issuedOn: string | null;
         expiresOn: string | null;
         licenceUrl: string | null;
         licenceIsPdf: boolean;
@@ -39,7 +40,11 @@
 
     let busy = $state<string | null>(null);
     // svelte-ignore state_referenced_locally
+    let issuedOn = $state(documents.issuedOn ?? '');
+    // svelte-ignore state_referenced_locally
     let expiresOn = $state(documents.expiresOn ?? '');
+
+    const datesUnchanged = $derived(issuedOn === (documents.issuedOn ?? '') && expiresOn === (documents.expiresOn ?? ''));
     let drawnSignature = $state<string | null>(null);
     let drawing = $state(false);
 
@@ -117,11 +122,22 @@
             class="flex flex-wrap items-end gap-2.5"
             onsubmit={(e) => {
                 e.preventDefault();
-                send('expiry', { licence_expires_at: expiresOn });
+                send('dates', { licence_issued_at: issuedOn, licence_expires_at: expiresOn });
             }}
         >
-            <label class="flex min-w-[180px] flex-1 flex-col gap-1.5">
-                <span class="text-sm font-semibold">Licence expiry date</span>
+            <label class="flex min-w-[160px] flex-1 flex-col gap-1.5">
+                <span class="text-sm font-semibold">Issue date</span>
+                <input
+                    type="date"
+                    max={today}
+                    bind:value={issuedOn}
+                    required
+                    aria-invalid={!!errors.licence_issued_at || undefined}
+                    class="h-12 rounded-xl border-[1.5px] border-line bg-sf px-3 font-mono text-base"
+                />
+            </label>
+            <label class="flex min-w-[160px] flex-1 flex-col gap-1.5">
+                <span class="text-sm font-semibold">Expiry date</span>
                 <input
                     type="date"
                     min={today}
@@ -131,10 +147,11 @@
                     class="h-12 rounded-xl border-[1.5px] border-line bg-sf px-3 font-mono text-base"
                 />
             </label>
-            <Button type="submit" size="sm" class="h-12" disabled={busy !== null || !expiresOn || expiresOn === documents.expiresOn}>
-                {busy === 'expiry' ? 'Saving…' : 'Save date'}
+            <Button type="submit" size="sm" class="h-12" disabled={busy !== null || !issuedOn || !expiresOn || datesUnchanged}>
+                {busy === 'dates' ? 'Saving…' : 'Save dates'}
             </Button>
         </form>
+        {#if errors.licence_issued_at}<span class="text-sm font-semibold text-bad" role="alert">{errors.licence_issued_at}</span>{/if}
         {#if errors.licence_expires_at}<span class="text-sm font-semibold text-bad" role="alert">{errors.licence_expires_at}</span>{/if}
         <span class="text-[13px] text-mut">We email you a month before it expires. After the expiry date, new work is blocked until you upload the renewed licence.</span>
     </div>

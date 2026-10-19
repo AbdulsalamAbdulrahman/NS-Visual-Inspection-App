@@ -90,7 +90,7 @@ final class JobRules
         $area = filled($data['service_area_id'] ?? null) ? ServiceArea::query()->whereKey($data['service_area_id'])->first() : null;
 
         if ($area !== null && filled($data['contractor'] ?? null) && self::contractor((string) $data['contractor'], $area) === null) {
-            $errors['contractor'] = "Choose an active contractor with a valid licence who works in {$area->state->label()} State.";
+            $errors['contractor'] = "Choose an active contractor with a valid licence and complete documents who works in {$area->state->label()} State.";
         }
 
         return $errors;
@@ -106,7 +106,7 @@ final class JobRules
             ->role(Role::Contractor)
             ->where('status', UserStatus::Active)
             ->where(Str::isUuid($key) ? 'uuid' : 'email', Str::isUuid($key) ? $key : Str::lower(trim($key)))
-            ->whereHas('contractorProfile', fn ($q) => $q->where('state', $area->state)->licensed())
+            ->whereHas('contractorProfile', fn ($q) => $q->where('state', $area->state)->licensed()->onboarded())
             ->first();
     }
 

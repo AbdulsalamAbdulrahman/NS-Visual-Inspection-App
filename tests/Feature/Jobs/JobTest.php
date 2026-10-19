@@ -95,7 +95,7 @@ test('a contractor in another state cannot be assigned', function () {
 
     $this->actingAs($this->rep)
         ->post(route('rep.jobs.store'), jobPayload(['contractor' => $sokotoContractor->uuid]))
-        ->assertSessionHasErrors(['contractor' => 'Choose an active contractor with a valid licence who works in Kaduna State.']);
+        ->assertSessionHasErrors(['contractor' => 'Choose an active contractor with a valid licence and complete documents who works in Kaduna State.']);
 
     expect(Inspection::query()->count())->toBe(0);
 });

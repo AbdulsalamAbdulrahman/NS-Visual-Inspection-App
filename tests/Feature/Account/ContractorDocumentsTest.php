@@ -66,7 +66,23 @@ test('wrong file types and a past expiry are rejected', function () {
         'licence_expires_at' => '2026-10-13',
     ])->assertSessionHasErrors(['licence', 'passport', 'licence_expires_at']);
 
-    expect($this->contractor->contractorProfile->fresh()->licence_path)->toBeNull();
+    expect($this->contractor->contractorProfile->fresh()->licence_path)->toBe('contractors/test/licence.jpg');
+});
+
+test('the licence issue date is saved, and must be past and before the expiry', function () {
+    $this->actingAs($this->contractor)
+        ->post(route('profile.documents.store'), ['licence_issued_at' => '2026-10-15'])
+        ->assertSessionHasErrors(['licence_issued_at' => 'The issue date can’t be in the future.']);
+    $this->post(route('profile.documents.store'), ['licence_issued_at' => '2025-03-01', 'licence_expires_at' => '2025-02-01'])
+        ->assertSessionHasErrors('licence_expires_at');
+
+    $this->post(route('profile.documents.store'), ['licence_issued_at' => '2025-03-01', 'licence_expires_at' => '2028-02-28'])
+        ->assertSessionHasNoErrors();
+
+    $profile = $this->contractor->contractorProfile->fresh();
+    expect($profile->licence_issued_at->toDateString())->toBe('2025-03-01')
+        ->and($profile->licence_expires_at->toDateString())->toBe('2028-02-28');
+    $this->get(route('profile.show'))->assertInertia(fn (Assert $page) => $page->where('profile.documents.issuedOn', '2025-03-01'));
 });
 
 test('documents are visible to their contractor and admins only', function () {
@@ -107,15 +123,9 @@ test('a renewed licence lifts the block straight away', function () {
     $this->post(route('inspections.start', $job))->assertRedirect(route('inspections.edit', $job));
 });
 
-test('the licence is valid through its expiry day, and contractors with no expiry yet are not blocked', function () {
+test('the licence is valid through its expiry day', function () {
     expireLicence($this->contractor, '2026-10-14');
     expect($this->contractor->contractorProfile->fresh()->isLicenceExpired())->toBeFalse();
-
-    $other = User::factory()->contractor()->create();
-    $this->actingAs($other)->get(route('inspections.index'))
-        ->assertInertia(fn (Assert $page) => $page
-            ->where('licence.state', 'missing')
-            ->where('licence.missing', ['Licence copy', 'Licence expiry date', 'Passport photograph', 'Signature']));
 });
 
 test('reps cannot assign a contractor whose licence has expired', function () {
@@ -135,7 +145,7 @@ test('reps cannot assign a contractor whose licence has expired', function () {
         'building_type' => 'duplex',
         'form74_no' => 'F74/KD/2026/08841',
         'contractor' => $this->contractor->uuid,
-    ])->assertSessionHasErrors(['contractor' => 'Choose an active contractor with a valid licence who works in Kaduna State.']);
+    ])->assertSessionHasErrors(['contractor' => 'Choose an active contractor with a valid licence and complete documents who works in Kaduna State.']);
 });
 
 test('the daily check emails a month before expiry and on expiry, once each', function () {

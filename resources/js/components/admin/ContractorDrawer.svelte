@@ -17,6 +17,9 @@
         firmName: string | null;
         engineerName: string | null;
         engineerRegNo: string | null;
+        /** Y-m-d */
+        licenceIssuedOn: string | null;
+        licenceExpiresOn: string | null;
         state: string | null;
         stateLabel: string | null;
         /** Uploaded by the contractor on Profile; admins view only. */
@@ -57,6 +60,8 @@
         firm_name: '',
         engineer_name: '',
         engineer_reg_no: '',
+        licence_issued_at: '',
+        licence_expires_at: '',
         state: null as string | null,
     });
 
@@ -75,6 +80,8 @@
         form.firm_name = row?.firmName ?? '';
         form.engineer_name = row?.engineerName ?? '';
         form.engineer_reg_no = row?.engineerRegNo ?? '';
+        form.licence_issued_at = row?.licenceIssuedOn ?? '';
+        form.licence_expires_at = row?.licenceExpiresOn ?? '';
         form.state = row?.state ?? null;
     }
 
@@ -202,10 +209,27 @@
             </div>
         {/if}
 
+        <div class="grid gap-3.5 lg:grid-cols-2 lg:gap-3">
+            {#each [{ key: 'licence_issued_at', label: 'Licence issue date' }, { key: 'licence_expires_at', label: 'Licence expiry date' }] as const as d (d.key)}
+                <Field id="c-{d.key}" error={form.errors[d.key]}>
+                    {#snippet labelAside()}
+                        <label for="c-{d.key}" class="text-[15px] font-semibold lg:text-sm">{d.label} <span class="font-normal text-mut">optional</span></label>
+                    {/snippet}
+                    <input
+                        id="c-{d.key}"
+                        type="date"
+                        bind:value={form[d.key]}
+                        aria-invalid={!!form.errors[d.key] || undefined}
+                        class={['h-12 w-full rounded-xl border-[1.5px] border-line bg-sf px-3 font-mono text-base', compact]}
+                    />
+                </Field>
+            {/each}
+        </div>
+
         {#if !editing}
             <div class="flex gap-2.5 rounded-xl bg-info-bg p-3.5 text-sm leading-[1.45]">
                 <Mail class="size-[22px] flex-none text-info" />
-                <span>We'll email a temporary password to this address. They must set their own on first sign-in.</span>
+                <span>We'll email a temporary password to this address. At first sign-in they set their own password, then add their passport photograph, licence copy and signature (and any missing licence dates) before they can take jobs.</span>
             </div>
         {/if}
     </form>

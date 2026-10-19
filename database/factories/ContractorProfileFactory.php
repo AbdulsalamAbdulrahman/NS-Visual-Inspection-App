@@ -28,7 +28,25 @@ class ContractorProfileFactory extends Factory
             'coren_no' => fake()->optional()->numerify('R.#####'),
             'firm_name' => null,
             'state' => NigerianState::Kaduna,
+            // Onboarded: documents and licence dates in (see withoutDocuments()).
+            'licence_path' => 'contractors/test/licence.jpg',
+            'passport_path' => 'contractors/test/passport.jpg',
+            'signature_path' => 'contractors/test/signature.png',
+            'licence_issued_at' => today()->subYear(),
+            'licence_expires_at' => today()->addYear(),
         ];
+    }
+
+    /** Fresh from the register or import: documents to add at first sign-in. */
+    public function withoutDocuments(): static
+    {
+        return $this->state([
+            'licence_path' => null,
+            'passport_path' => null,
+            'signature_path' => null,
+            'licence_issued_at' => null,
+            'licence_expires_at' => null,
+        ]);
     }
 
     public function corporate(string $firm = 'Danladi Electrical Services'): static

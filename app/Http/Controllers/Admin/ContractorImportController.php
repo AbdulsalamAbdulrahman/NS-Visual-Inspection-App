@@ -31,8 +31,9 @@ class ContractorImportController extends Controller
             }
 
             fputcsv($out, ImportContractors::COLUMNS, escape: '');
-            fputcsv($out, ['Aisha Lawal', 'aisha.lawal@example.com', '08062201145', 'Kaduna', 'Cat B', 'NEMSAB20220388', '', '', '', ''], escape: '');
-            fputcsv($out, ['Danladi Electrical Services', 'info@danladi.example.com', '08027004410', 'Kaduna', 'Corporate', 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd', 'Engr. Ibrahim Danladi', ''], escape: '');
+            // Dates are optional: a contractor without them adds them at first login.
+            fputcsv($out, ['Aisha Lawal', 'aisha.lawal@example.com', '08062201145', 'Kaduna', 'Cat B', 'NEMSAB20220388', '', '', '', '', '15/01/2025', '14/01/2028'], escape: '');
+            fputcsv($out, ['Danladi Electrical Services', 'info@danladi.example.com', '08027004410', 'Kaduna', 'Corporate', 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd', 'Engr. Ibrahim Danladi', 'COREN/R.4417', '', ''], escape: '');
             fclose($out);
         }, 'kens-contractors-template.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }

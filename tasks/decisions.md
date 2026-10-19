@@ -136,3 +136,7 @@ Decisions with the user (13 Oct): LECAN officials as a new role; owner notified 
 - **Expiry is computed, not a status:** past `licence_expires_at` (valid through that day) blocks start, pay and resubmit (`LicenceExpiredException` → toast; policies too) and hides the contractor from reps' lists. Sign-in still works; a later date lifts the block at once. No expiry recorded = not blocked ("Documents missing" reminder).
 - `contractors:licence-check` (daily 07:00) emails once at ≤30 days and once when expired; flags reset when the expiry date changes.
 - The profile signature is copied into a report when the job starts (a copy, so profile changes never alter reports).
+
+## Contractor onboarding (19 Oct 2026)
+- The CSV template gains resident_state and optional licence issue/expiry dates (DD/MM/YYYY and other common formats). The old `state` header and the client's own header spellings are accepted; engineer_reg_no and the dates may be missing from an uploaded file.
+- Passport photo, licence copy and signature are never in the CSV: contractors add them at first sign-in. Until the three documents and both licence dates are in, a contractor only sees "Complete your profile" (/welcome/documents; JSON calls get 423), and reps can't assign them jobs. This replaces "contractors without documents keep working".

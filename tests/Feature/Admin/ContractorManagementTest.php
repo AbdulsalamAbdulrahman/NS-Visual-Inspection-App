@@ -143,3 +143,29 @@ test('corporate contractors must name their electrical engineer or technologist'
         ->post(route('admin.contractors.store'), contractorPayload(['engineer_name' => '']))
         ->assertSessionHasErrors(['engineer_name' => 'Required for Corporate contractors']);
 });
+
+test('admins can enter the licence dates when registering or editing a contractor', function () {
+    $this->travelTo('2026-10-19 09:00:00');
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.contractors.store'), contractorPayload(['licence_issued_at' => '2026-11-01']))
+        ->assertSessionHasErrors(['licence_issued_at' => 'The licence issue date can’t be in the future.']);
+    $this->post(route('admin.contractors.store'), contractorPayload(['licence_issued_at' => '2025-01-15', 'licence_expires_at' => '2028-01-14']))
+        ->assertSessionHasNoErrors();
+
+    $contractor = User::query()->where('email', 'm.abubakar@garbapower.ng')->sole();
+    expect($contractor->contractorProfile->licence_issued_at->toDateString())->toBe('2025-01-15');
+
+    // An expiry already past is kept when other details change; a new one must be in the future.
+    $contractor->contractorProfile->update(['licence_expires_at' => '2026-10-01', 'licence_reminded_at' => now()]);
+    $this->put(route('admin.contractors.update', $contractor), contractorPayload(['email' => $contractor->email, 'licence_issued_at' => '2025-01-15', 'licence_expires_at' => '2026-10-01']))
+        ->assertSessionHasNoErrors();
+    $this->put(route('admin.contractors.update', $contractor), contractorPayload(['email' => $contractor->email, 'licence_issued_at' => '2025-01-15', 'licence_expires_at' => '2026-10-10']))
+        ->assertSessionHasErrors(['licence_expires_at' => 'The licence has already expired.']);
+    $this->put(route('admin.contractors.update', $contractor), contractorPayload(['email' => $contractor->email, 'licence_issued_at' => '2025-01-15', 'licence_expires_at' => '2029-01-14']))
+        ->assertSessionHasNoErrors();
+
+    $profile = $contractor->contractorProfile->fresh();
+    expect($profile->licence_expires_at->toDateString())->toBe('2029-01-14')
+        ->and($profile->licence_reminded_at)->toBeNull();
+});

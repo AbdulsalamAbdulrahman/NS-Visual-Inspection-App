@@ -34,7 +34,7 @@ class ContractorRequest extends FormRequest
     /**
      * Validated input in the shape CreateContractor / UpdateContractor expect.
      *
-     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string}
+     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string, licence_issued_at: string|null, licence_expires_at: string|null}
      */
     public function contractorData(): array
     {

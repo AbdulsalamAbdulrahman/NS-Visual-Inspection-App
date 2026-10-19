@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $licence_path
  * @property string|null $passport_path
  * @property string|null $signature_path
+ * @property Carbon|null $licence_issued_at
  * @property Carbon|null $licence_expires_at
  * @property Carbon|null $licence_reminded_at
  * @property Carbon|null $licence_expired_notified_at
@@ -54,6 +55,7 @@ class ContractorProfile extends Model
         'licence_path',
         'passport_path',
         'signature_path',
+        'licence_issued_at',
         'licence_expires_at',
         'licence_reminded_at',
         'licence_expired_notified_at',
@@ -65,6 +67,7 @@ class ContractorProfile extends Model
     protected $casts = [
         'state' => NigerianState::class,
         'nemsa_category' => NemsaCategory::class,
+        'licence_issued_at' => 'date',
         'licence_expires_at' => 'date',
         'licence_reminded_at' => 'datetime',
         'licence_expired_notified_at' => 'datetime',
@@ -99,6 +102,7 @@ class ContractorProfile extends Model
     {
         return array_values(array_filter([
             $this->licence_path ? null : 'Licence copy',
+            $this->licence_issued_at ? null : 'Licence issue date',
             $this->licence_expires_at ? null : 'Licence expiry date',
             $this->passport_path ? null : 'Passport photograph',
             $this->signature_path ? null : 'Signature',
@@ -113,6 +117,37 @@ class ContractorProfile extends Model
             'signature' => $this->signature_path,
             default => null,
         };
+    }
+
+    /** Every document and both licence dates are in: the contractor can take jobs. */
+    public function isOnboarded(): bool
+    {
+        return $this->documentsMissing() === [];
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeOnboarded(Builder $query): void
+    {
+        $query->whereNotNull(['licence_path', 'passport_path', 'signature_path', 'licence_issued_at', 'licence_expires_at']);
+    }
+
+    /**
+     * Fields for new licence dates (Y-m-d or null); a changed expiry means new reminder emails.
+     *
+     * @return array<string, string|null>
+     */
+    public function licenceDateFields(?string $issuedAt, ?string $expiresAt): array
+    {
+        $fields = ['licence_issued_at' => $issuedAt, 'licence_expires_at' => $expiresAt];
+
+        if ($this->licence_expires_at?->toDateString() !== $expiresAt) {
+            $fields['licence_reminded_at'] = null;
+            $fields['licence_expired_notified_at'] = null;
+        }
+
+        return $fields;
     }
 
     /**

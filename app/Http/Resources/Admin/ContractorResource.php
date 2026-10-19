@@ -43,6 +43,8 @@ class ContractorResource extends JsonResource
             'firmName' => $licence?->firm_name,
             'engineerName' => $licence?->engineer_name,
             'engineerRegNo' => $licence?->engineer_reg_no,
+            'licenceIssuedOn' => $licence?->licence_issued_at?->toDateString(),
+            'licenceExpiresOn' => $licence?->licence_expires_at?->toDateString(),
             'state' => $licence?->state?->value,
             'stateLabel' => $licence?->state?->label(),
             // Uploaded by the contractor on Profile; admins view only.

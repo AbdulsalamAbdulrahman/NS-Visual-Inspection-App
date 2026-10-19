@@ -34,6 +34,8 @@ final class ContractorRules
             'firm_name' => $text('firm_name'),
             'engineer_name' => $text('engineer_name'),
             'engineer_reg_no' => $text('engineer_reg_no'),
+            'licence_issued_at' => $text('licence_issued_at'),
+            'licence_expires_at' => $text('licence_expires_at'),
         ];
     }
 
@@ -63,6 +65,11 @@ final class ContractorRules
             // Corporate firms name their electrical engineer/technologist.
             'engineer_name' => [Rule::requiredIf($corporate), 'nullable', 'string', 'max:255'],
             'engineer_reg_no' => ['nullable', 'string', 'max:60'],
+            // Optional here: a contractor without them adds them at first login.
+            'licence_issued_at' => ['bail', 'nullable', 'date_format:Y-m-d', 'before_or_equal:today'],
+            // An unchanged (already past) expiry doesn't stop an admin editing other details.
+            'licence_expires_at' => ['bail', 'nullable', 'date_format:Y-m-d',
+                ...(($input['licence_expires_at'] ?? null) === $contractor?->contractorProfile?->licence_expires_at?->toDateString() ? [] : ['after_or_equal:today']), ...(self::isDate($input['licence_issued_at'] ?? null) ? ['after:licence_issued_at'] : [])],
             // LECAN chapter they work in: reps assign jobs to contractors in the area's state.
             'state' => ['required', Rule::enum(NigerianState::class)],
         ];
@@ -83,6 +90,11 @@ final class ContractorRules
             'nemsa_reg_no.unique' => 'Another contractor already has this registration number.',
             'firm_name.required' => 'Required for Corporate contractors',
             'phone.regex' => 'Enter a valid phone number.',
+            'licence_issued_at.date_format' => 'Enter the licence issue date as DD/MM/YYYY.',
+            'licence_issued_at.before_or_equal' => 'The licence issue date can’t be in the future.',
+            'licence_expires_at.date_format' => 'Enter the licence expiry date as DD/MM/YYYY.',
+            'licence_expires_at.after_or_equal' => 'The licence has already expired.',
+            'licence_expires_at.after' => 'The licence expiry date must be after the issue date.',
         ];
     }
 
@@ -96,6 +108,8 @@ final class ContractorRules
             'nemsa_reg_no' => 'NEMSA registration no.',
             'coren_no' => 'COREN no.',
             'state' => 'state',
+            'licence_issued_at' => 'licence issue date',
+            'licence_expires_at' => 'licence expiry date',
         ];
     }
 
@@ -103,7 +117,7 @@ final class ContractorRules
      * Validated input in the shape CreateContractor / UpdateContractor expect.
      *
      * @param  array<string, mixed>  $input
-     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string}
+     * @return array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string, licence_issued_at: string|null, licence_expires_at: string|null}
      */
     public static function data(array $input): array
     {
@@ -120,6 +134,8 @@ final class ContractorRules
             'engineer_name' => $optional('engineer_name'),
             'engineer_reg_no' => $optional('engineer_reg_no'),
             'state' => (string) $input['state'],
+            'licence_issued_at' => $optional('licence_issued_at'),
+            'licence_expires_at' => $optional('licence_expires_at'),
         ];
     }
 
@@ -129,5 +145,11 @@ final class ContractorRules
     private static function isCorporate(array $input): bool
     {
         return ($input['nemsa_category'] ?? null) === NemsaCategory::Corporate->value;
+    }
+
+    /** A real YYYY-MM-DD date (not 2025-02-31). */
+    private static function isDate(mixed $value): bool
+    {
+        return is_string($value) && preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $value, $m) === 1 && checkdate((int) $m[2], (int) $m[3], (int) $m[1]);
     }
 }

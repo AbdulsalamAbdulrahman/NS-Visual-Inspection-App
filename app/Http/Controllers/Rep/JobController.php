@@ -198,7 +198,7 @@ class JobController extends Controller
         $contractors = User::query()
             ->role(Role::Contractor)
             ->where('status', UserStatus::Active)
-            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states)->licensed())
+            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states)->licensed()->onboarded())
             ->with('contractorProfile')
             ->withCount(['inspections as open_jobs' => fn ($q) => $q->whereIn('status', [InspectionStatus::Assigned, InspectionStatus::Draft])])
             ->orderBy('name')

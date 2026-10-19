@@ -17,7 +17,7 @@ class CreateContractor
     /**
      * Create an Invited contractor with their licence and email a temporary password.
      *
-     * @param  array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string}  $data
+     * @param  array{name: string, email: string, phone: string|null, nemsa_category: string, nemsa_reg_no: string, coren_no: string|null, firm_name: string|null, engineer_name: string|null, engineer_reg_no: string|null, state: string, licence_issued_at: string|null, licence_expires_at: string|null}  $data
      */
     public function handle(array $data): User
     {
@@ -43,6 +43,8 @@ class CreateContractor
                 // Only corporate firms name an engineer/technologist.
                 'engineer_name' => $data['nemsa_category'] === NemsaCategory::Corporate->value ? $data['engineer_name'] : null,
                 'engineer_reg_no' => $data['nemsa_category'] === NemsaCategory::Corporate->value ? $data['engineer_reg_no'] : null,
+                'licence_issued_at' => $data['licence_issued_at'],
+                'licence_expires_at' => $data['licence_expires_at'],
             ]);
 
             return $user;
