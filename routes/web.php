@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Account\ContractorDocumentController;
 use App\Http\Controllers\Account\FirstPasswordController;
+use App\Http\Controllers\Account\OnboardingController;
 use App\Http\Controllers\Account\PasswordController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Admin\AccountController;
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function () {
         ->name('password.change');
 
     Route::middleware('role:contractor')->group(function () {
+        Route::get('welcome/documents', [OnboardingController::class, 'show'])->name('onboarding');
         Route::post('profile/documents', [ContractorDocumentController::class, 'store'])->middleware('throttle:30,1')->name('profile.documents.store');
         Route::get('profile/documents/{document}', [ContractorDocumentController::class, 'show'])->whereIn('document', ContractorProfile::DOCUMENTS)->name('profile.documents.show');
 

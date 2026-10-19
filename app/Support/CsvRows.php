@@ -15,11 +15,13 @@ final class CsvRows
 {
     /**
      * @param  list<string>  $columns  required column names (snake_case)
+     * @param  array<string, string>  $aliases  other header names (snake_case) => column, e.g. an older template's
+     * @param  list<string>  $optional  columns of $columns a file may leave out (read as blank)
      * @return list<array{line: int, values: array<string, string>}>
      *
      * @throws RuntimeException when the file doesn't match the template
      */
-    public static function read(string $path, array $columns, int $maxRows): array
+    public static function read(string $path, array $columns, int $maxRows, array $aliases = [], array $optional = []): array
     {
         $handle = fopen($path, 'r');
 
@@ -31,7 +33,9 @@ final class CsvRows
             $header = fgetcsv($handle, escape: '');
             // Excel adds a byte-order mark to "CSV UTF-8" files.
             $header = is_array($header) ? array_map(fn ($h): string => Str::snake(trim((string) preg_replace('/^\xEF\xBB\xBF/', '', (string) $h))), $header) : [];
-            $missing = array_diff($columns, $header);
+            $header = array_map(fn (string $h): string => in_array($h, $columns, true) ? $h : ($aliases[$h] ?? $h), $header);
+            $missing = array_diff($columns, $header, $optional);
+            $blank = array_fill_keys(array_values(array_diff($columns, $header)), '');
 
             if ($missing !== []) {
                 throw new RuntimeException('Use the template: the first row must have the column names. Missing: '.implode(', ', $missing).'.');
@@ -52,7 +56,7 @@ final class CsvRows
                     throw new RuntimeException("Upload at most {$maxRows} rows at a time.");
                 }
 
-                $rows[] = ['line' => $line, 'values' => array_combine($header, array_pad(array_slice($cells, 0, count($header)), count($header), ''))];
+                $rows[] = ['line' => $line, 'values' => [...$blank, ...array_combine($header, array_pad(array_slice($cells, 0, count($header)), count($header), ''))]];
             }
         } finally {
             fclose($handle);

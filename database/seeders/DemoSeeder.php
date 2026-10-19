@@ -50,7 +50,8 @@ class DemoSeeder extends Seeder
         $this->contractor('Engr. Yusuf Bello', 'y.bello@bellopower.ng', '0803 412 7790', NemsaCategory::CatA, 'NEMSAA20230142', 'R.12873', 'Bello Power Systems Ltd');
         $this->contractor('Aisha Lawal', 'aisha.lawal@gmail.com', '0806 220 1145', NemsaCategory::CatB, 'NEMSAB20220388');
         $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSAB20210217', 'R.20456', state: NigerianState::Sokoto);
-        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd');
+        // Fresh from registration: lands on "Complete your profile" at sign-in.
+        $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd', onboarded: false);
         $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSAC20240610', status: UserStatus::Suspended);
 
         // Licence expiry examples: valid for a year, expiring soon, and expired (new work blocked).
@@ -320,6 +321,7 @@ class DemoSeeder extends Seeder
         ?string $firm = null,
         UserStatus $status = UserStatus::Active,
         NigerianState $state = NigerianState::Kaduna,
+        bool $onboarded = true,
     ): User {
         $user = $this->user($name, $email, Role::Contractor, $status, $phone);
 
@@ -331,6 +333,24 @@ class DemoSeeder extends Seeder
             'state' => $state,
             'engineer_name' => $category === NemsaCategory::Corporate ? 'Engr. Ibrahim Danladi' : null,
         ]);
+
+        $profile = $user->contractorProfile()->firstOrFail();
+
+        if ($onboarded && ! $profile->isOnboarded()) {
+            $disk = Storage::disk('local');
+            $directory = "contractors/{$user->uuid}";
+            $disk->put("{$directory}/licence-demo.jpg", $this->placeholderJpeg('NEMSA licence'));
+            $disk->put("{$directory}/passport-demo.jpg", $this->placeholderJpeg('Passport photograph'));
+            $disk->put("{$directory}/signature-demo.png", $this->signaturePng());
+
+            $profile->update([
+                'licence_path' => "{$directory}/licence-demo.jpg",
+                'passport_path' => "{$directory}/passport-demo.jpg",
+                'signature_path' => "{$directory}/signature-demo.png",
+                'licence_issued_at' => today()->subYear(),
+                'licence_expires_at' => today()->addYears(2),
+            ]);
+        }
 
         return $user;
     }

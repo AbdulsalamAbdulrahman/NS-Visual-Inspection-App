@@ -40,6 +40,7 @@ class ProfileResource extends JsonResource
             // Profile → Licence & documents (contractors upload their own).
             'documents' => $licence ? [
                 'status' => LicenceStatus::for($licence),
+                'issuedOn' => $licence->licence_issued_at?->toDateString(),
                 'expiresOn' => $licence->licence_expires_at?->toDateString(),
                 'licenceUrl' => $licence->licence_path ? route('profile.documents.show', 'licence').'?v='.md5($licence->licence_path) : null,
                 'licenceIsPdf' => $licence->licence_path !== null && str_ends_with(strtolower($licence->licence_path), '.pdf'),

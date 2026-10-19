@@ -52,14 +52,11 @@ class SaveContractorDocuments
             }
         }
 
-        if (array_key_exists('licence_expires_at', $data)) {
-            $fields['licence_expires_at'] = $data['licence_expires_at'];
-
-            // A new expiry date means new reminder emails.
-            if ($profile->licence_expires_at?->toDateString() !== $data['licence_expires_at']) {
-                $fields['licence_reminded_at'] = null;
-                $fields['licence_expired_notified_at'] = null;
-            }
+        if (array_key_exists('licence_issued_at', $data) || array_key_exists('licence_expires_at', $data)) {
+            $fields += $profile->licenceDateFields(
+                $data['licence_issued_at'] ?? $profile->licence_issued_at?->toDateString(),
+                $data['licence_expires_at'] ?? $profile->licence_expires_at?->toDateString(),
+            );
         }
 
         try {

@@ -40,6 +40,14 @@ class EnsureAccountUsable
             return redirect()->route('password.first');
         }
 
+        // Contractors add their documents and licence dates before anything else.
+        if ($user->isContractor() && $user->contractorProfile?->isOnboarded() !== true
+            && ! $request->routeIs('onboarding', 'profile.documents.*', 'password.first*', 'logout')) {
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Add your licence, passport photograph and signature before you continue.'], 423)
+                : redirect()->route('onboarding');
+        }
+
         if ($user->last_active_at === null || $user->last_active_at->lt(now()->subMinutes(5))) {
             $user->forceFill(['last_active_at' => now()])->saveQuietly();
         }
