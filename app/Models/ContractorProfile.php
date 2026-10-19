@@ -7,12 +7,16 @@ namespace App\Models;
 use App\Enums\NemsaCategory;
 use App\Enums\NigerianState;
 use Database\Factories\ContractorProfileFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * Licence details for a contractor; managed by NSD admins only.
+ * Licence details for a contractor. NSD admins manage the licence fields; the
+ * contractor uploads their documents (licence copy, passport photo,
+ * signature) and the licence expiry on their Profile.
  *
  * @property int $id
  * @property int $user_id
@@ -23,6 +27,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property NigerianState|null $state
  * @property string|null $engineer_name
  * @property string|null $engineer_reg_no
+ * @property string|null $licence_path
+ * @property string|null $passport_path
+ * @property string|null $signature_path
+ * @property Carbon|null $licence_expires_at
+ * @property Carbon|null $licence_reminded_at
+ * @property Carbon|null $licence_expired_notified_at
  * @property-read User $user
  */
 class ContractorProfile extends Model
@@ -41,6 +51,12 @@ class ContractorProfile extends Model
         'state',
         'engineer_name',
         'engineer_reg_no',
+        'licence_path',
+        'passport_path',
+        'signature_path',
+        'licence_expires_at',
+        'licence_reminded_at',
+        'licence_expired_notified_at',
     ];
 
     /**
@@ -49,7 +65,16 @@ class ContractorProfile extends Model
     protected $casts = [
         'state' => NigerianState::class,
         'nemsa_category' => NemsaCategory::class,
+        'licence_expires_at' => 'date',
+        'licence_reminded_at' => 'datetime',
+        'licence_expired_notified_at' => 'datetime',
     ];
+
+    /** Documents a contractor uploads, keyed as in routes and the UI. */
+    public const array DOCUMENTS = ['licence', 'passport', 'signature'];
+
+    /** Days before expiry when the reminder email goes. */
+    public const int REMINDER_DAYS = 30;
 
     /**
      * @return BelongsTo<User, $this>
@@ -57,5 +82,46 @@ class ContractorProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** Past its expiry date (valid through the expiry day itself). No date yet = not expired. */
+    public function isLicenceExpired(): bool
+    {
+        return $this->licence_expires_at !== null && $this->licence_expires_at->lt(today());
+    }
+
+    /**
+     * What the contractor still has to upload.
+     *
+     * @return list<string> labels, e.g. ['Licence copy', 'Licence expiry date']
+     */
+    public function documentsMissing(): array
+    {
+        return array_values(array_filter([
+            $this->licence_path ? null : 'Licence copy',
+            $this->licence_expires_at ? null : 'Licence expiry date',
+            $this->passport_path ? null : 'Passport photograph',
+            $this->signature_path ? null : 'Signature',
+        ]));
+    }
+
+    public function documentPath(string $document): ?string
+    {
+        return match ($document) {
+            'licence' => $this->licence_path,
+            'passport' => $this->passport_path,
+            'signature' => $this->signature_path,
+            default => null,
+        };
+    }
+
+    /**
+     * May take new work: no expiry recorded yet, or not past it.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeLicensed(Builder $query): void
+    {
+        $query->where(fn (Builder $q) => $q->whereNull('licence_expires_at')->orWhereDate('licence_expires_at', '>=', today()));
     }
 }

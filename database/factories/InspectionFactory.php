@@ -6,6 +6,8 @@ namespace Database\Factories;
 
 use App\Enums\AttachmentType;
 use App\Enums\BuildingType;
+use App\Enums\CableColour;
+use App\Enums\CableInsulation;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -99,7 +101,7 @@ class InspectionFactory extends Factory
             'main_cable_mm2' => 16,
             'conductor_type' => ConductorType::Copper,
             'wiring_method' => WiringMethod::Conduit,
-            'cable_insulation' => 'PVC',
+            'cable_insulation' => CableInsulation::Pvc->value,
             'declaration_accepted_at' => now(),
             'signature_path' => 'inspections/test/signature.png',
         ])->afterCreating(function (Inspection $inspection): void {
@@ -109,6 +111,10 @@ class InspectionFactory extends Factory
                 'description' => CircuitDescription::Lighting,
                 'rating_a' => 10,
                 'conductor_mm2' => 1.5,
+                'earth_conductor_mm2' => 1.5,
+                'live_colour' => CableColour::Red,
+                'neutral_colour' => CableColour::Black,
+                'earth_colour' => CableColour::GreenYellow,
                 'condition' => CircuitCondition::Satisfactory,
             ]);
 

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\Payments\InitPayment;
 use App\Actions\Payments\VerifyPayment;
 use App\Enums\PaymentStatus;
+use App\Exceptions\LicenceExpiredException;
 use App\Models\Inspection;
 use App\Models\Payment;
 use App\Services\Monnify\MonnifyException;
@@ -30,8 +31,9 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 class PaymentController extends Controller
 {
     /** CP-01: fee and summary before paying (phones; desktop pays from Review). */
-    public function create(Inspection $inspection): Response|RedirectResponse
+    public function create(Request $request, Inspection $inspection): Response|RedirectResponse
     {
+        LicenceExpiredException::check($request->user());
         Gate::authorize('pay', $inspection);
 
         if (! InspectionChecklist::isComplete($inspection)) {
@@ -54,11 +56,13 @@ class PaymentController extends Controller
                 'effectiveFrom' => $fee['effectiveFrom'],
                 'breakdown' => $fee['breakdown'],
             ] : null,
+            'feeUnavailable' => $fee ? null : InspectionFee::unavailableMessage($inspection),
         ]);
     }
 
-    public function store(Inspection $inspection, InitPayment $init): HttpResponse
+    public function store(Request $request, Inspection $inspection, InitPayment $init): HttpResponse
     {
+        LicenceExpiredException::check($request->user());
         Gate::authorize('pay', $inspection);
 
         try {

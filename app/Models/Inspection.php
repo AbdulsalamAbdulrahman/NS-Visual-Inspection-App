@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\BuildingType;
+use App\Enums\CableInsulation;
 use App\Enums\ConductorType;
 use App\Enums\ConnectionType;
 use App\Enums\EarthingSystemType;
@@ -138,6 +139,15 @@ class Inspection extends Model
 
     /** Steps 1–8 are form sections; 9 is Review. */
     public const STEPS = 9;
+
+    /**
+     * PVC is the only cable insulation offered for now.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'cable_insulation' => CableInsulation::Pvc->value,
+    ];
 
     /** Fields a contractor may change on a draft (SaveDraft). */
     public const DRAFT_FIELDS = [

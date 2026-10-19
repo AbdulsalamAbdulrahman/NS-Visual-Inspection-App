@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\BuildingType;
+use App\Enums\ConnectionType;
+use App\Enums\Premises;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FeeScheduleRequest;
 use App\Models\FeeSchedule;
@@ -15,69 +17,77 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * AD-10, per building type (client feedback): a default fee plus optional fees
- * per building type, all per structure; one scheduled change per fee; history.
+ * AD-10, per the LECAN fee sheet (Oct 2026): a fee per structure for each
+ * building type × supply × premises (₦0 = not offered), plus the default as a
+ * fallback; one scheduled change per fee; history.
  */
 class FeeController extends Controller
 {
+    /** The sheet's four columns, in order. */
+    private const COLUMNS = [
+        [ConnectionType::SinglePhase, Premises::StandAlone],
+        [ConnectionType::ThreePhase, Premises::StandAlone],
+        [ConnectionType::SinglePhase, Premises::Multiple],
+        [ConnectionType::ThreePhase, Premises::Multiple],
+    ];
+
     public function index(): Response
     {
-        $scheduled = FeeSchedule::query()->scheduled()->orderBy('effective_from')->get()
-            ->keyBy(fn (FeeSchedule $fee): string => $fee->building_type->value ?? 'default');
+        // Every live row, newest first; the first in effect per cell is current.
+        $all = FeeSchedule::query()->with('creator:id,name')->orderByDesc('effective_from')->orderByDesc('id')->get();
+        $current = $all->reject(fn (FeeSchedule $fee): bool => $fee->isScheduled())->unique(fn (FeeSchedule $fee): string => $fee->cellKey())->keyBy(fn (FeeSchedule $fee): string => $fee->cellKey());
+        $scheduled = $all->filter(fn (FeeSchedule $fee): bool => $fee->isScheduled())->sortBy('effective_from')->unique(fn (FeeSchedule $fee): string => $fee->cellKey())->keyBy(fn (FeeSchedule $fee): string => $fee->cellKey());
 
-        $default = FeeSchedule::current();
-
-        // One row for the default fee, then one per building type (own fee or "uses default").
-        $rows = collect([null, ...BuildingType::cases()])->map(function (?BuildingType $type) use ($scheduled, $default): array {
-            $own = $type ? FeeSchedule::query()->where('building_type', $type)
-                ->whereDate('effective_from', '<=', today()->toDateString())
-                ->orderByDesc('effective_from')->orderByDesc('id')->first() : $default;
-            $next = $scheduled->get($type->value ?? 'default');
+        $cell = function (?BuildingType $type, ?ConnectionType $connection, ?Premises $premises) use ($current, $scheduled): array {
+            $key = FeeSchedule::keyFor($type, $connection, $premises);
 
             return [
-                'key' => $type->value ?? 'default',
-                'label' => $type?->label() ?? 'Default fee',
-                'purpose' => $type?->purpose()->label(),
-                'current' => $own ? $this->present($own) : null,
-                'usesDefault' => $type !== null && $own === null,
-                'scheduled' => $next ? $this->present($next) : null,
+                'key' => $key,
+                'buildingType' => $type?->value,
+                'connectionType' => $connection?->value,
+                'premises' => $premises?->value,
+                'label' => collect([$type?->label() ?? 'Default fee', $connection?->label(), $premises?->label()])->filter()->implode(' · '),
+                'current' => ($fee = $current->get($key)) ? $this->present($fee) : null,
+                'scheduled' => ($next = $scheduled->get($key)) ? $this->present($next) : null,
             ];
-        });
-
-        $history = FeeSchedule::query()
-            ->with('creator:id,name')
-            ->orderByDesc('effective_from')
-            ->orderByDesc('id')
-            ->limit(80)
-            ->get();
+        };
 
         return Inertia::render('admin/Fees', [
-            'default' => $default ? $this->present($default) : null,
-            'rows' => $rows,
-            'history' => $history->map(fn (FeeSchedule $fee): array => $this->present($fee)),
+            'default' => $cell(null, null, null),
+            'columns' => array_map(fn (array $column): array => [
+                'connectionType' => $column[0]->label(),
+                'premises' => $column[1]->label(),
+            ], self::COLUMNS),
+            'rows' => array_map(fn (BuildingType $type): array => [
+                'key' => $type->value,
+                'label' => $type->label(),
+                'purpose' => $type->purpose()->label(),
+                'cells' => array_map(fn (array $column): array => $cell($type, ...$column), self::COLUMNS),
+            ], BuildingType::cases()),
+            'history' => $all->take(80)->map(fn (FeeSchedule $fee): array => $this->present($fee))->values(),
         ]);
     }
 
     public function store(FeeScheduleRequest $request): RedirectResponse
     {
-        $type = BuildingType::tryFrom((string) $request->validated('building_type'));
-
         $fee = FeeSchedule::query()->create([
-            'building_type' => $type,
+            'building_type' => BuildingType::tryFrom((string) $request->validated('building_type')),
+            'connection_type' => ConnectionType::tryFrom((string) $request->validated('connection_type')),
+            'premises' => Premises::tryFrom((string) $request->validated('premises')),
             'amount_kobo' => $request->amountKobo(),
             'effective_from' => $request->validated('effective_from'),
             'reason' => $request->validated('reason'),
             'created_by' => $request->user()->id,
         ]);
 
-        $amount = Money::format($fee->amount_kobo);
-        $which = $type ? "{$type->label()} fee" : 'default fee';
+        $which = $fee->cellLabel();
+        $when = $fee->isScheduled() ? "from {$fee->effective_from->format('d M Y')}" : 'from today';
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => $fee->isScheduled()
-                ? "{$amount} {$which} scheduled from {$fee->effective_from->format('d M Y')}."
-                : "{$amount} is now the {$which} (per structure).",
+            'message' => $fee->amount_kobo === 0
+                ? "{$which}: not offered {$when}."
+                : "{$which}: ".Money::format($fee->amount_kobo)." per structure {$when}.",
         ]);
 
         return back();
@@ -102,8 +112,9 @@ class FeeController extends Controller
         return [
             'id' => $fee->id,
             'buildingType' => $fee->building_type?->value,
-            'buildingTypeLabel' => $fee->building_type?->label() ?? 'Default',
+            'buildingTypeLabel' => $fee->cellLabel(),
             'amountKobo' => $fee->amount_kobo,
+            'notOffered' => $fee->amount_kobo === 0,
             'amount' => Money::format($fee->amount_kobo),
             'effectiveFrom' => $fee->effective_from->format('d M Y'),
             'changedOn' => $fee->created_at?->format('d M Y'),

@@ -22,7 +22,7 @@ final class InspectionChecklist
 
     public const MIN_EARTH_CONDUCTOR_MM2 = 10.0;
 
-    public const MAX_EARTH_RESISTANCE_OHM = 2.0;
+    public const MAX_EARTH_RESISTANCE_OHM = 5.0;
 
     /** GPS fixes worse than this show the "low accuracy" state. */
     public const GOOD_GPS_ACCURACY_M = 20.0;
@@ -97,7 +97,7 @@ final class InspectionChecklist
             $inspection->db_main_breaker_seen === false
                 || ($inspection->db_main_breaker_seen === true && $inspection->db_main_breaker_rated_a !== null
                     && $inspection->db_main_breaker_poles !== null && $inspection->db_main_breaker_standard !== null),
-            'db_main_breaker', 'DB main breaker switch', 4,
+            'db_main_breaker', 'DB main isolator', 4,
         );
         $need($inspection->cb_type_standard !== null, 'cb_type_standard', 'Circuit breaker type', 4);
         $need(
@@ -150,6 +150,10 @@ final class InspectionChecklist
             && ($circuit->description !== CircuitDescription::Other || filled($circuit->description_other))
             && $circuit->rating_a !== null
             && $circuit->conductor_mm2 !== null
+            && $circuit->earth_conductor_mm2 !== null
+            && $circuit->live_colour !== null
+            && $circuit->neutral_colour !== null
+            && $circuit->earth_colour !== null
             && $circuit->condition !== null;
     }
 }

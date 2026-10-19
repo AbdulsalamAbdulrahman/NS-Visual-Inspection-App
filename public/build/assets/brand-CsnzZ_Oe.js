@@ -1,1 +1,0 @@
-var e=`Building Electrical Inspection & Certification`;export{e as t};

@@ -21,6 +21,7 @@ use App\Models\Payment;
 use App\Models\ServiceArea;
 use App\Models\Setting;
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -51,6 +52,11 @@ class DemoSeeder extends Seeder
         $this->contractor('Chinedu Okafor', 'c.okafor@okaforelectric.ng', '0809 551 0032', NemsaCategory::CatB, 'NEMSAB20210217', 'R.20456', state: NigerianState::Sokoto);
         $this->contractor('Danladi Electrical Services', 'info@danladielectrical.ng', '0802 700 4410', NemsaCategory::Corporate, 'CC/CE1F/PR/08634', 'R.09931', 'Danladi Electrical Services Ltd');
         $this->contractor('Emmanuel Gajere', 'e.gajere@gmail.com', '0817 330 9021', NemsaCategory::CatC, 'NEMSAC20240610', status: UserStatus::Suspended);
+
+        // Licence expiry examples: valid for a year, expiring soon, and expired (new work blocked).
+        $this->licenceExpires('y.bello@bellopower.ng', today()->addYear());
+        $this->licenceExpires('aisha.lawal@gmail.com', today()->addDays(20));
+        $this->licenceExpires('c.okafor@okaforelectric.ng', today()->subDays(3));
 
         $this->rep('Grace Ayuba', 'g.ayuba@kadunaelectric.com', ['Barnawa', 'Makera', 'Mando']);
         $this->rep('Abubakar Shehu', 'a.shehu@kadunaelectric.com', ['Kawo', 'Rigasa']);
@@ -154,7 +160,7 @@ class DemoSeeder extends Seeder
             }
 
             if ($i % 11 === 5) {
-                $note = 'Earth resistance reading is above 2 Ω. Improve the electrode, re-test and attach a photo of the meter.';
+                $note = 'Earth resistance reading is above 5 Ω. Improve the electrode, re-test and attach a photo of the meter.';
                 $inspection->forceFill([
                     'review_status' => ReviewStatus::ChangesRequested,
                     'reviewed_by' => $admin?->id,
@@ -327,6 +333,11 @@ class DemoSeeder extends Seeder
         ]);
 
         return $user;
+    }
+
+    private function licenceExpires(string $email, CarbonInterface $date): void
+    {
+        User::query()->where('email', $email)->firstOrFail()->contractorProfile?->update(['licence_expires_at' => $date]);
     }
 
     /**

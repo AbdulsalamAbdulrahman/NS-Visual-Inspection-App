@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Requests\Inspections;
 
 use App\Enums\BuildingType;
+use App\Enums\CableColour;
+use App\Enums\CableInsulation;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -105,7 +107,7 @@ class SaveDraftRequest extends FormRequest
             'conductor_type' => ['nullable', Rule::enum(ConductorType::class)],
             'wiring_method' => ['nullable', Rule::enum(WiringMethod::class)],
             'wiring_method_other' => ['nullable', 'string', 'max:255'],
-            'cable_insulation' => ['nullable', 'string', 'max:120'],
+            'cable_insulation' => ['nullable', Rule::enum(CableInsulation::class)],
 
             'declaration_accepted' => ['sometimes', 'boolean'],
             // PNG data URL from signature_pad, or null to clear.
@@ -117,6 +119,10 @@ class SaveDraftRequest extends FormRequest
             'circuits.*.description_other' => ['nullable', 'string', 'max:255'],
             'circuits.*.rating_a' => $reading,
             'circuits.*.conductor_mm2' => $reading,
+            'circuits.*.earth_conductor_mm2' => $reading,
+            'circuits.*.live_colour' => ['nullable', Rule::enum(CableColour::class)],
+            'circuits.*.neutral_colour' => ['nullable', Rule::enum(CableColour::class)],
+            'circuits.*.earth_colour' => ['nullable', Rule::enum(CableColour::class)],
             'circuits.*.condition' => ['nullable', Rule::enum(CircuitCondition::class)],
             'circuits.*.observation' => ['nullable', 'string', 'max:1000'],
         ];

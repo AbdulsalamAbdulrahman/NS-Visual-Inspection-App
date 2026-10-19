@@ -38,11 +38,11 @@ class InitPayment
             ]);
         }
 
-        // Building type's fee (or the default), per structure.
+        // The fee sheet's cell for the building (or a fallback), per structure.
         $fee = InspectionFee::quote($inspection);
 
         if ($fee === null) {
-            throw ValidationException::withMessages(['inspection' => 'The inspection fee has not been set yet. Contact the New Service Department.']);
+            throw ValidationException::withMessages(['inspection' => InspectionFee::unavailableMessage($inspection)]);
         }
 
         $contractor = $inspection->contractor;

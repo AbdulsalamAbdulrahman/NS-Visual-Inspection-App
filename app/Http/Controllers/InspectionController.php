@@ -8,6 +8,8 @@ use App\Actions\Inspections\SaveDraft;
 use App\Actions\Inspections\StartInspection;
 use App\Actions\Reviews\ResubmitInspection;
 use App\Enums\BuildingType;
+use App\Enums\CableColour;
+use App\Enums\CableInsulation;
 use App\Enums\CircuitCondition;
 use App\Enums\CircuitDescription;
 use App\Enums\ConductorType;
@@ -20,6 +22,7 @@ use App\Enums\ProtectionType;
 use App\Enums\ReviewStatus;
 use App\Enums\VoltageLevel;
 use App\Enums\WiringMethod;
+use App\Exceptions\LicenceExpiredException;
 use App\Http\Requests\Inspections\SaveDraftRequest;
 use App\Http\Resources\DraftResource;
 use App\Http\Resources\InspectionCardResource;
@@ -29,6 +32,7 @@ use App\Models\FeeSchedule;
 use App\Models\Inspection;
 use App\Models\ServiceArea;
 use App\Support\InspectionFee;
+use App\Support\LicenceStatus;
 use App\Support\Money;
 use App\Support\ReceiptLinks;
 use Illuminate\Http\JsonResponse;
@@ -73,12 +77,15 @@ class InspectionController extends Controller
             'submittedTotal' => $user->inspections()->submitted()->count(),
             'filters' => ['search' => $search],
             'fee' => ($kobo = FeeSchedule::currentAmountKobo()) ? Money::format($kobo) : null,
+            // Expired licence blocks starting jobs; missing documents are a reminder.
+            'licence' => LicenceStatus::for($user->contractorProfile),
         ]);
     }
 
     /** At the property: the assigned job becomes a draft and the form opens. */
-    public function start(Inspection $inspection, StartInspection $start): RedirectResponse
+    public function start(Request $request, Inspection $inspection, StartInspection $start): RedirectResponse
     {
+        LicenceExpiredException::check($request->user());
         Gate::authorize('start', $inspection);
 
         $start->handle($inspection);
@@ -146,6 +153,8 @@ class InspectionController extends Controller
                 'earthingSystemType' => EarthingSystemType::options(),
                 'conductorType' => ConductorType::options(),
                 'wiringMethod' => WiringMethod::options(),
+                'cableInsulation' => CableInsulation::options(),
+                'cableColour' => CableColour::options(),
                 'circuitDescription' => CircuitDescription::options(),
                 'circuitCondition' => CircuitCondition::options(),
             ],
@@ -203,6 +212,7 @@ class InspectionController extends Controller
     /** A report sent back by NSD goes back into the review queue; no new payment. */
     public function resubmit(Request $request, Inspection $inspection, ResubmitInspection $resubmit): RedirectResponse
     {
+        LicenceExpiredException::check($request->user());
         Gate::authorize('resubmit', $inspection);
 
         $resubmit->handle($inspection, $request->user());
@@ -226,8 +236,9 @@ class InspectionController extends Controller
         $disk = Storage::disk('local');
         abort_unless($inspection->signature_path && $disk->exists($inspection->signature_path), 404);
 
-        return $disk->response($inspection->signature_path, 'signature.png', [
-            'Content-Type' => 'image/png',
+        // Drawn signatures are PNG; one copied from the profile may be a JPG.
+        return $disk->response($inspection->signature_path, 'signature', [
+            'Content-Type' => $disk->mimeType($inspection->signature_path) ?: 'image/png',
             'Cache-Control' => 'private, max-age=86400',
         ]);
     }

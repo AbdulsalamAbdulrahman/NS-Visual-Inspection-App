@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Resources\Admin;
 
 use App\Http\Resources\Concerns\FormatsActivity;
+use App\Models\ContractorProfile;
 use App\Models\User;
+use App\Support\LicenceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -43,6 +45,13 @@ class ContractorResource extends JsonResource
             'engineerRegNo' => $licence?->engineer_reg_no,
             'state' => $licence?->state?->value,
             'stateLabel' => $licence?->state?->label(),
+            // Uploaded by the contractor on Profile; admins view only.
+            'licence' => LicenceStatus::for($licence),
+            'documents' => collect(ContractorProfile::DOCUMENTS)
+                ->mapWithKeys(fn (string $document): array => [$document => $licence?->documentPath($document)
+                    ? route('admin.contractors.documents.show', [$this->resource, $document]).'?v='.md5((string) $licence->documentPath($document))
+                    : null])
+                ->all(),
         ];
     }
 }

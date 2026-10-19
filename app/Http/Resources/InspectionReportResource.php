@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\CableColour;
+use App\Enums\CableInsulation;
 use App\Enums\CircuitCondition;
 use App\Enums\ReviewStatus;
 use App\Enums\WiringMethod;
@@ -52,6 +54,10 @@ class InspectionReportResource extends JsonResource
             'description' => $c->descriptionLabel(),
             'rating' => $c->rating_a,
             'conductor' => $c->conductor_mm2,
+            'earthConductor' => $c->earth_conductor_mm2,
+            'colours' => $c->live_colour || $c->neutral_colour || $c->earth_colour
+                ? collect([$c->live_colour, $c->neutral_colour, $c->earth_colour])->map(fn (?CableColour $colour): string => $colour?->shortLabel() ?? '—')->implode(' / ')
+                : null,
             'condition' => $c->condition?->value,
             'observation' => $c->observation,
         ])->values();
@@ -111,7 +117,7 @@ class InspectionReportResource extends JsonResource
                 'wiringMethod' => $this->wiring_method === WiringMethod::Other
                     ? ($this->wiring_method_other ?: 'Other')
                     : $this->wiring_method?->label(),
-                'cableInsulation' => $this->cable_insulation,
+                'cableInsulation' => CableInsulation::tryFrom((string) $this->cable_insulation)?->label() ?? $this->cable_insulation,
             ],
 
             'd' => [
@@ -286,7 +292,7 @@ class InspectionReportResource extends JsonResource
                 self::amps($this->changeover_rated_a),
             ])],
             ['Main switch', 'BS EN 60947-3', $mainSwitch, $mainTone],
-            ['DB main breaker switch', null, ...$detailed($this->db_main_breaker_seen, $this->db_main_breaker_standard, [
+            ['DB main isolator', null, ...$detailed($this->db_main_breaker_seen, $this->db_main_breaker_standard, [
                 self::amps($this->db_main_breaker_rated_a),
                 $this->db_main_breaker_poles ? "{$this->db_main_breaker_poles}P" : null,
             ])],

@@ -1,0 +1,1 @@
+var e=`Building Visual Electrical Inspection and Compliance`;export{e as t};

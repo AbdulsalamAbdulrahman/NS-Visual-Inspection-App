@@ -48,7 +48,7 @@ class JobController extends Controller
             ->when($progress === 'in_progress', fn ($q) => $q->where('status', InspectionStatus::Draft))
             ->when($progress === 'submitted', fn ($q) => $q->where('status', InspectionStatus::Submitted))
             ->search($request->string('search')->toString())
-            ->with(['serviceArea:id,name', 'contractor:id,uuid,name', 'assigner:id,name'])
+            ->with(['serviceArea:id,name', 'contractor:id,uuid,name', 'contractor.contractorProfile:id,user_id,licence_expires_at', 'assigner:id,name'])
             ->latest('assigned_at')
             ->paginate(25)
             ->withQueryString();
@@ -121,8 +121,8 @@ class JobController extends Controller
             }
 
             fputcsv($out, ImportJobs::COLUMNS, escape: '');
-            fputcsv($out, ['Amina Sule', '14 Ahmadu Bello Way, Kaduna', '08031234567', 'amina.sule@example.com', 'Barnawa', 'Residential', 'Duplex', 'F74/KD/2026/08841', '', 'contractor@example.com'], escape: '');
-            fputcsv($out, ['Sabon Gari Estate Ltd', 'Plot 3, Sabon Gari Estate', '08059876543', 'estates@example.com', 'Barnawa', 'Residential', 'Block of flats', 'F74/KD/2026/09001', 'F74/KD/2026/09020', 'contractor@example.com'], escape: '');
+            fputcsv($out, ['Amina Sule', '14 Ahmadu Bello Way, Kaduna', '08031234567', 'amina.sule@example.com', 'Barnawa', 'Residential', 'Duplex', '084123', '', 'contractor@example.com'], escape: '');
+            fputcsv($out, ['Sabon Gari Estate Ltd', 'Plot 3, Sabon Gari Estate', '08059876543', 'estates@example.com', 'Barnawa', 'Residential', 'Block of flats', '090001', '090020', 'contractor@example.com'], escape: '');
             fclose($out);
         }, 'kens-jobs-template.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
@@ -198,7 +198,7 @@ class JobController extends Controller
         $contractors = User::query()
             ->role(Role::Contractor)
             ->where('status', UserStatus::Active)
-            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states))
+            ->whereHas('contractorProfile', fn ($q) => $q->whereIn('state', $states)->licensed())
             ->with('contractorProfile')
             ->withCount(['inspections as open_jobs' => fn ($q) => $q->whereIn('status', [InspectionStatus::Assigned, InspectionStatus::Draft])])
             ->orderBy('name')

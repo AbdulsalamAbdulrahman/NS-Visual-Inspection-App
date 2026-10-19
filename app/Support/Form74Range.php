@@ -6,8 +6,8 @@ namespace App\Support;
 
 /**
  * An estate's Form 74 numbers: the first and last share a prefix and end in
- * a number, e.g. F74/KD/2026/08841 – F74/KD/2026/08860 = 20 structures. The
- * last can also be typed as just its number (08860).
+ * a number, e.g. 084123 – 084142 = 20 structures. The
+ * last can also be typed as just its number (084142).
  */
 final class Form74Range
 {
@@ -26,7 +26,7 @@ final class Form74Range
         }
 
         if (! preg_match('#^(.*?)(\d+)$#', $first, $a)) {
-            return 'The first Form 74 number must end in digits, e.g. F74/KD/2026/08841.';
+            return 'The first Form 74 number must end in digits, e.g. 084123.';
         }
 
         $lastNumber = str_contains($last, '/') ? (preg_match('#^(.*?)(\d+)$#', $last, $b) ? $b : null) : (ctype_digit($last) ? [$last, $a[1], $last] : null);
@@ -44,7 +44,7 @@ final class Form74Range
         };
     }
 
-    /** "F74/KD/2026/08841 – 08860" for display. */
+    /** "084123 – 084142" for display. */
     public static function label(?string $first, ?string $last): ?string
     {
         if (blank($first)) {
