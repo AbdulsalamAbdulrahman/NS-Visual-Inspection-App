@@ -140,3 +140,8 @@ Decisions with the user (13 Oct): LECAN officials as a new role; owner notified 
 ## Contractor onboarding (19 Oct 2026)
 - The CSV template gains resident_state and optional licence issue/expiry dates (DD/MM/YYYY and other common formats). The old `state` header and the client's own header spellings are accepted; engineer_reg_no and the dates may be missing from an uploaded file.
 - Passport photo, licence copy and signature are never in the CSV: contractors add them at first sign-in. Until the three documents and both licence dates are in, a contractor only sees "Complete your profile" (/welcome/documents; JSON calls get 423), and reps can't assign them jobs. This replaces "contractors without documents keep working".
+
+## Branded emails (21 Oct 2026)
+- Every notification email uses the KENS theme (`mail.markdown.theme = kens`, `resources/views/vendor/mail/html/themes/kens.css`): the deep-green header band with the Kaduna Electric logo, the light design tokens, 12 px radius green button, and a footer with the NSD phone and email.
+- The logo is embedded inline (CID) when sending, so it shows without "load images"; previews fall back to `/images/ke-logo.png`. Light only: email clients can't follow the app's theme setting.
+- Only changed Laravel mail views are published (html header, layout, message and the notifications email); the rest fall back to the framework's.
