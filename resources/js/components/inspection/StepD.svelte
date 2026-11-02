@@ -59,7 +59,17 @@
     <span class="-mt-2 flex items-center gap-1 text-sm font-semibold text-bad"><ErrorIcon class="size-[18px]" />Tick the declaration to continue.</span>
 {/if}
 
-<SignatureField savedUrl={draft.signature_url} onchange={onsignature} error={errors.signature} />
+<!-- The signature saved at registration is reused; drawing is only for older drafts without one. -->
+{#if draft.signature_url}
+    <div class="flex flex-col gap-2">
+        <span class="text-[15px] font-semibold">Your signature</span>
+        <div class="flex h-32 items-center justify-center rounded-xl border-[1.5px] border-line bg-white p-3">
+            <img src={draft.signature_url} alt="Your saved signature" class="max-h-full object-contain" />
+        </div>
+    </div>
+{:else}
+    <SignatureField savedUrl={null} onchange={onsignature} error={errors.signature} />
+{/if}
 
 <div class="flex items-center justify-between rounded-xl bg-sf2 px-4 py-3">
     <span class="flex items-center gap-1.5 text-[15px] font-semibold"><Lock class="size-5 text-mut" />Date</span>

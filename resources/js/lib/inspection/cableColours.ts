@@ -27,7 +27,11 @@ export const DEFAULT_COLOURS = {
 
 /** "Red / Black / Green-Yellow" (live / neutral / earth). */
 export function colourSummary(c: Circuit): string {
-    return [c.live_colour, c.neutral_colour, c.earth_colour]
+    return [
+        c.live_colour,
+        c.neutral_colour,
+        ...(c.earth_colour ? [c.earth_colour] : []),
+    ]
         .map((v) => (v ? CABLE_COLOURS[v].short : '—'))
         .join(' / ');
 }

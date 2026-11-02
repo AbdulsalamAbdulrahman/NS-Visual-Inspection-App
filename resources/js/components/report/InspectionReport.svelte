@@ -107,7 +107,7 @@
                     <span class="flex min-w-0 flex-col">
                         <b>{c.description ?? '—'}</b>
                         {#if c.earthConductor !== null || c.colours}
-                            <span class="text-xs text-mut">Earth <span class="font-mono">{num(c.earthConductor)} mm²</span> · L/N/E {c.colours ?? '—'}</span>
+                            <span class="text-xs text-mut">{#if c.earthConductor !== null}Earth <span class="font-mono">{num(c.earthConductor)} mm²</span> · {/if}L/N/E {c.colours ?? '—'}</span>
                         {/if}
                     </span>
                     <span class="ml-auto font-mono lg:ml-0">{num(c.rating)} A</span>

@@ -40,7 +40,8 @@
             ? {
                   approve: 'Approve for NSD',
                   confirmTitle: `Approve ${report.ticketNo} for LECAN?`,
-                  confirmBody: 'It goes to the New Service Department for final approval, and your name appears on the certificate. Check the report below first.',
+                  confirmBody:
+                      'After review approval, this inspection moves to the Admin for final approval and your name appears on the issued certificate as the Reviewer of this building electrical inspection. Ensure all reports submitted by the inspector are in line with the set standards and requirements of this activity and safe for connection to the grid.',
                   confirming: 'Approving…',
               }
             : {

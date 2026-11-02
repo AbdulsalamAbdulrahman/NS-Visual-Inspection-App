@@ -3,7 +3,7 @@
     import NumberInput from '@/components/form/NumberInput.svelte';
     import Select from '@/components/form/Select.svelte';
     import { CABLE_COLOURS, colourSummary, DEFAULT_COLOURS } from '@/lib/inspection/cableColours';
-    import { circuitComplete } from '@/lib/inspection/checklist';
+    import { circuitComplete, hasNoEarthCable } from '@/lib/inspection/checklist';
     import { CONDITIONS, CONDITION_ORDER } from '@/lib/inspection/conditions';
     import type { CableColour, Circuit, Option } from '@/lib/inspection/types';
     import { num } from '@/lib/format';
@@ -40,7 +40,8 @@
         return c.description === 'other' && c.description_other ? `Other · ${c.description_other}` : base;
     };
 
-    const spec = (c: Circuit): string => `${num(c.rating_a)} A · ${num(c.conductor_mm2)} mm² · earth ${num(c.earth_conductor_mm2)} mm²`;
+    const spec = (c: Circuit): string =>
+        `${num(c.rating_a)} A · ${num(c.conductor_mm2)} mm²` + (hasNoEarthCable(c.description) ? '' : ` · earth ${num(c.earth_conductor_mm2)} mm²`);
 
     function blank(): Circuit {
         return {
@@ -64,6 +65,10 @@
     }
 
     function commit(c: Circuit): void {
+        if (hasNoEarthCable(c.description)) {
+            c = { ...c, earth_conductor_mm2: null, earth_colour: null };
+        }
+
         const i = circuits.findIndex((x) => x.uuid === c.uuid);
 
         if (i === -1) {
@@ -206,7 +211,13 @@
                     </div>
                     <span role="cell"><NumberInput id="ci-rating" size="md" unit="A" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.rating_a} /></span>
                     <span role="cell"><NumberInput id="ci-cond" size="md" unit="mm²" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.conductor_mm2} /></span>
-                    <span role="cell"><NumberInput id="ci-earth" size="md" unit="mm²" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.earth_conductor_mm2} /></span>
+                    <span role="cell">
+                        {#if hasNoEarthCable(working.description)}
+                            <span class="text-mut">—</span>
+                        {:else}
+                            <NumberInput id="ci-earth" size="md" unit="mm²" class="h-[42px] rounded-[10px]" inputClass="px-2.5 text-[15px]" bind:value={working.earth_conductor_mm2} />
+                        {/if}
+                    </span>
                     <span role="cell"><Select id="ci-condition" size="md" class="h-[42px] rounded-[10px] text-sm" options={conditionOptions} placeholder="Select condition" bind:value={working.condition} /></span>
                     <input
                         role="cell"
@@ -226,11 +237,13 @@
                     <div role="cell" class="col-span-full col-start-2 grid grid-cols-3 gap-3">
                         {#each [['live_colour', 'Live'], ['neutral_colour', 'Neutral'], ['earth_colour', 'Earth']] as const as [key, label] (key)}
                             {@const value = working[key]}
+                            {#if key !== 'earth_colour' || !hasNoEarthCable(working.description)}
                             <label class="flex items-center gap-2 text-[13px] font-semibold">
                                 <span class="size-3.5 flex-none rounded-full border border-line" style:background={value ? CABLE_COLOURS[value].swatch : 'transparent'} aria-hidden="true"></span>
                                 <span class="w-14 flex-none">{label}</span>
                                 <Select id="ci-{key}" size="md" class="h-[42px] flex-1 rounded-[10px] text-sm" options={colours} placeholder="Colour" bind:value={working[key]} />
                             </label>
+                            {/if}
                         {/each}
                     </div>
                 </div>
@@ -244,7 +257,7 @@
                     </span>
                     <span role="cell" class="font-mono">{num(c.rating_a)} A</span>
                     <span role="cell" class="font-mono">{num(c.conductor_mm2)} mm²</span>
-                    <span role="cell" class="font-mono">{num(c.earth_conductor_mm2)} mm²</span>
+                    <span role="cell" class="font-mono">{hasNoEarthCable(c.description) ? '—' : `${num(c.earth_conductor_mm2)} mm²`}</span>
                     <span role="cell">
                         {#if c.condition}
                             <ConditionPill condition={c.condition} length="short" />

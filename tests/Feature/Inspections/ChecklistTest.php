@@ -103,10 +103,17 @@ test('each circuit needs its earthing cable size and live, neutral and earth col
 
     expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label'))->toContain('Circuit C1 details');
 
-    $inspection->circuits()->update(['neutral_colour' => 'black', 'earth_conductor_mm2' => null]);
+    $inspection->circuits()->update(['neutral_colour' => 'black', 'description' => 'socket_outlet', 'earth_conductor_mm2' => null]);
 
     expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label'))->toContain('Circuit C1 details');
 });
+
+test('lighting and fan circuits need no earth cable', function (string $description) {
+    $inspection = Inspection::factory()->complete()->create();
+    $inspection->circuits()->update(['description' => $description, 'earth_conductor_mm2' => null, 'earth_colour' => null]);
+
+    expect(collect(InspectionChecklist::missing($inspection->fresh()))->pluck('label'))->not->toContain('Circuit C1 details');
+})->with(['lighting', 'ceiling_fan']);
 
 test('earth resistance is flagged above 5 Ω', function (float $ohms, bool $flagged) {
     $inspection = Inspection::factory()->complete()->create(['earth_resistance_ohm' => $ohms]);

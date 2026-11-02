@@ -61,6 +61,12 @@ class InspectionPolicy
         return $inspection->isSubmitted() && $this->view($user, $inspection);
     }
 
+    /** Review committee members never see payment documents. */
+    public function receipt(User $user, Inspection $inspection): bool
+    {
+        return ! $user->isLecan() && $this->print($user, $inspection);
+    }
+
     /** A certificate exists only after NSD approval. */
     public function certificate(User $user, Inspection $inspection): bool
     {

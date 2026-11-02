@@ -17,16 +17,21 @@ export type MissingItem = { key: string; label: string; step: number };
 const filled = (v: unknown): boolean =>
     v !== null && v !== undefined && v !== '';
 
+/** Lighting and fan circuits don't record an earth cable. */
+export function hasNoEarthCable(description: Circuit['description']): boolean {
+    return description === 'lighting' || description === 'ceiling_fan';
+}
+
 export function circuitComplete(c: Circuit): boolean {
     return (
         filled(c.description) &&
         (c.description !== 'other' || filled(c.description_other?.trim())) &&
         filled(c.rating_a) &&
         filled(c.conductor_mm2) &&
-        filled(c.earth_conductor_mm2) &&
+        (hasNoEarthCable(c.description) || filled(c.earth_conductor_mm2)) &&
         filled(c.live_colour) &&
         filled(c.neutral_colour) &&
-        filled(c.earth_colour) &&
+        (hasNoEarthCable(c.description) || filled(c.earth_colour)) &&
         filled(c.condition)
     );
 }

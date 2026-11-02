@@ -150,10 +150,10 @@ final class InspectionChecklist
             && ($circuit->description !== CircuitDescription::Other || filled($circuit->description_other))
             && $circuit->rating_a !== null
             && $circuit->conductor_mm2 !== null
-            && $circuit->earth_conductor_mm2 !== null
+            && ($circuit->description->hasNoEarthCable() || $circuit->earth_conductor_mm2 !== null)
             && $circuit->live_colour !== null
             && $circuit->neutral_colour !== null
-            && $circuit->earth_colour !== null
+            && ($circuit->description->hasNoEarthCable() || $circuit->earth_colour !== null)
             && $circuit->condition !== null;
     }
 }

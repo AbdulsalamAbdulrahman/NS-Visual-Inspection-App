@@ -6,6 +6,7 @@
     import Select from '@/components/form/Select.svelte';
     import TextInput from '@/components/form/TextInput.svelte';
     import { CABLE_COLOURS } from '@/lib/inspection/cableColours';
+    import { hasNoEarthCable } from '@/lib/inspection/checklist';
     import { CONDITIONS, CONDITION_ORDER } from '@/lib/inspection/conditions';
     import type { CableColour, Circuit, Option } from '@/lib/inspection/types';
     import Close from '~icons/ms/close';
@@ -31,14 +32,21 @@
     let tried = $state(false);
 
     const conditionMissing = $derived(tried && !circuit?.condition);
-    const earthMissing = $derived(tried && circuit?.earth_conductor_mm2 === null);
-    const coloursMissing = $derived(tried && !(circuit?.live_colour && circuit.neutral_colour && circuit.earth_colour));
+    const noEarth = $derived(hasNoEarthCable(circuit?.description ?? null));
+    const earthMissing = $derived(tried && !noEarth && circuit?.earth_conductor_mm2 === null);
+    const coloursMissing = $derived(tried && !(circuit?.live_colour && circuit.neutral_colour && (noEarth || circuit.earth_colour)));
 
-    const colourFields = [
-        { key: 'live_colour', label: 'Live' },
-        { key: 'neutral_colour', label: 'Neutral' },
-        { key: 'earth_colour', label: 'Earth' },
-    ] as const;
+    const colourFields = $derived(
+        [
+            { key: 'live_colour', label: 'Live' },
+            { key: 'neutral_colour', label: 'Neutral' },
+            { key: 'earth_colour', label: 'Earth' },
+        ].filter((f) => !noEarth || f.key !== 'earth_colour') as { key: 'live_colour' | 'neutral_colour' | 'earth_colour'; label: string }[],
+    );
+
+    function earthMissingNow(): boolean {
+        return !noEarth && (circuit?.earth_conductor_mm2 === null || !circuit?.earth_colour);
+    }
 
     function save(): void {
         if (!circuit) {
@@ -46,7 +54,7 @@
         }
 
         // Condition, earthing cable size and colours (LECAN) can't be left out.
-        if (!circuit.condition || circuit.earth_conductor_mm2 === null || !circuit.live_colour || !circuit.neutral_colour || !circuit.earth_colour) {
+        if (!circuit.condition || earthMissingNow() || !circuit.live_colour || !circuit.neutral_colour) {
             tried = true;
 
             return;
@@ -103,12 +111,14 @@
                         <Field id="circuit-conductor" label="Conductor size">
                             <NumberInput id="circuit-conductor" unit="mm²" bind:value={circuit.conductor_mm2} />
                         </Field>
-                        <Field id="circuit-earth" error={earthMissing ? 'Enter the earthing cable size.' : undefined}>
-                            {#snippet labelAside()}
-                                <label for="circuit-earth" class="text-[15px] font-semibold">Earthing cable <span class="text-bad" aria-hidden="true">*</span></label>
-                            {/snippet}
-                            <NumberInput id="circuit-earth" unit="mm²" bind:value={circuit.earth_conductor_mm2} invalid={earthMissing} />
-                        </Field>
+                        {#if !noEarth}
+                            <Field id="circuit-earth" error={earthMissing ? 'Enter the earthing cable size.' : undefined}>
+                                {#snippet labelAside()}
+                                    <label for="circuit-earth" class="text-[15px] font-semibold">Earthing cable <span class="text-bad" aria-hidden="true">*</span></label>
+                                {/snippet}
+                                <NumberInput id="circuit-earth" unit="mm²" bind:value={circuit.earth_conductor_mm2} invalid={earthMissing} />
+                            </Field>
+                        {/if}
                     </div>
 
                     <fieldset class="flex flex-col gap-2">
@@ -128,7 +138,7 @@
                             </div>
                         {/each}
                         {#if coloursMissing}
-                            <span class="text-sm font-semibold text-bad" role="alert">Choose the live, neutral and earth colours.</span>
+                            <span class="text-sm font-semibold text-bad" role="alert">Choose the {noEarth ? 'live and neutral' : 'live, neutral and earth'} colours.</span>
                         {/if}
                     </fieldset>
 

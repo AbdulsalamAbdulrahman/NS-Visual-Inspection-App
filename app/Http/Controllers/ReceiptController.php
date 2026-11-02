@@ -19,7 +19,7 @@ class ReceiptController extends Controller
 {
     public function send(Inspection $inspection): RedirectResponse
     {
-        Gate::authorize('print', $inspection);
+        Gate::authorize('receipt', $inspection);
         abort_unless($inspection->paidPayment()->exists(), 404);
 
         if (blank($inspection->owner_email)) {

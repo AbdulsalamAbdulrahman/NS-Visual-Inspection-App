@@ -143,3 +143,13 @@ test('only admins manage LECAN officials', function () {
     $this->actingAs($this->official)->get(route('admin.lecan.index'))->assertForbidden();
     $this->actingAs(User::factory()->rep()->create())->post(route('admin.lecan.store'), [])->assertForbidden();
 });
+
+test('a reviewer gets no receipt and cannot send or open one', function () {
+    $inspection = Inspection::factory()->submitted()->inArea($this->barnawa)->create();
+
+    $this->actingAs($this->official)->get(route('lecan.inspections.show', $inspection))
+        ->assertInertia(fn (Assert $page) => $page->missing('receipt'));
+
+    $this->get(route('inspections.receipt', $inspection))->assertForbidden();
+    $this->post(route('inspections.receipt.send', $inspection))->assertForbidden();
+});
