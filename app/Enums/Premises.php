@@ -12,18 +12,30 @@ enum Premises: string
 {
     case StandAlone = 'stand_alone';
     case Multiple = 'multiple';
+    case Large = 'large';
 
     public function label(): string
     {
         return match ($this) {
             self::StandAlone => 'Stand-alone',
             self::Multiple => 'Multiple premises',
+            self::Large => 'Above 15',
         };
     }
 
-    public static function forStructures(int $count): self
+    /** The sheet's column for a building: its size bands decide, not just one or many. */
+    public static function forBuilding(?BuildingType $type, int $count): self
     {
-        return $count > 1 ? self::Multiple : self::StandAlone;
+        return match ($type) {
+            BuildingType::BlockOfFlats, BuildingType::TwoBedroomFlat, BuildingType::ThreeBedroomFlat => match (true) {
+                $count <= 4 => self::StandAlone,
+                $count <= 15 => self::Multiple,
+                default => self::Large,
+            },
+            BuildingType::Shop => $count <= 5 ? self::StandAlone : self::Multiple,
+            BuildingType::Plaza, BuildingType::LargePlaza => self::Multiple,
+            default => $count > 1 ? self::Multiple : self::StandAlone,
+        };
     }
 
     /**

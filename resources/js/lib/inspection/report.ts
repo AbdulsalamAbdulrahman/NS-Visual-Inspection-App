@@ -104,7 +104,7 @@ export type Report = {
         lecanApprovedAt: string | null;
         /** Who sent it back for changes. */
         sentBackBy: 'LECAN' | 'NSD' | null;
-        /** Admins and LECAN officials only. */
+        /** Admins and Inspection Review Committee only. */
         history?: {
             id: number;
             action:

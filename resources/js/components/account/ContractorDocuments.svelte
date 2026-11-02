@@ -17,12 +17,15 @@
         passportUrl: string | null;
         signatureUrl: string | null;
         storeUrl: string;
+        bank: { name: string; number: string; accountName: string } | null;
+        bankUrl: string;
     };
 </script>
 
 <script lang="ts">
     import { page, router } from '@inertiajs/svelte';
     import Button from '@/components/Button.svelte';
+    import BankAccountForm from '@/components/account/BankAccountForm.svelte';
     import SignatureField from '@/components/inspection/SignatureField.svelte';
     import { compressImage } from '@/lib/inspection/photos';
     import Badge from '~icons/ms/badge';
@@ -32,7 +35,7 @@
     import UploadFile from '~icons/ms/upload-file';
     import Warning from '~icons/ms/warning';
 
-    let { documents }: { documents: ContractorDocumentsData } = $props();
+    let { documents, banks }: { documents: ContractorDocumentsData; banks: { code: string; name: string }[] } = $props();
 
     const errors = $derived((page.props.errors ?? {}) as Record<string, string>);
     const status = $derived(documents.status);
@@ -198,4 +201,6 @@
         {/if}
         {#if errors.signature}<span class="text-sm font-semibold text-bad" role="alert">{errors.signature}</span>{/if}
     </div>
+
+    <BankAccountForm bank={documents.bank} url={documents.bankUrl} banks={banks} />
 </section>

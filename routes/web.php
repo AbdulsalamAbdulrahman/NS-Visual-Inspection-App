@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\BankAccountController;
 use App\Http\Controllers\Account\ContractorDocumentController;
 use App\Http\Controllers\Account\FirstPasswordController;
 use App\Http\Controllers\Account\OnboardingController;
@@ -19,7 +20,9 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\RepController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController;
+use App\Http\Controllers\Admin\SettlementController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\Contractor\EarningsController;
 use App\Http\Controllers\CustomerDocumentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InspectionController;
@@ -72,6 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:contractor')->group(function () {
         Route::get('welcome/documents', [OnboardingController::class, 'show'])->name('onboarding');
         Route::post('profile/documents', [ContractorDocumentController::class, 'store'])->middleware('throttle:30,1')->name('profile.documents.store');
+        Route::post('profile/bank', [BankAccountController::class, 'store'])->middleware('throttle:10,1')->name('profile.documents.bank');
+        Route::get('earnings', EarningsController::class)->name('earnings');
         Route::get('profile/documents/{document}', [ContractorDocumentController::class, 'show'])->whereIn('document', ContractorProfile::DOCUMENTS)->name('profile.documents.show');
 
         Route::get('inspections', [InspectionController::class, 'index'])->name('inspections.index');
@@ -148,6 +153,10 @@ Route::middleware('auth')->group(function () {
         Route::put('areas/{area}', [ServiceAreaController::class, 'update'])->name('areas.update');
         Route::post('areas/{area}/toggle', [ServiceAreaController::class, 'toggle'])->name('areas.toggle');
 
+        Route::get('settlements', [SettlementController::class, 'index'])->name('settlements.index');
+        Route::get('settlements/export', [SettlementController::class, 'export'])->name('settlements.export');
+        Route::put('settlements/ratios', [SettlementController::class, 'ratios'])->name('settlements.ratios');
+        Route::post('settlements/{party}/account', [SettlementController::class, 'account'])->middleware('throttle:10,1')->name('settlements.account');
         Route::get('fees', [FeeController::class, 'index'])->name('fees.index');
         Route::post('fees', [FeeController::class, 'store'])->name('fees.store');
         Route::delete('fees/{fee}', [FeeController::class, 'destroy'])->name('fees.destroy');

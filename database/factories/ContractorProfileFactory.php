@@ -34,6 +34,11 @@ class ContractorProfileFactory extends Factory
             'signature_path' => 'contractors/test/signature.png',
             'licence_issued_at' => today()->subYear(),
             'licence_expires_at' => today()->addYear(),
+            'bank_code' => '058',
+            'bank_name' => 'GTBank',
+            'account_number' => fake()->numerify('##########'),
+            'account_name' => fake()->name(),
+            'sub_account_code' => 'MFY_SUB_'.fake()->unique()->numerify('########'),
         ];
     }
 
@@ -46,6 +51,11 @@ class ContractorProfileFactory extends Factory
             'signature_path' => null,
             'licence_issued_at' => null,
             'licence_expires_at' => null,
+            'bank_code' => null,
+            'bank_name' => null,
+            'account_number' => null,
+            'account_name' => null,
+            'sub_account_code' => null,
         ]);
     }
 

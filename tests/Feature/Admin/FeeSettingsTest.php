@@ -83,7 +83,7 @@ test('the fee page shows current, scheduled and history', function () {
             ->where('default.current.amount', '₦15,000.00')
             ->where('default.scheduled.amount', '₦17,500.00')
             ->has('rows', count(BuildingType::cases()))
-            ->has('rows.0.cells', 4)
+            ->has('rows.0.cells', 6)
             ->where('rows.0.cells.1.key', 'single_room|three_phase|stand_alone')
             ->where('rows.0.cells.1.current', null)
             ->has('history', 2));

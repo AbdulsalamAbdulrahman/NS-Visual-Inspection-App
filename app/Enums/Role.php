@@ -16,9 +16,9 @@ enum Role: string
     {
         return match ($this) {
             self::Admin => 'NSD Admin',
-            self::Contractor => 'Contractor',
+            self::Contractor => 'Building Electrical Inspector',
             self::Rep => 'Service rep',
-            self::Lecan => 'LECAN official',
+            self::Lecan => 'Inspection Review Committee member',
         };
     }
 

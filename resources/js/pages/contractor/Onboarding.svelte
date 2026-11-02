@@ -6,9 +6,9 @@
     import { signOut } from '@/lib/offline/signout';
     import { home } from '@/routes';
 
-    type Props = { firstName: string; profile: { documents: ContractorDocumentsData } };
+    type Props = { firstName: string; profile: { documents: ContractorDocumentsData }; banks: { code: string; name: string }[] };
 
-    let { firstName, profile }: Props = $props();
+    let { firstName, profile, banks }: Props = $props();
 
     const complete = $derived(profile.documents.status.missing.length === 0);
 </script>
@@ -21,11 +21,11 @@
     <div class="flex flex-col gap-2">
         <h1 class="text-[26px] leading-[1.15] font-extrabold lg:text-[32px]">Complete your profile</h1>
         <p class="text-base leading-[1.45] text-mut">
-            Welcome, {firstName}. Before you can take jobs, add your licence copy and dates, passport photograph and signature.
+            Welcome, {firstName}. Before you can take jobs, add your licence copy and dates, passport photograph, signature and bank account. Your share of each inspection fee is paid to this account.
         </p>
     </div>
 
-    <ContractorDocuments documents={profile.documents} />
+    <ContractorDocuments documents={profile.documents} {banks} />
 
     {#snippet actions()}
         <Button size="xl" block disabled={!complete} onclick={() => router.visit(home.url())}>Continue</Button>

@@ -23,12 +23,14 @@ use Inertia\Response;
  */
 class FeeController extends Controller
 {
-    /** The sheet's four columns, in order. */
+    /** The sheet's columns, in order. */
     private const COLUMNS = [
         [ConnectionType::SinglePhase, Premises::StandAlone],
         [ConnectionType::ThreePhase, Premises::StandAlone],
         [ConnectionType::SinglePhase, Premises::Multiple],
         [ConnectionType::ThreePhase, Premises::Multiple],
+        [ConnectionType::SinglePhase, Premises::Large],
+        [ConnectionType::ThreePhase, Premises::Large],
     ];
 
     public function index(): Response

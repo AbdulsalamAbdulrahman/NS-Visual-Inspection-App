@@ -26,6 +26,8 @@ class ReceiptResource extends JsonResource
     {
         $payment = $this->paidPayment;
         $paidKobo = $payment === null ? 0 : (int) ($payment->amount_paid_kobo ?? $payment->amount_kobo);
+        $chargeKobo = (int) $payment?->charge_kobo;
+        $feeKobo = (int) ($payment->fee_kobo ?? $paidKobo);
         $structures = max(1, (int) $this->structure_count);
         $ticket = (string) $this->ticket_no;
 
@@ -46,7 +48,9 @@ class ReceiptResource extends JsonResource
             'form74No' => Form74Range::label($this->form74_no, $this->form74_last_no),
             'building' => $this->building_type?->label() ?? $this->purpose?->label(),
             'structures' => $structures,
-            'unit' => $structures > 1 ? Money::format(intdiv($paidKobo, $structures)) : null,
+            'unit' => $structures > 1 ? Money::format(intdiv($feeKobo, $structures)) : null,
+            'fee' => Money::format($feeKobo),
+            'charge' => $chargeKobo > 0 ? Money::format($chargeKobo) : null,
             'total' => Money::format($paidKobo),
             'verifyUrl' => TicketQr::verifyUrl($ticket),
             'qr' => TicketQr::dataUri($ticket),

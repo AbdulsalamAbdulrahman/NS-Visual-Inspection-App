@@ -42,7 +42,7 @@
         documents: ContractorDocumentsData | null;
     };
 
-    let { profile }: { profile: Profile } = $props();
+    let { profile, banks = [] }: { profile: Profile; banks?: { code: string; name: string }[] } = $props();
 
     const shell = $derived(shellClasses(profile.role));
 
@@ -140,7 +140,7 @@
     {/if}
 
     {#if profile.documents}
-        <ContractorDocuments documents={profile.documents} />
+        <ContractorDocuments documents={profile.documents} {banks} />
     {/if}
 
     {#if profile.areas.length > 0}

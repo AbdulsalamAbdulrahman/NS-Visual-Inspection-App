@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-    <title>Contractors · KENS</title>
+    <title>Building Electrical Inspectors · KENS</title>
 </svelte:head>
 
 {#snippet licenceNote(c: ContractorRow)}
@@ -84,16 +84,16 @@
 <header class="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-sf px-4 pt-[calc(12px+env(safe-area-inset-top))] pb-3.5 lg:hidden">
     <div class="flex items-center gap-3">
         <div class="flex flex-1 flex-col">
-            <h1 class="text-[20px] font-bold">Contractors</h1>
+            <h1 class="text-[20px] font-bold">Building Electrical Inspectors</h1>
             <span class="text-[13px] text-mut">{summaryLine}</span>
         </div>
-        <Link href={importPage.url()} class="flex size-11 items-center justify-center rounded-xl border border-line text-ink" aria-label="Register contractors from a CSV">
+        <Link href={importPage.url()} class="flex size-11 items-center justify-center rounded-xl border border-line text-ink" aria-label="Register Building Electrical Inspectors from a CSV">
             <UploadFile class="size-6" />
         </Link>
         <button
             type="button"
             class="flex size-11 items-center justify-center rounded-xl bg-pri text-on-pri"
-            aria-label="Add contractor"
+            aria-label="Add Building Electrical Inspector"
             onclick={() => openDrawer(null)}
         >
             <PersonAdd class="size-6" />
@@ -107,14 +107,14 @@
     <!-- Desktop header (AD-05) -->
     <div class="hidden items-center gap-3 lg:flex">
         <div class="flex flex-col gap-0.5">
-            <h1 class="text-[28px] font-extrabold">Contractors</h1>
+            <h1 class="text-[28px] font-extrabold">Building Electrical Inspectors</h1>
             <span class="text-sm text-mut">{summaryLine}</span>
         </div>
         <span class="ml-auto">{@render licenceFilter()}</span>
         <SearchField class="w-[300px]" value={filters.search} placeholder="Name, NEMSA or phone" only={['contractors', 'filters']} />
         <Button href={importPage.url()} variant="outline" size="sm" class="h-11 rounded-xl"><UploadFile />Upload CSV</Button>
         <Button size="sm" class="h-11 rounded-xl" onclick={() => openDrawer(null)}>
-            <PersonAdd />Add contractor
+            <PersonAdd />Add Building Electrical Inspector
         </Button>
     </div>
 
@@ -122,8 +122,8 @@
         <EmptyState
             icon={Engineering}
             tone="muted"
-            title={filters.search ? `No contractors match “${filters.search}”` : 'No contractors yet'}
-            body={filters.search ? 'Try a name, NEMSA registration number or phone.' : 'Add a licensed contractor, or register many at once with Upload CSV. Each gets their login details by email.'}
+            title={filters.search ? `No Building Electrical Inspectors match “${filters.search}”` : 'No Building Electrical Inspectors yet'}
+            body={filters.search ? 'Try a name, NEMSA registration number or phone.' : 'Add a licensed Building Electrical Inspector, or register many at once with Upload CSV. Each gets their login details by email.'}
         />
     {:else}
         <!-- Desktop table -->
@@ -163,7 +163,7 @@
                     <span role="cell" class="flex justify-end">
                         <AccountActions
                             account={{ ...c, subtitle: [c.categoryLabel, c.regNo].filter(Boolean).join(' · ') }}
-                            noun="contractor"
+                            noun="Building Electrical Inspector"
                             inspectionsCount={c.inspectionsCount}
                             onEdit={() => openDrawer(c)}
                             onRequestDelete={() => (confirmingDelete = c.uuid)}
@@ -174,7 +174,7 @@
                     <DeleteConfirmRow
                         uuid={c.uuid}
                         name={c.name}
-                        noun="contractor"
+                        noun="Building Electrical Inspector"
                         inspectionsCount={c.inspectionsCount}
                         suspended={c.status === 'suspended'}
                         onCancel={() => (confirmingDelete = null)}
@@ -205,7 +205,7 @@
                     </div>
                     <AccountActions
                         account={{ ...c, subtitle: [c.categoryLabel, c.regNo].filter(Boolean).join(' · ') }}
-                        noun="contractor"
+                        noun="Building Electrical Inspector"
                         inspectionsCount={c.inspectionsCount}
                         onEdit={() => openDrawer(c)}
                         onRequestDelete={() => (confirmingDelete = c.uuid)}

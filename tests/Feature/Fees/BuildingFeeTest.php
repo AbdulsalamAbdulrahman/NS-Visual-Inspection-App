@@ -117,12 +117,12 @@ test('the fee sheet prices by supply and premises, per structure', function () {
     FeeScheduleSeeder::seedSheet();
     $inspection = fn (array $attributes): Inspection => Inspection::factory()->complete()->create(['building_type' => BuildingType::Duplex, ...$attributes]);
 
-    expect(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase]))['totalKobo'])->toBe(1_500_000)
-        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::ThreePhase]))['totalKobo'])->toBe(2_000_000)
-        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase, 'structure_count' => 10]))['totalKobo'])->toBe(7_500_000)
+    expect(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase]))['totalKobo'])->toBe(3_000_000)
+        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::ThreePhase]))['totalKobo'])->toBe(4_500_000)
+        ->and(InspectionFee::quote($inspection(['connection_type' => ConnectionType::SinglePhase, 'structure_count' => 10, 'building_type' => BuildingType::School]))['totalKobo'])->toBe(20_000_000)
         ->and(InspectionFee::quote(Inspection::factory()->complete()->create([
             'purpose' => PropertyPurpose::Commercial, 'building_type' => BuildingType::LargePlaza, 'connection_type' => ConnectionType::SinglePhase, 'structure_count' => 20,
-        ]))['totalKobo'])->toBe(20 * 400_000);
+        ]))['totalKobo'])->toBe(20 * 700_000);
 });
 
 test('a building and supply the sheet does not offer cannot be paid for', function () {

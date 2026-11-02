@@ -23,6 +23,7 @@
 
     const nav = [
         { label: 'My inspections', href: inspections.index.url() },
+        { label: 'Earnings', href: '/earnings' },
         { label: 'Profile', href: profile.url() },
     ];
 </script>

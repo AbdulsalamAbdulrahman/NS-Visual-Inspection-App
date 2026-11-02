@@ -145,3 +145,10 @@ Decisions with the user (13 Oct): LECAN officials as a new role; owner notified 
 - Every notification email uses the KENS theme (`mail.markdown.theme = kens`, `resources/views/vendor/mail/html/themes/kens.css`): the deep-green header band with the Kaduna Electric logo, the light design tokens, 12 px radius green button, and a footer with the NSD phone and email.
 - The logo is embedded inline (CID) when sending, so it shows without "load images"; previews fall back to `/images/ke-logo.png`. Light only: email clients can't follow the app's theme setting.
 - Only changed Laravel mail views are published (html header, layout, message and the notifications email); the rest fall back to the framework's.
+
+## Official fee and settlement (2 Nov 2026)
+- The contractor pays the official fee ("CONTRACTOR CHARGES" sheet) plus Monnify's charge, added at checkout (`MONNIFY_CHARGE_PERCENT`, `MONNIFY_CHARGE_CAP_KOBO`). 2- and 3-bedroom flats price as block of flats; blank cells are not offered. Bands come from the structure count (`Premises::forBuilding`): flats 1–4 / 5–15 / above 15, shops 1–5.
+- The fee (not the charge) splits Inspector 40, LECAN offices 15, Review Committee 10, Admin & KE HQ 20, App team 5, NEMSA 5, Reps 5. Rounding remainder and the charge stay in the main account (Admin & KE HQ), which bears Monnify's fee. Shares are snapshotted in `payment_splits` when the checkout opens.
+- Each inspector has a sub-account (bank details at onboarding). The other parties are one account each, entered in Admin → Settlements; reviewers are one pooled account, so they register no bank details, and reps' share goes to one account paid out monthly.
+- `MONNIFY_SPLIT_ENABLED` stays off until the accounts exist and the settlement endpoints are confirmed against sandbox: until then shares are recorded but all money reaches the main account.
+- User-visible "contractor" is "Building Electrical Inspector" and LECAN's review is "Inspection Review Committee". Code, routes, tables and CSV columns keep their old names.

@@ -97,7 +97,7 @@
     <div class="flex flex-wrap items-end gap-3">
         <div class="hidden flex-col gap-0.5 md:flex">
             <h1 class="text-[20px] font-bold lg:text-[28px] lg:font-extrabold">Jobs</h1>
-            <span class="text-sm text-mut">Customers you assigned to contractors · {counts.not_started} not started</span>
+            <span class="text-sm text-mut">Customers you assigned to Building Electrical Inspectors · {counts.not_started} not started</span>
         </div>
         <div class="flex w-full gap-2 md:ml-auto md:w-auto">
             <Button href={importPage.url()} variant="outline" size="md" class="flex-1 md:flex-none"><UploadFile />Upload CSV</Button>
@@ -119,7 +119,7 @@
             title={filtered ? 'No jobs match' : 'No jobs yet'}
             body={filtered
                 ? 'Try another filter or clear the search.'
-                : 'Add a customer and assign a contractor in the area’s state. For many customers at once, upload the CSV template.'}
+                : 'Add a customer and assign a Building Electrical Inspector in the area’s state. For many customers at once, upload the CSV template.'}
         />
     {:else}
         <!-- Desktop table -->

@@ -59,7 +59,7 @@ test('an upload is previewed with each row\'s problems and nobody is registered'
             ->where('rows.1.errors', fn ($errors) => collect($errors)->contains('An account with this email already exists (it may have been deleted).')
                 && collect($errors)->contains('State “Lagos” isn\'t one of Kaduna, Kebbi, Sokoto or Zamfara.')
                 && collect($errors)->contains('NEMSA category “Cat Z” isn\'t recognised (Cat A, Cat B, Cat C or Corporate).'))
-            ->where('rows.2.errors', ['Firm name is required for Corporate contractors.', 'Engineer name is required for Corporate contractors.'])
+            ->where('rows.2.errors', ['Firm name is required for Corporate Building Electrical Inspectors.', 'Engineer name is required for Corporate Building Electrical Inspectors.'])
             ->where('rows.3.errors', ['Email is also on row 2.']));
 });
 

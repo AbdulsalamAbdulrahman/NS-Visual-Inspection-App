@@ -39,7 +39,7 @@
         level === 'lecan'
             ? {
                   approve: 'Approve for NSD',
-                  confirmTitle: `Approve ${report.ticketNo} for LECAN?`,
+                  confirmTitle: `Approve ${report.ticketNo}?`,
                   confirmBody:
                       'After review approval, this inspection moves to the Admin for final approval and your name appears on the issued certificate as the Reviewer of this building electrical inspection. Ensure all reports submitted by the inspector are in line with the set standards and requirements of this activity and safe for connection to the grid.',
                   confirming: 'Approving…',
@@ -47,7 +47,7 @@
             : {
                   approve: 'Approve & issue certificate',
                   confirmTitle: `Issue certificate ${report.ticketNo}?`,
-                  confirmBody: 'The contractor is emailed and anyone scanning the QR code will see it as approved. Check the report below first.',
+                  confirmBody: 'The Building Electrical Inspector is emailed and anyone scanning the QR code will see it as approved. Check the report below first.',
                   confirming: 'Issuing…',
               },
     );
@@ -94,7 +94,7 @@
                 </div>
             {:else}
                 <form class="mt-2 flex flex-col gap-2 rounded-xl border border-line bg-sf p-3.5" onsubmit={sendBack} novalidate>
-                    <label for="reason" class="text-[15px] font-semibold">What should the contractor change?</label>
+                    <label for="reason" class="text-[15px] font-semibold">What should the Building Electrical Inspector change?</label>
                     <textarea
                         id="reason"
                         bind:value={changesForm.reason}
@@ -109,7 +109,7 @@
                         <span id="reason-error" class="flex items-center gap-1.5 text-sm font-semibold text-bad"><ErrorIcon class="size-4" />{changesForm.errors.reason}</span>
                     {/if}
                     <span class="text-[13px] text-mut">
-                        The contractor gets this note by email, fixes the report and resubmits without paying again. It then starts again with LECAN.
+                        The contractor gets this note by email, fixes the report and resubmits without paying again. It then starts again with the Inspection Review Committee.
                     </span>
                     <div class="flex flex-wrap gap-2">
                         <Button type="submit" size="sm" class="h-11" disabled={changesForm.processing || changesForm.reason.trim().length === 0}>

@@ -19,7 +19,7 @@
         <Logo size={40} />
         <img src="/images/lecan-logo.jpg" alt="LECAN" class="size-10 rounded-full object-cover" />
         <div class="flex flex-col">
-            <b class="text-base">Kaduna Electric · LECAN</b>
+            <b class="text-base">Kaduna Electric · Inspection Review</b>
             <span class="text-xs text-mut">{APP_TITLE} · {user.subtitle}</span>
         </div>
         <UserMenu {user} triggerClass="ml-auto flex items-center gap-2.5 rounded-full border border-line py-1 pr-2 pl-1 hover:bg-sf2">

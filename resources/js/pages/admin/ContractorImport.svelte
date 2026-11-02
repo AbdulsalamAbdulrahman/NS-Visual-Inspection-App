@@ -31,20 +31,20 @@
 </script>
 
 <svelte:head>
-    <title>Register contractors · KENS</title>
+    <title>Register Building Electrical Inspectors · KENS</title>
 </svelte:head>
 
 <header class="sticky top-0 z-20 flex items-center gap-1 border-b border-line bg-sf px-2 pt-[calc(4px+env(safe-area-inset-top))] pb-1 lg:hidden">
     <Link href={index.url()} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Back to contractors">
         <ArrowBack class="size-[22px]" />
     </Link>
-    <h1 class="flex-1 text-[18px] font-bold">Register contractors</h1>
+    <h1 class="flex-1 text-[18px] font-bold">Register Building Electrical Inspectors</h1>
 </header>
 
 <div class="flex max-w-[1200px] flex-col gap-5 px-4 py-4 lg:px-10 lg:py-8">
     <div class="hidden flex-col gap-1 lg:flex">
-        <Link href={index.url()} class="flex items-center gap-1 text-sm font-semibold text-mut no-underline"><ArrowBack class="size-4" />Contractors</Link>
-        <h1 class="text-[28px] font-extrabold">Register contractors from a spreadsheet</h1>
+        <Link href={index.url()} class="flex items-center gap-1 text-sm font-semibold text-mut no-underline"><ArrowBack class="size-4" />Building Electrical Inspectors</Link>
+        <h1 class="text-[28px] font-extrabold">Register Building Electrical Inspectors from a spreadsheet</h1>
     </div>
 
     <CsvImport
@@ -62,12 +62,12 @@
         {#snippet guide()}
             <b>resident_state</b> is Kaduna, Kebbi, Sokoto or Zamfara (where they work; reps assign them jobs there); <b>nemsa_category</b> is Cat A, Cat B, Cat
             C or Corporate. Corporate rows need <b>firm_name</b> and <b>engineer_name</b>. <b>phone</b>, <b>coren_no</b>, <b>engineer_reg_no</b> and the
-            licence dates (<b>licence_issued_on</b>, <b>licence_expires_on</b>, as DD/MM/YYYY) are optional. Contractors add their passport photograph, licence copy
+            licence dates (<b>licence_issued_on</b>, <b>licence_expires_on</b>, as DD/MM/YYYY) are optional. Building Electrical Inspectors add their passport photograph, licence copy
             and signature (and any missing dates) when they first sign in, before they can take jobs.
         {/snippet}
         {#snippet note()}
             <p class="flex items-start gap-2 rounded-xl bg-info-bg px-3.5 py-3 text-sm">
-                <Mail class="size-5 flex-none text-info" />Each contractor is emailed a temporary password and sets their own at first sign-in.
+                <Mail class="size-5 flex-none text-info" />Each Building Electrical Inspector is emailed a temporary password and sets their own at first sign-in.
             </p>
         {/snippet}
         {#snippet cells(row: Row)}

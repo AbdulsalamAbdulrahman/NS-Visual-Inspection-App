@@ -10,6 +10,7 @@ use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * One Monnify checkout attempt for an inspection fee.
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $transaction_reference
  * @property int $amount_kobo
  * @property int|null $amount_paid_kobo
+ * @property int|null $fee_kobo
+ * @property int $charge_kobo
  * @property string|null $channel
  * @property PaymentStatus $status
  * @property CarbonImmutable|null $paid_at
@@ -44,6 +47,8 @@ class Payment extends Model
         'transaction_reference',
         'amount_kobo',
         'amount_paid_kobo',
+        'fee_kobo',
+        'charge_kobo',
         'channel',
         'status',
         'paid_at',
@@ -56,6 +61,8 @@ class Payment extends Model
     protected $casts = [
         'amount_kobo' => 'integer',
         'amount_paid_kobo' => 'integer',
+        'fee_kobo' => 'integer',
+        'charge_kobo' => 'integer',
         'status' => PaymentStatus::class,
         'paid_at' => 'datetime',
         'gateway_payload' => 'array',
@@ -80,6 +87,14 @@ class Payment extends Model
     public function contractor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'contractor_id')->withTrashed();
+    }
+
+    /**
+     * @return HasMany<PaymentSplit, $this>
+     */
+    public function splits(): HasMany
+    {
+        return $this->hasMany(PaymentSplit::class);
     }
 
     public function isPaid(): bool

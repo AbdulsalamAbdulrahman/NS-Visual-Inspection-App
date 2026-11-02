@@ -349,6 +349,11 @@ class DemoSeeder extends Seeder
                 'signature_path' => "{$directory}/signature-demo.png",
                 'licence_issued_at' => today()->subYear(),
                 'licence_expires_at' => today()->addYears(2),
+                'bank_code' => '058',
+                'bank_name' => 'GTBank',
+                'account_number' => '0123456789',
+                'account_name' => $name,
+                'sub_account_code' => 'MFY_SUB_DEMO',
             ]);
         }
 

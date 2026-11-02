@@ -48,7 +48,7 @@
 </script>
 
 <svelte:head>
-    <title>LECAN officials · KENS</title>
+    <title>Inspection Review Committee · KENS</title>
 </svelte:head>
 
 <header class="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-sf px-2 pt-[calc(4px+env(safe-area-inset-top))] pb-3.5 lg:hidden">
@@ -56,8 +56,8 @@
         <Link href={admin.more()} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Back to More">
             <ArrowBack class="size-[22px]" />
         </Link>
-        <h1 class="flex-1 text-[18px] font-bold">LECAN officials</h1>
-        <button type="button" class="mr-2 flex size-11 items-center justify-center rounded-xl bg-pri text-on-pri" aria-label="Add LECAN official" onclick={() => openDrawer(null)}>
+        <h1 class="flex-1 text-[18px] font-bold">Inspection Review Committee</h1>
+        <button type="button" class="mr-2 flex size-11 items-center justify-center rounded-xl bg-pri text-on-pri" aria-label="Add committee member" onclick={() => openDrawer(null)}>
             <PersonAdd class="size-6" />
         </button>
     </div>
@@ -67,11 +67,11 @@
 <div class="flex flex-col gap-[18px] px-4 py-3 lg:px-10 lg:py-8">
     <div class="hidden items-center gap-3 lg:flex">
         <div class="flex flex-col gap-0.5">
-            <h1 class="text-[28px] font-extrabold">LECAN officials</h1>
+            <h1 class="text-[28px] font-extrabold">Inspection Review Committee</h1>
             <span class="text-sm text-mut">First review of paid reports for their state chapter, before NSD’s final approval</span>
         </div>
         <SearchField class="ml-auto w-[300px]" value={filters.search} placeholder="Name or email" only={['officials', 'filters']} />
-        <Button size="sm" class="h-11 rounded-xl" onclick={() => openDrawer(null)}><PersonAdd />Add LECAN official</Button>
+        <Button size="sm" class="h-11 rounded-xl" onclick={() => openDrawer(null)}><PersonAdd />Add committee member</Button>
     </div>
 
     <!-- Each chapter's queue -->
@@ -85,18 +85,18 @@
         {/each}
     </ul>
     {#if unstaffed.length > 0}
-        <p class="text-sm text-mut">Reports from {unstaffed.map((s) => s.label).join(', ')} wait for LECAN until an official is added for that chapter.</p>
+        <p class="text-sm text-mut">Reports from {unstaffed.map((s) => s.label).join(', ')} wait for the Inspection Review Committee until an official is added for that chapter.</p>
     {/if}
 
     {#if officials.data.length === 0}
         <EmptyState
             icon={Groups}
             tone="muted"
-            title={filters.search ? `No officials match “${filters.search}”` : 'No LECAN officials yet'}
+            title={filters.search ? `No officials match “${filters.search}”` : 'No Inspection Review Committee yet'}
             body={filters.search ? undefined : 'Add an official for each state chapter. Paid reports wait for their review before NSD approves them.'}
         />
     {:else}
-        <div class="hidden overflow-visible rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="LECAN officials">
+        <div class="hidden overflow-visible rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Inspection Review Committee">
             <div role="row" class="grid {cols} gap-3 rounded-t-2xl border-b border-line bg-sf2 px-5 py-3 text-xs font-bold tracking-[0.06em] text-mut">
                 <span role="columnheader">NAME</span>
                 <span role="columnheader">EMAIL</span>
@@ -115,14 +115,14 @@
                     <span role="cell" class="flex justify-end">
                         <AccountActions
                             account={{ ...o, subtitle: `${o.stateLabel} chapter` }}
-                            noun="LECAN official"
+                            noun="committee member"
                             onEdit={() => openDrawer(o)}
                             onRequestDelete={() => (confirmingDelete = o.uuid)}
                         />
                     </span>
                 </div>
                 {#if confirmingDelete === o.uuid}
-                    <DeleteConfirmRow uuid={o.uuid} name={o.name} noun="LECAN official" suspended={o.status === 'suspended'} onCancel={() => (confirmingDelete = null)} />
+                    <DeleteConfirmRow uuid={o.uuid} name={o.name} noun="committee member" suspended={o.status === 'suspended'} onCancel={() => (confirmingDelete = null)} />
                 {/if}
             {/each}
         </div>
@@ -140,7 +140,7 @@
                     </div>
                     <AccountActions
                         account={{ ...o, subtitle: `${o.stateLabel} chapter` }}
-                        noun="LECAN official"
+                        noun="committee member"
                         onEdit={() => openDrawer(o)}
                         onRequestDelete={() => (confirmingDelete = o.uuid)}
                     />

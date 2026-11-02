@@ -20,6 +20,8 @@
         /** Per structure, for estates only. */
         unit: string | null;
         total: string;
+        fee: string;
+        charge: string | null;
         verifyUrl: string;
         qr: string;
     };
@@ -61,7 +63,7 @@
     <section class="print-sheet paper flex flex-col gap-6 px-12 pt-10 pb-8" aria-label="Receipt {r.ticketNo}">
         <div class="flex items-center gap-3.5 border-b-2 border-brand pb-3">
             <img src="/images/ke-logo.png" alt="Kaduna Electric" class="size-[58px] flex-none object-contain" />
-            <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
+            <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Building Electrical Inspectors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
             <div class="flex flex-1 flex-col gap-0.5">
                 <span class="font-mono text-[10px] font-semibold tracking-[0.1em] text-brand">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT · LECAN</span>
                 <span class="text-[20px] leading-tight font-extrabold tracking-[-0.01em]">{APP_TITLE}</span>
@@ -108,9 +110,15 @@
             <div role="row" class="grid grid-cols-[1fr_110px_130px_130px] gap-3 border-t border-[#C9D2C7] px-3.5 py-2.5">
                 <span role="cell">Building electrical inspection{r.building ? ` · ${r.building}` : ''}</span>
                 <span role="cell" class="text-right font-mono tabular-nums">{r.structures}</span>
-                <span role="cell" class="text-right font-mono tabular-nums">{r.unit ?? r.total}</span>
-                <span role="cell" class="text-right font-mono font-semibold tabular-nums">{r.total}</span>
+                <span role="cell" class="text-right font-mono tabular-nums">{r.unit ?? r.fee}</span>
+                <span role="cell" class="text-right font-mono font-semibold tabular-nums">{r.fee}</span>
             </div>
+            {#if r.charge}
+                <div role="row" class="grid grid-cols-[1fr_130px] gap-3 border-t border-[#C9D2C7] px-3.5 py-2.5">
+                    <span role="cell">Payment charge</span>
+                    <span role="cell" class="text-right font-mono tabular-nums">{r.charge}</span>
+                </div>
+            {/if}
             <div role="row" class="grid grid-cols-[1fr_130px] gap-3 border-t-2 border-brand px-3.5 py-2.5">
                 <b role="cell">Total paid</b>
                 <b role="cell" class="text-right font-mono tabular-nums">{r.total}</b>

@@ -145,7 +145,7 @@ test('reps cannot assign a contractor whose licence has expired', function () {
         'building_type' => 'duplex',
         'form74_no' => 'F74/KD/2026/08841',
         'contractor' => $this->contractor->uuid,
-    ])->assertSessionHasErrors(['contractor' => 'Choose an active contractor with a valid licence and complete documents who works in Kaduna State.']);
+    ])->assertSessionHasErrors(['contractor' => 'Choose an active Building Electrical Inspector with a valid licence and complete documents who works in Kaduna State.']);
 });
 
 test('the daily check emails a month before expiry and on expiry, once each', function () {

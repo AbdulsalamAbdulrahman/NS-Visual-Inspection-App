@@ -57,7 +57,7 @@
     const compact = 'lg:h-12 lg:rounded-[10px] lg:text-[15px]';
 </script>
 
-<Drawer bind:open title={editing ? 'Edit LECAN official' : 'Add LECAN official'}>
+<Drawer bind:open title={editing ? 'Edit committee member' : 'Add committee member'}>
     <form id="lecan-form" class="contents" onsubmit={submit} novalidate>
         <Field id="l-name" label="Full name" error={form.errors.name}>
             <TextInput id="l-name" size="md" class={compact} bind:value={form.name} autocomplete="off" invalid={!!form.errors.name} />

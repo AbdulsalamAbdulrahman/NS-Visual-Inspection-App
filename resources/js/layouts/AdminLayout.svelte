@@ -41,11 +41,12 @@
     const sidebar: NavItem[] = [
         { label: 'Overview', href: '/admin', icon: SpaceDashboard, exact: true },
         { label: 'Inspections', href: '/admin/inspections', icon: Assignment, countKey: 'inspections' },
-        { label: 'Contractors', href: '/admin/contractors', icon: Engineering, countKey: 'contractors' },
+        { label: 'Building Electrical Inspectors', href: '/admin/contractors', icon: Engineering, countKey: 'contractors' },
         { label: 'Service reps', href: '/admin/reps', icon: Badge, countKey: 'reps' },
-        { label: 'LECAN officials', href: '/admin/lecan', icon: Groups, countKey: 'lecan' },
+        { label: 'Inspection Review Committee', href: '/admin/lecan', icon: Groups, countKey: 'lecan' },
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, countKey: 'areas' },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
+        { label: 'Settlements', href: '/admin/settlements', icon: Payments },
         { label: 'Fee settings', href: '/admin/fees', icon: Tune },
         { label: 'Certificate', href: '/admin/certificate', icon: WorkspacePremium },
     ];

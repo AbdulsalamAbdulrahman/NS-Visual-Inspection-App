@@ -61,7 +61,7 @@
         ['Building', [report.a.purpose, report.a.buildingType].filter(Boolean).join(' · ')],
         ['Supply', [report.a.connection, report.a.voltage].filter(Boolean).join(' · ')],
         ['GPS', report.a.gps ? `${formatCoords(report.a.gps.lat, report.a.gps.lng)}${report.a.gps.accuracy !== null ? ` ±${Math.round(report.a.gps.accuracy)} m` : ''}` : null, true],
-        ['Contractor', report.a.contractor],
+        ['Building Electrical Inspector', report.a.contractor],
         ['Inspected', report.a.inspectionDate, true],
     ])}
 {/snippet}

@@ -99,7 +99,7 @@
     const compact = 'lg:h-12 lg:rounded-[10px] lg:text-[15px]';
 </script>
 
-<Drawer bind:open title={editing ? 'Edit contractor' : 'Add contractor'}>
+<Drawer bind:open title={editing ? 'Edit contractor' : 'Add Building Electrical Inspector'}>
     {#if contractor}
         <!-- Documents the contractor uploaded on their Profile (view only). -->
         <section class="flex flex-col gap-2.5 rounded-xl border border-line p-3.5" aria-label="Licence and documents">
@@ -121,7 +121,7 @@
                 {#if contractor.documents.licence}<a href={contractor.documents.licence} target="_blank" rel="noopener" class="text-brand">View licence</a>{/if}
                 {#if contractor.documents.signature}<a href={contractor.documents.signature} target="_blank" rel="noopener" class="text-brand">View signature</a>{/if}
             </div>
-            <span class="text-[13px] text-mut">The contractor uploads these on their Profile.</span>
+            <span class="text-[13px] text-mut">The Building Electrical Inspector uploads these on their Profile.</span>
         </section>
     {/if}
 
@@ -139,7 +139,7 @@
             </Field>
         </div>
 
-        <Field id="c-state" label="State they work in" hint="Reps assign jobs to contractors in the area office's state." error={form.errors.state}>
+        <Field id="c-state" label="State they work in" hint="Reps assign jobs to Building Electrical Inspectors in the area office's state." error={form.errors.state}>
             <ChoiceGroup label="State they work in" variant="segmented" options={states} bind:value={form.state} invalid={!!form.errors.state} />
         </Field>
 

@@ -87,7 +87,7 @@ final class ContractorRules
                 ? 'Use the corporate format, e.g. CC/CE1F/PR/08634.'
                 : 'Letters and numbers only, no spaces or slashes.',
             'engineer_name.required' => 'Required for Corporate contractors',
-            'nemsa_reg_no.unique' => 'Another contractor already has this registration number.',
+            'nemsa_reg_no.unique' => 'Another Building Electrical Inspector already has this registration number.',
             'firm_name.required' => 'Required for Corporate contractors',
             'phone.regex' => 'Enter a valid phone number.',
             'licence_issued_at.date_format' => 'Enter the licence issue date as DD/MM/YYYY.',

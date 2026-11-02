@@ -20,9 +20,9 @@ test('the reference seeder adds the official area offices and the launch fee onc
     expect(ServiceArea::query()->count())->toBe(26)
         ->and(ServiceArea::query()->where('is_active', true)->count())->toBe(26)
         ->and(ServiceArea::query()->pluck('name')->sort()->values()->all())->toBe(collect(ServiceAreaSeeder::AREAS)->sort()->values()->all())
-        ->and(FeeSchedule::query()->count())->toBe(1 + 4 * count(FeeScheduleSeeder::SHEET))
+        ->and(FeeSchedule::query()->count())->toBe(1 + 6 * count(FeeScheduleSeeder::SHEET))
         ->and(FeeSchedule::currentAmountKobo())->toBe(1_500_000)
-        ->and(FeeSchedule::forCell(BuildingType::Hospital, ConnectionType::ThreePhase, Premises::StandAlone)->amount_kobo)->toBe(3_500_000)
+        ->and(FeeSchedule::forCell(BuildingType::Hospital, ConnectionType::ThreePhase, Premises::StandAlone)->amount_kobo)->toBe(5_000_000)
         ->and(User::query()->count())->toBe(0);
 });
 

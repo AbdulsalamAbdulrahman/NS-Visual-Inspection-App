@@ -20,7 +20,7 @@ enum ReviewStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PendingLecan => 'Awaiting LECAN',
+            self::PendingLecan => 'Awaiting Review Committee',
             self::PendingNsd => 'Awaiting NSD',
             self::ChangesRequested => 'Changes requested',
             self::Approved => 'Approved',

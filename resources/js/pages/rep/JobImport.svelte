@@ -60,7 +60,7 @@
         {#snippet guide()}
             <b>area_office</b> is one of your area offices; <b>purpose</b> and <b>building_type</b> as in the form (e.g. Residential, Duplex);
             <b>email</b> is the owner’s email (required: they get the receipt and certificate);
-            <b>contractor_email</b> is the contractor’s sign-in email. Leave <b>form74_last</b> empty for a single building.
+            <b>contractor_email</b> is the Building Electrical Inspector’s sign-in email. Leave <b>form74_last</b> empty for a single building.
         {/snippet}
         {#snippet cells(row: Row)}
             <span role="cell" class="flex min-w-0 flex-col">

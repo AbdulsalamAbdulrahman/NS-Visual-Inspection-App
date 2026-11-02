@@ -158,7 +158,7 @@ class InspectionReportResource extends JsonResource
                         'action' => $r->action->value,
                         'label' => $r->action->label(),
                         'note' => $r->note,
-                        'by' => $r->user ? $r->user->name.($r->user->isLecan() ? ' (LECAN)' : '') : null,
+                        'by' => $r->user ? $r->user->name.($r->user->isLecan() ? ' (Review Committee)' : '') : null,
                         'at' => $r->created_at->format('d M Y, H:i'),
                     ])->values(),
                 ),

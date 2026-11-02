@@ -17,7 +17,7 @@
 
     const review = $derived(report.review);
     const chapter = $derived(review.chapter ? `${review.chapter} State` : 'state');
-    const by = $derived(review.sentBackBy === 'LECAN' ? `LECAN (${chapter} chapter)` : 'NSD');
+    const by = $derived(review.sentBackBy === 'LECAN' ? `the Inspection Review Committee (${chapter})` : 'NSD');
 </script>
 
 {#if review.status === 'approved'}
@@ -25,7 +25,7 @@
         <CheckCircle class="size-6 flex-none text-ok" aria-hidden="true" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
             <b class="text-[15px] text-ok">Approved · certificate issued</b>
-            <span class="text-sm">Approved{review.lecanApprovedBy ? ` by LECAN (${review.lecanApprovedBy}) and` : ''} by the New Service Department on {review.approvedAt}. Certificate no. <span class="font-mono">{report.ticketNo}</span>.</span>
+            <span class="text-sm">Approved{review.lecanApprovedBy ? ` by the Inspection Review Committee (${review.lecanApprovedBy}) and` : ''} by the New Service Department on {review.approvedAt}. Certificate no. <span class="font-mono">{report.ticketNo}</span>.</span>
             {@render children?.()}
         </div>
     </div>
@@ -41,8 +41,8 @@
             {/if}
             <span class="text-[13px] text-mut">
                 {audience === 'contractor'
-                    ? 'Fix the report and resubmit. It goes back to LECAN, then NSD. There is nothing more to pay.'
-                    : `Waiting for the contractor to resubmit (sent ${review.reviewedAt}).`}
+                    ? 'Fix the report and resubmit. It goes back to the Inspection Review Committee, then NSD. There is nothing more to pay.'
+                    : `Waiting for the Building Electrical Inspector to resubmit (sent ${review.reviewedAt}).`}
             </span>
             {@render children?.()}
         </div>
@@ -51,12 +51,12 @@
     <div class="flex gap-3 rounded-2xl border border-info bg-info-bg px-4 py-3.5" role="status">
         <HourglassTop class="size-6 flex-none text-info" aria-hidden="true" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
-            <b class="text-[15px] text-info">{review.status === 'pending_lecan' ? `Awaiting LECAN review · ${chapter}` : 'Approved by LECAN · awaiting NSD'}</b>
+            <b class="text-[15px] text-info">{review.status === 'pending_lecan' ? `Awaiting Inspection Review Committee · ${chapter}` : 'Approved by LECAN · awaiting NSD'}</b>
             <span class="text-sm">
                 {#if review.status === 'pending_lecan'}
                     {audience === 'contractor'
-                        ? `The LECAN ${chapter} chapter reviews this report first, then the New Service Department. You'll get an email when the certificate is issued or if anything needs changing.`
-                        : `Step 1 of 2: the LECAN ${chapter} chapter reviews it, then NSD gives final approval. No certificate has been issued yet.`}
+                        ? `The Inspection Review Committee (${chapter}) reviews this report first, then the New Service Department. You'll get an email when the certificate is issued or if anything needs changing.`
+                        : `Step 1 of 2: the Inspection Review Committee (${chapter}) reviews it, then NSD gives final approval. No certificate has been issued yet.`}
                 {:else}
                     Approved for LECAN by {review.lecanApprovedBy ?? 'the state chapter'}{review.lecanApprovedAt ? ` on ${review.lecanApprovedAt}` : ''}.
                     {audience === 'contractor' ? 'The New Service Department gives the final approval.' : 'Step 2 of 2: waiting for NSD final approval.'}

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
+use App\Services\Monnify\MonnifyClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,12 +14,12 @@ use Inertia\Response;
 
 /**
  * First sign-in, after the password: a contractor adds their passport photo,
- * licence copy, signature and licence dates before they can take jobs
+ * licence copy, signature, licence dates and bank account before they can take jobs
  * (EnsureAccountUsable keeps them here until then).
  */
 class OnboardingController extends Controller
 {
-    public function show(Request $request): Response|RedirectResponse
+    public function show(Request $request, MonnifyClient $monnify): Response|RedirectResponse
     {
         $user = $request->user()->loadMissing('contractorProfile');
 
@@ -29,6 +30,7 @@ class OnboardingController extends Controller
         return Inertia::render('contractor/Onboarding', [
             'firstName' => explode(' ', $user->name)[0],
             'profile' => ProfileResource::make($user),
+            'banks' => $monnify->banksOrNone(),
         ]);
     }
 }

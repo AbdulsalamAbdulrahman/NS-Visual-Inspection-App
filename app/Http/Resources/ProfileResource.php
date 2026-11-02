@@ -47,6 +47,8 @@ class ProfileResource extends JsonResource
                 'passportUrl' => $licence->passport_path ? route('profile.documents.show', 'passport').'?v='.md5($licence->passport_path) : null,
                 'signatureUrl' => $licence->signature_path ? route('profile.documents.show', 'signature').'?v='.md5($licence->signature_path) : null,
                 'storeUrl' => route('profile.documents.store'),
+                'bank' => $licence->sub_account_code ? ['name' => $licence->bank_name, 'number' => $licence->account_number, 'accountName' => $licence->account_name] : null,
+                'bankUrl' => route('profile.documents.bank'),
             ] : null,
         ];
     }

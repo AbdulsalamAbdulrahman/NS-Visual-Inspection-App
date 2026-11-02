@@ -27,7 +27,7 @@ class ReviewController extends Controller
 
         if ($request->user()->isLecan()) {
             $lecanApprove->handle($inspection, $request->user());
-            Inertia::flash('toast', ['type' => 'success', 'message' => "Approved for LECAN. {$inspection->ticket_no} goes to NSD for final approval."]);
+            Inertia::flash('toast', ['type' => 'success', 'message' => "Approved. {$inspection->ticket_no} goes to NSD for final approval."]);
 
             return back();
         }
@@ -45,12 +45,12 @@ class ReviewController extends Controller
 
         $validated = $request->validate(
             ['reason' => ['required', 'string', 'min:10', 'max:2000']],
-            ['reason.required' => 'Tell the contractor what to change.', 'reason.min' => 'Give the contractor a little more detail.'],
+            ['reason.required' => 'Tell the Building Electrical Inspector what to change.', 'reason.min' => 'Give the Building Electrical Inspector a little more detail.'],
         );
 
         $requestChanges->handle($inspection, $request->user(), trim($validated['reason']));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Sent back to the contractor with your note.']);
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Sent back to the Building Electrical Inspector with your note.']);
 
         return back();
     }

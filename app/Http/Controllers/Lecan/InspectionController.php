@@ -15,7 +15,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * LECAN officials: reports in their state chapter, the ones waiting for them
+ * Inspection Review Committee: reports in their state chapter, the ones waiting for them
  * first, and the review of each (approve for NSD or send back).
  */
 class InspectionController extends Controller

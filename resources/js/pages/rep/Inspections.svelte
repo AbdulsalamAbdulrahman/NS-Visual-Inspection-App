@@ -106,7 +106,7 @@
             icon={Inbox}
             tone="muted"
             title={filtered ? 'Nothing matches these filters' : `No submissions in ${areaList} yet`}
-            body={filtered ? 'Try another area or clear the filters.' : 'Paid inspections for your areas will appear here as soon as contractors submit them.'}
+            body={filtered ? 'Try another area or clear the filters.' : 'Paid inspections for your areas will appear here as soon as Building Electrical Inspectors submit them.'}
         >
             {#if !filtered}<span class="mt-1.5 text-sm text-mut">Wrong areas? Ask the NSD admin to update your assignment.</span>{/if}
         </EmptyState>

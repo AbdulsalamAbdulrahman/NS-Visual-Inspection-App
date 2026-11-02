@@ -120,7 +120,7 @@
         router.delete(destroy.url(fee.id), { preserveScroll: true });
     }
 
-    const matrix = 'lg:grid-cols-[minmax(0,1.2fr)_repeat(4,minmax(0,1fr))]';
+    const matrix = 'lg:grid-cols-[minmax(0,1.2fr)_repeat(6,minmax(0,1fr))]';
     const cols = 'grid-cols-[minmax(0,1.6fr)_120px_120px_110px_minmax(0,1fr)_minmax(0,1.1fr)]';
 </script>
 
@@ -138,7 +138,7 @@
 <div class="flex flex-col gap-5 px-4 py-4 lg:px-10 lg:py-8">
     <div class="hidden flex-col gap-1 lg:flex">
         <h1 class="text-[28px] font-extrabold">Inspection fees</h1>
-        <p class="text-[15px] text-mut">Per structure, by building type, supply and premises (LECAN fee sheet). Multiple premises pay the fee × the number of structures.</p>
+        <p class="text-[15px] text-mut">Per structure, by building type, supply and premises (official fee sheet). Multiple premises pay the fee × the number of structures.</p>
     </div>
 
     <div class="grid max-w-[1320px] gap-5 xl:grid-cols-[1fr_380px] xl:items-start">

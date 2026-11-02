@@ -61,7 +61,7 @@
 {#snippet actions()}
     <p class="flex items-start gap-2 rounded-xl bg-info-bg px-3.5 py-3 text-sm text-ink">
         <HourglassTop class="size-5 flex-none text-info" />
-        <span><b>Next: LECAN and NSD review.</b> You and the owner get an email when the certificate is issued; you'll also hear if anything needs changing.</span>
+        <span><b>Next: Inspection Review Committee and NSD review.</b> You and the owner get an email when the certificate is issued; you'll also hear if anything needs changing.</span>
     </p>
     <div class="grid grid-cols-2 gap-2.5 lg:flex lg:gap-3">
         {#if ticket.reportUrl}

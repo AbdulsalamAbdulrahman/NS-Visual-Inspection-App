@@ -11,6 +11,7 @@ use App\Services\Monnify\MonnifyClient;
 use App\Services\Monnify\MonnifyException;
 use App\Support\InspectionChecklist;
 use App\Support\InspectionFee;
+use App\Support\Settlement;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -46,14 +47,19 @@ class InitPayment
         }
 
         $contractor = $inspection->contractor;
+        $splits = Settlement::split($fee['totalKobo'], $contractor);
+        $splitConfig = config('services.monnify.split_enabled') ? Settlement::monnifyConfig($splits) : [];
 
         $payment = Payment::query()->create([
             'inspection_id' => $inspection->id,
             'contractor_id' => $contractor->id,
             'payment_reference' => 'KENS-'.now()->format('Ymd').'-'.Str::upper(Str::random(10)),
-            'amount_kobo' => $fee['totalKobo'],
+            'amount_kobo' => $fee['payableKobo'],
+            'fee_kobo' => $fee['totalKobo'],
+            'charge_kobo' => $fee['chargeKobo'],
             'status' => PaymentStatus::Pending,
         ]);
+        $payment->splits()->createMany($splits);
 
         try {
             $checkout = $this->monnify->initTransaction(
@@ -63,6 +69,7 @@ class InitPayment
                 customerEmail: $contractor->email,
                 description: Str::limit("Building electrical inspection fee · {$inspection->owner_name} · {$inspection->form74_no}", 120),
                 redirectUrl: route('payments.show', $payment),
+                incomeSplit: $splitConfig,
             );
         } catch (MonnifyException $e) {
             $payment->update(['status' => PaymentStatus::Failed, 'gateway_payload' => ['init_error' => $e->getMessage()]]);

@@ -74,8 +74,8 @@ class ImportContractors
                 'licence_issued_at.date_format' => "Licence issue date “{$values['licence_issued_on']}” isn't a date (use DD/MM/YYYY).",
                 'licence_expires_at.date_format' => "Licence expiry date “{$values['licence_expires_on']}” isn't a date (use DD/MM/YYYY).",
                 'licence_expires_at.after_or_equal' => 'The licence expired on '.$this->dateLabel($data['licence_expires_at'] ?? null).'.',
-                'firm_name.required' => 'Firm name is required for Corporate contractors.',
-                'engineer_name.required' => 'Engineer name is required for Corporate contractors.',
+                'firm_name.required' => 'Firm name is required for Corporate Building Electrical Inspectors.',
+                'engineer_name.required' => 'Engineer name is required for Corporate Building Electrical Inspectors.',
             ]);
 
             // The same person twice in one file would fail half-way through creating.

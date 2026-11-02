@@ -31,25 +31,25 @@
         approved: {
             icon: CheckCircle,
             title: 'Approved and safe for grid connection',
-            body: 'This installation\'s inspection report was reviewed and approved by LECAN and the New Service Unit of Kaduna Electric. The certificate is valid.',
+            body: 'This installation\'s inspection report was reviewed and approved by the Inspection Review Committee and the New Service Unit of Kaduna Electric. The certificate is valid.',
             tone: 'border-ok bg-ok-bg text-ok',
         },
         pending_lecan: {
             icon: HourglassTop,
             title: 'Report submitted, not yet certified',
-            body: 'The inspection report is genuine and paid, and is waiting for LECAN review. No certificate has been issued yet.',
+            body: 'The inspection report is genuine and paid, and is waiting for the Inspection Review Committee. No certificate has been issued yet.',
             tone: 'border-info bg-info-bg text-info',
         },
         pending_nsd: {
             icon: HourglassTop,
             title: 'Report submitted, not yet certified',
-            body: 'The inspection report was approved by LECAN and is waiting for final approval by Kaduna Electric. No certificate has been issued yet.',
+            body: 'The inspection report was approved by the Inspection Review Committee and is waiting for final approval by Kaduna Electric. No certificate has been issued yet.',
             tone: 'border-info bg-info-bg text-info',
         },
         changes_requested: {
             icon: Warning,
             title: 'Not certified: changes requested',
-            body: 'The report was reviewed and the contractor was asked for changes. No certificate has been issued yet.',
+            body: 'The report was reviewed and the Building Electrical Inspector was asked for changes. No certificate has been issued yet.',
             tone: 'border-imp bg-imp-bg text-imp',
         },
     } as const;
@@ -103,7 +103,7 @@
                     {/if}
                     <dt class="text-mut">Submitted</dt><dd class="font-mono">{result.submittedAt ?? '—'}</dd>
                     <dt class="text-mut">Service area</dt><dd>{result.area ?? '—'}</dd>
-                    <dt class="text-mut">Contractor</dt><dd>{result.contractor ?? '—'}</dd>
+                    <dt class="text-mut">Building Electrical Inspector</dt><dd>{result.contractor ?? '—'}</dd>
                     <dt class="text-mut">Owner</dt><dd>{result.owner ?? '—'}</dd>
                 </dl>
                 <p class="text-[13px] text-mut">Compare these details with the printed certificate. If they don't match, contact the New Service Department.</p>

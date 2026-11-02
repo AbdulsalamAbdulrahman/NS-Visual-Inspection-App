@@ -18,7 +18,7 @@ test('contractors see their read-only licence details', function () {
             ->where('profile.initials', 'YB')
             ->where('profile.licence.category', 'Cat A')
             ->where('profile.licence.regNo', 'NEMSA/A/2023/0142')
-            ->where('auth.user.subtitle', 'Contractor · Cat A')
+            ->where('auth.user.subtitle', 'Building Electrical Inspector · Cat A')
             ->where('auth.user.badge', 'Cat A'));
 });
 

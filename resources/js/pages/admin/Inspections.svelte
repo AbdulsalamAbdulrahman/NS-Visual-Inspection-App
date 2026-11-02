@@ -28,7 +28,7 @@
     const reviewChips: { value: ReviewStatus | null; label: string }[] = [
         { value: null, label: 'All' },
         { value: 'pending_nsd', label: 'Awaiting NSD' },
-        { value: 'pending_lecan', label: 'Awaiting LECAN' },
+        { value: 'pending_lecan', label: 'Awaiting Review Committee' },
         { value: 'changes_requested', label: 'Changes requested' },
         { value: 'approved', label: 'Approved' },
     ];
@@ -104,7 +104,7 @@
             icon={Assignment}
             tone="muted"
             title={filtered ? 'No inspections match these filters' : 'No submitted inspections yet'}
-            body={filtered ? 'Try a wider date range or clear the filters.' : 'Paid inspections appear here as soon as contractors submit them.'}
+            body={filtered ? 'Try a wider date range or clear the filters.' : 'Paid inspections appear here as soon as Building Electrical Inspectors submit them.'}
         />
     {:else}
         <div class="hidden overflow-hidden rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Submitted inspections">

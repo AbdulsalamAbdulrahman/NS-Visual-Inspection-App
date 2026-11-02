@@ -77,7 +77,7 @@
         <div class="relative flex h-full flex-col items-center justify-between px-[86px] pt-[78px] pb-[70px] text-center">
             <!-- Issuers -->
             <header class="grid w-full grid-cols-[96px_1fr_96px] items-center gap-4">
-                <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-24 rounded-full object-cover" />
+                <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Building Electrical Inspectors Association of Nigeria (LECAN)" class="size-24 rounded-full object-cover" />
                 <div class="flex flex-col items-center gap-1">
                     <span class="text-[12px] font-extrabold tracking-[0.14em] text-[#0B5A33]">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</span>
                     <span class="text-[9.5px] font-bold tracking-[0.12em] text-ink">LICENSED ELECTRICAL CONTRACTORS ASSOCIATION OF NIGERIA</span>
@@ -109,7 +109,7 @@
                 <p>
                     This is to certify that the building electrical installation at <b>{c.address ?? '—'}</b>{c.area ? ` (${c.area} service area)` : ''},
                     owned by <b>{c.ownerName ?? '—'}</b>, was inspected on <b>{c.inspectionDate ?? '—'}</b> by
-                    <b>{c.contractor.name ?? '—'}</b>{c.contractor.firm ? ` of ${c.contractor.firm}` : ''}, a NEMSA-licensed electrical contractor{licence ? ` (${licence})` : ''},
+                    <b>{c.contractor.name ?? '—'}</b>{c.contractor.firm ? ` of ${c.contractor.firm}` : ''}, a NEMSA-licensed electrical Building Electrical Inspector{licence ? ` (${licence})` : ''},
                     and that the inspection report was reviewed and approved by the Licensed Electrical Contractors Association of Nigeria
                     (LECAN, {c.chapter} State Chapter) and the New Service Unit of Kaduna Electric on <b>{c.approvedAt ?? '—'}</b>.
                 </p>

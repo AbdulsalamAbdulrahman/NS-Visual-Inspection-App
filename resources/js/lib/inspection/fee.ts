@@ -9,6 +9,8 @@ export type FeeTable = {
     /** Fee sheet cells, "type|supply|premises" → kobo per structure; 0 = not offered. */
     cells?: Record<string, number>;
     effectiveFrom: string | null;
+    chargePercent?: number;
+    chargeCapKobo?: number;
 };
 
 export const NOT_OFFERED =
@@ -76,6 +78,34 @@ export type Quote = {
     breakdown: string | null;
 };
 
+/** The sheet's column for a building (Premises::forBuilding). */
+function premisesFor(buildingType: string | null, count: number): string {
+    switch (buildingType) {
+        case 'block_of_flats':
+        case 'two_bedroom_flat':
+        case 'three_bedroom_flat':
+            return count <= 4
+                ? 'stand_alone'
+                : count <= 15
+                  ? 'multiple'
+                  : 'large';
+        case 'shop':
+            return count <= 5 ? 'stand_alone' : 'multiple';
+        case 'plaza':
+        case 'large_plaza':
+            return 'multiple';
+        default:
+            return count > 1 ? 'multiple' : 'stand_alone';
+    }
+}
+
+/** Payment charge added at checkout (InspectionFee::charge). */
+function charge(fees: FeeTable, feeKobo: number): number {
+    const raw = Math.ceil((feeKobo * (fees.chargePercent ?? 0)) / 100);
+
+    return fees.chargeCapKobo ? Math.min(raw, fees.chargeCapKobo) : raw;
+}
+
 /** Per-structure fee in kobo: the sheet's cell, else the type's own, else the default. */
 function unitFee(
     fees: FeeTable,
@@ -83,7 +113,7 @@ function unitFee(
     connectionType: string | null,
     structures: number,
 ): number | null {
-    const premises = structures > 1 ? 'multiple' : 'stand_alone';
+    const premises = premisesFor(buildingType, structures);
     const cell =
         buildingType && connectionType
             ? fees.cells?.[`${buildingType}|${connectionType}|${premises}`]
@@ -119,10 +149,16 @@ export function quote(
         return null;
     }
 
+    const fee = unit * structures;
+    const extra = charge(fees, fee);
+    const parts = [
+        structures > 1 ? `${structures} structures × ${naira(unit)}` : null,
+        extra > 0 ? `Fee ${naira(fee)} + payment charge ${naira(extra)}` : null,
+    ].filter(Boolean);
+
     return {
-        amount: naira(unit * structures),
+        amount: naira(fee + extra),
         effectiveFrom: fees.effectiveFrom ?? '',
-        breakdown:
-            structures > 1 ? `${structures} structures × ${naira(unit)}` : null,
+        breakdown: parts.length ? parts.join(' · ') : null,
     };
 }

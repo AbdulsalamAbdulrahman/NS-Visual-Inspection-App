@@ -36,7 +36,7 @@ class LicenceExpired extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Your licence has expired')
             ->greeting("Hello {$notifiable->firstName()},")
-            ->line("Your contractor licence on record expired on **{$date}**.")
+            ->line("Your Building Electrical Inspector licence on record expired on **{$date}**.")
             ->line('Until you upload the renewed licence you can’t start, pay for or resubmit inspections, and you won’t be assigned new jobs. Your reports stay available.')
             ->action('Upload the renewed licence', route('profile.show'))
             ->salutation('— New Service Department, Kaduna Electric');

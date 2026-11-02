@@ -128,7 +128,7 @@
             icon={PaymentsIcon}
             tone="muted"
             title={filters.status || filters.search ? 'No payments match' : 'No payments yet'}
-            body={filters.status || filters.search ? 'Try another status or search term.' : 'Monnify payment attempts appear here as contractors pay.'}
+            body={filters.status || filters.search ? 'Try another status or search term.' : 'Monnify payment attempts appear here as Building Electrical Inspectors pay.'}
         />
     {:else}
         <div class="hidden overflow-hidden rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Payments">

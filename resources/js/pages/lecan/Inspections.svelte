@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-    <title>Reports · LECAN · KENS</title>
+    <title>Reports · Review · KENS</title>
 </svelte:head>
 
 {#snippet chips()}
@@ -91,7 +91,7 @@
             icon={Inbox}
             tone="muted"
             title={queue && !filters.search ? 'Nothing waiting for you' : 'No reports match'}
-            body={queue && !filters.search ? `Paid reports from ${chapter} State appear here for LECAN review.` : 'Try another filter or clear the search.'}
+            body={queue && !filters.search ? `Paid reports from ${chapter} State appear here for the Inspection Review Committee.` : 'Try another filter or clear the search.'}
         />
     {:else}
         <div class="hidden overflow-hidden rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Reports">

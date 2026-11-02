@@ -118,7 +118,7 @@
     <div class="hidden flex-col gap-1 md:flex">
         <Link href={index.url()} class="flex items-center gap-1 text-sm font-semibold text-mut no-underline"><ArrowBack class="size-4" />Jobs</Link>
         <h1 class="text-[28px] font-extrabold">{job ? `Edit job · ${job.ownerName}` : 'New job'}</h1>
-        <p class="text-[15px] text-mut">The contractor sees these details filled in and can’t change them. You can edit or reassign the job until they start it.</p>
+        <p class="text-[15px] text-mut">The Building Electrical Inspector sees these details filled in and can’t change them. You can edit or reassign the job until they start it.</p>
     </div>
 
     <div class="grid gap-5 lg:grid-cols-[1fr_420px] lg:items-start">
@@ -215,16 +215,16 @@
                 </Field>
 
                 <fieldset class="flex flex-col gap-2.5" aria-describedby={form.errors.contractor ? 'contractor-error' : undefined}>
-                    <legend class="mb-2.5 {label}">Contractor <Required /></legend>
+                    <legend class="mb-2.5 {label}">Building Electrical Inspector <Required /></legend>
                     {#if !area}
-                        <p class="rounded-xl bg-sf2 px-3.5 py-3 text-sm text-mut">Choose the area office first. You’ll see contractors who work in its state.</p>
+                        <p class="rounded-xl bg-sf2 px-3.5 py-3 text-sm text-mut">Choose the area office first. You’ll see Building Electrical Inspectors who work in its state.</p>
                     {:else if eligible.length === 0}
-                        <p class="rounded-xl bg-imp-bg px-3.5 py-3 text-sm">No active contractors work in {area.stateLabel} State yet. Ask the NSD admin to add one.</p>
+                        <p class="rounded-xl bg-imp-bg px-3.5 py-3 text-sm">No active Building Electrical Inspectors work in {area.stateLabel} State yet. Ask the NSD admin to add one.</p>
                     {:else}
                         {#if eligible.length > 6}
                             <label class="flex h-11 items-center gap-2 rounded-xl border-[1.5px] border-line bg-sf px-3 focus-within:border-pri">
                                 <Search class="size-5 text-mut" />
-                                <span class="sr-only">Search contractors</span>
+                                <span class="sr-only">Search Building Electrical Inspectors</span>
                                 <input bind:value={contractorSearch} placeholder="Search {eligible.length} contractors" class="h-full min-w-0 flex-1 bg-transparent text-[15px] outline-none" />
                             </label>
                         {/if}
@@ -246,7 +246,7 @@
                                     <span class="flex-none text-right text-[13px] text-mut"><span class="font-mono">{c.openJobs}</span> open</span>
                                 </label>
                             {:else}
-                                <p class="px-1 text-sm text-mut">No contractor matches “{contractorSearch}”.</p>
+                                <p class="px-1 text-sm text-mut">No Building Electrical Inspector matches “{contractorSearch}”.</p>
                             {/each}
                         </div>
                     {/if}
@@ -275,7 +275,7 @@
                             <Button variant="ghost" size="sm" onclick={() => (confirmingCancel = false)}>Keep it</Button>
                         </div>
                     {:else}
-                        <p class="text-sm text-mut">Only while the contractor hasn’t started it.</p>
+                        <p class="text-sm text-mut">Only while the Building Electrical Inspector hasn’t started it.</p>
                         <Button variant="outline" size="sm" class="self-start" onclick={() => (confirmingCancel = true)}>Cancel job…</Button>
                     {/if}
                 </section>

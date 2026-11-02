@@ -31,6 +31,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $passport_path
  * @property string|null $signature_path
  * @property Carbon|null $licence_issued_at
+ * @property string|null $bank_code
+ * @property string|null $bank_name
+ * @property string|null $account_number
+ * @property string|null $account_name
+ * @property string|null $sub_account_code
  * @property Carbon|null $licence_expires_at
  * @property Carbon|null $licence_reminded_at
  * @property Carbon|null $licence_expired_notified_at
@@ -59,6 +64,11 @@ class ContractorProfile extends Model
         'licence_expires_at',
         'licence_reminded_at',
         'licence_expired_notified_at',
+        'bank_code',
+        'bank_name',
+        'account_number',
+        'account_name',
+        'sub_account_code',
     ];
 
     /**
@@ -106,6 +116,7 @@ class ContractorProfile extends Model
             $this->licence_expires_at ? null : 'Licence expiry date',
             $this->passport_path ? null : 'Passport photograph',
             $this->signature_path ? null : 'Signature',
+            $this->sub_account_code ? null : 'Bank account',
         ]));
     }
 
@@ -130,7 +141,7 @@ class ContractorProfile extends Model
      */
     public function scopeOnboarded(Builder $query): void
     {
-        $query->whereNotNull(['licence_path', 'passport_path', 'signature_path', 'licence_issued_at', 'licence_expires_at']);
+        $query->whereNotNull(['licence_path', 'passport_path', 'signature_path', 'licence_issued_at', 'licence_expires_at', 'sub_account_code']);
     }
 
     /**

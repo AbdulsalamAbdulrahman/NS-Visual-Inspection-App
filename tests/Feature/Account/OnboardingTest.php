@@ -28,7 +28,7 @@ test('a contractor without documents can only reach the onboarding page', functi
 
     $this->get(route('onboarding'))->assertOk()->assertInertia(fn (Assert $page) => $page
         ->component('contractor/Onboarding')
-        ->where('profile.documents.status.missing', ['Licence copy', 'Licence issue date', 'Licence expiry date', 'Passport photograph', 'Signature']));
+        ->where('profile.documents.status.missing', ['Licence copy', 'Licence issue date', 'Licence expiry date', 'Passport photograph', 'Signature', 'Bank account']));
 });
 
 test('the contractor adds their documents from the onboarding page, then continues', function () {
@@ -43,6 +43,7 @@ test('the contractor adds their documents from the onboarding page, then continu
     $this->post(route('profile.documents.store'), ['licence_issued_at' => today()->subYear()->toDateString(), 'licence_expires_at' => today()->addYear()->toDateString()])
         ->assertSessionHasNoErrors();
 
+    $this->contractor->contractorProfile->update(['sub_account_code' => 'MFY_SUB_1']);
     $this->get(route('inspections.index'))->assertOk();
     $this->get(route('onboarding'))->assertRedirect(route('home'));
 });
