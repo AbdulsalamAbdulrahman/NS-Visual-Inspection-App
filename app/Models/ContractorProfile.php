@@ -116,7 +116,7 @@ class ContractorProfile extends Model
             $this->licence_expires_at ? null : 'Licence expiry date',
             $this->passport_path ? null : 'Passport photograph',
             $this->signature_path ? null : 'Signature',
-            $this->sub_account_code ? null : 'Bank account',
+            $this->account_number ? null : 'Bank account',
         ]));
     }
 
@@ -141,7 +141,7 @@ class ContractorProfile extends Model
      */
     public function scopeOnboarded(Builder $query): void
     {
-        $query->whereNotNull(['licence_path', 'passport_path', 'signature_path', 'licence_issued_at', 'licence_expires_at', 'sub_account_code']);
+        $query->whereNotNull(['licence_path', 'passport_path', 'signature_path', 'licence_issued_at', 'licence_expires_at', 'account_number']);
     }
 
     /**

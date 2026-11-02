@@ -19,7 +19,7 @@ enum Premises: string
         return match ($this) {
             self::StandAlone => 'Stand-alone',
             self::Multiple => 'Multiple premises',
-            self::Large => 'Above 15',
+            self::Large => 'Above 15 flats',
         };
     }
 

@@ -35,7 +35,7 @@
 </svelte:head>
 
 <header class="sticky top-0 z-20 flex items-center gap-1 border-b border-line bg-sf px-2 pt-[calc(4px+env(safe-area-inset-top))] pb-1 lg:hidden">
-    <Link href={index.url()} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Back to contractors">
+    <Link href={index.url()} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Back to Building Electrical Inspectors">
         <ArrowBack class="size-[22px]" />
     </Link>
     <h1 class="flex-1 text-[18px] font-bold">Register Building Electrical Inspectors</h1>
@@ -55,7 +55,7 @@
         {urls}
         noun={['contractor', 'contractors']}
         verb="Register"
-        rowMeaning="contractor"
+        rowMeaning="Building Electrical Inspector"
         headers={['NAME', 'STATE', 'CATEGORY', 'NEMSA REG. NO.', 'LICENCE EXPIRES']}
         cols="grid-cols-[56px_minmax(0,1.4fr)_100px_110px_minmax(0,1fr)_120px_minmax(0,1.5fr)]"
     >

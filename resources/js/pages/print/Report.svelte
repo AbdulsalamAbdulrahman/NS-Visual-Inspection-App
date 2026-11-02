@@ -56,7 +56,7 @@
 {#snippet header()}
     <div class="flex items-center gap-3.5 border-b-2 border-brand pb-3">
         <img src="/images/ke-logo.png" alt="Kaduna Electric" class="size-[58px] flex-none object-contain" />
-        <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Building Electrical Inspectors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
+        <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
         <div class="flex flex-1 flex-col gap-0.5">
             <span class="font-mono text-[10px] font-semibold tracking-[0.1em] text-brand">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT · LECAN</span>
             <span class="text-[20px] leading-tight font-extrabold tracking-[-0.01em]">{APP_TITLE}</span>
@@ -109,7 +109,7 @@
                     <span class="px-2 py-1.5 font-semibold">{c.description ?? '—'}</span>
                     <span class="px-2 py-1.5 font-mono">{amps(c.rating)}</span>
                     <span class="px-2 py-1.5 font-mono whitespace-nowrap">{c.conductor === null ? '—' : `${num(c.conductor)} mm²`}</span>
-                    <span class="px-2 py-1.5 font-mono whitespace-nowrap">{c.earthConductor === null ? '—' : `${num(c.earthConductor)} mm²`}</span>
+                    <span class="px-2 py-1.5 font-mono whitespace-nowrap">{c.noEarthCable ? 'N/A' : c.earthConductor === null ? '—' : `${num(c.earthConductor)} mm²`}</span>
                     <span class="px-2 py-1.5 text-[10.5px]">{c.colours ?? '—'}</span>
                     <span class="px-2 py-1">
                         {#if cond}

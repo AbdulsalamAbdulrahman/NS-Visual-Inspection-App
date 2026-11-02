@@ -99,7 +99,7 @@
     const compact = 'lg:h-12 lg:rounded-[10px] lg:text-[15px]';
 </script>
 
-<Drawer bind:open title={editing ? 'Edit contractor' : 'Add Building Electrical Inspector'}>
+<Drawer bind:open title={editing ? 'Edit Building Electrical Inspector' : 'Add Building Electrical Inspector'}>
     {#if contractor}
         <!-- Documents the contractor uploaded on their Profile (view only). -->
         <section class="flex flex-col gap-2.5 rounded-xl border border-line p-3.5" aria-label="Licence and documents">

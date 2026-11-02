@@ -127,7 +127,7 @@
         />
     {:else}
         <!-- Desktop table -->
-        <div class="hidden overflow-visible rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Contractors">
+        <div class="hidden overflow-visible rounded-2xl border border-line bg-sf lg:block" role="table" aria-label="Building Electrical Inspectors">
             <div
                 role="row"
                 class="grid {cols} gap-3 rounded-t-2xl border-b border-line bg-sf2 px-5 py-3 text-xs font-bold tracking-[0.06em] text-mut"
@@ -214,7 +214,7 @@
             {/each}
         </ul>
 
-        <Pagination meta={contractors.meta} links={contractors.links} noun="contractors" />
+        <Pagination meta={contractors.meta} links={contractors.links} noun="inspectors" />
     {/if}
 </div>
 

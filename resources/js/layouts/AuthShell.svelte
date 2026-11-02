@@ -54,7 +54,7 @@
                 {APP_TITLE}
             </div>
             <div class="text-[19px] leading-normal opacity-90">
-                Contractor inspection reports, NSD review and certificates for new service connections.
+                Building Electrical Inspector reports, NSD review and certificates for new service connections.
             </div>
         </div>
     </div>

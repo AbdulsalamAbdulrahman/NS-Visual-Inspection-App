@@ -256,7 +256,7 @@
                 <div class="flex gap-2.5 rounded-xl bg-info-bg p-3.5 text-sm leading-[1.45]">
                     <Mail class="size-[22px] flex-none text-info" />
                     <span>
-                        We’ll email the contractor the job, and tell the owner who will inspect. The owner also gets the payment receipt and, once approved, the certificate.
+                        We’ll email the Building Electrical Inspector the job, and tell the owner who will inspect. The owner also gets the payment receipt and, once approved, the certificate.
                     </span>
                 </div>
 

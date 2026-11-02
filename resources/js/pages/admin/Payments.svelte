@@ -88,7 +88,7 @@
     {#snippet trailing()}
         <a href={exportUrl} class="flex size-12 items-center justify-center rounded-xl text-ink" aria-label="Export CSV"><Download class="size-6" /></a>
     {/snippet}
-    <SearchField value={filters.search} placeholder="Reference, ticket or contractor" tone="filled" {only} />
+    <SearchField value={filters.search} placeholder="Reference, ticket or inspector" tone="filled" {only} />
     {@render chips()}
 </MobileHeader>
 
@@ -120,7 +120,7 @@
 
     <div class="hidden items-center gap-2 lg:flex">
         {@render chips()}
-        <SearchField value={filters.search} placeholder="Reference, ticket or contractor" {only} class="ml-auto w-80" />
+        <SearchField value={filters.search} placeholder="Reference, ticket or inspector" {only} class="ml-auto w-80" />
     </div>
 
     {#if payments.data.length === 0}

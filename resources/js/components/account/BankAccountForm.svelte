@@ -4,7 +4,7 @@
     import Select from '@/components/form/Select.svelte';
 
     type Props = {
-        bank: { name: string; number: string; accountName: string } | null;
+        bank: { name: string | null; number: string | null; accountName: string | null } | null;
         url: string;
         banks: { code: string; name: string }[];
         label?: string;
@@ -31,11 +31,9 @@
 <div class="flex flex-col gap-2.5 border-t border-line px-4 py-3.5">
     <span class="text-[15px] font-semibold">{label}</span>
     {#if bank && !editing}
-        <p class="text-sm"><b>{bank.accountName}</b><br /><span class="font-mono">{bank.number}</span> · {bank.name}</p>
+        <p class="text-sm"><b>{bank.accountName ?? 'Waiting for the bank to confirm'}</b><br /><span class="font-mono">{bank.number}</span> · {bank.name}</p>
         <Button variant="outline" size="sm" class="h-11 w-fit border-[1.5px]" onclick={() => (editing = true)}>Change</Button>
-    {:else if banks.length === 0}
-        <p class="text-sm text-mut">The bank list isn’t available right now. Try again shortly.</p>
-    {:else}
+        {:else}
         <Select id="bank-{label}" size="md" {options} placeholder="Choose bank" bind:value={form.bank_code} />
         <input
             aria-label="Account number"

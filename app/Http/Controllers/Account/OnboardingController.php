@@ -30,7 +30,7 @@ class OnboardingController extends Controller
         return Inertia::render('contractor/Onboarding', [
             'firstName' => explode(' ', $user->name)[0],
             'profile' => ProfileResource::make($user),
-            'banks' => $monnify->banksOrNone(),
+            'banks' => $monnify->banksForForm(),
         ]);
     }
 }

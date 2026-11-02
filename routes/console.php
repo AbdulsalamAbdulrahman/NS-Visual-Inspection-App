@@ -19,6 +19,9 @@ Schedule::command('payments:abandon-stale')
 // Licence expiry: one email a month before, one when it has expired.
 Schedule::command('contractors:licence-check')->dailyAt('07:00');
 
+// Bank accounts saved while Monnify was unavailable.
+Schedule::command('settlements:confirm-accounts')->hourly()->withoutOverlapping(30);
+
 // Housekeeping.
 Schedule::command('queue:prune-failed --hours=720')->daily();
 Schedule::command('auth:clear-resets')->daily();

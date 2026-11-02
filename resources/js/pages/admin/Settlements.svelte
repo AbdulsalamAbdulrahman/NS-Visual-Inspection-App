@@ -20,6 +20,7 @@
         accountNumber: string | null;
         accountName: string | null;
         ready: boolean;
+        confirmed: boolean;
         total: string;
     };
 
@@ -41,7 +42,7 @@
 
     const sum = $derived(parties.reduce((total, p) => total + Number(form.percentages[p.id] ?? 0), 0));
     const exportUrl = $derived(exportCsv.url({ query: { from, to } }));
-    const accountOf = (p: Party) => (p.ready ? { name: p.bankName ?? '', number: p.accountNumber ?? '', accountName: p.accountName ?? '' } : null);
+    const accountOf = (p: Party) => (p.ready ? { name: p.bankName ?? '', number: p.accountNumber ?? '', accountName: p.accountName } : null);
 
     function applyPeriod(): void {
         router.get(window.location.pathname, { from, to }, { preserveState: true, preserveScroll: true, replace: true });

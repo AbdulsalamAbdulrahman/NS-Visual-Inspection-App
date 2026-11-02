@@ -77,7 +77,7 @@
         <div class="relative flex h-full flex-col items-center justify-between px-[86px] pt-[78px] pb-[70px] text-center">
             <!-- Issuers -->
             <header class="grid w-full grid-cols-[96px_1fr_96px] items-center gap-4">
-                <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Building Electrical Inspectors Association of Nigeria (LECAN)" class="size-24 rounded-full object-cover" />
+                <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-24 rounded-full object-cover" />
                 <div class="flex flex-col items-center gap-1">
                     <span class="text-[12px] font-extrabold tracking-[0.14em] text-[#0B5A33]">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT</span>
                     <span class="text-[9.5px] font-bold tracking-[0.12em] text-ink">LICENSED ELECTRICAL CONTRACTORS ASSOCIATION OF NIGERIA</span>

@@ -65,6 +65,7 @@ export type Report = {
         rating: number | null;
         conductor: number | null;
         earthConductor: number | null;
+        noEarthCable: boolean;
         /** "Red / Black / Green-Yellow" (live / neutral / earth). */
         colours: string | null;
         condition: CircuitCondition | null;

@@ -120,6 +120,8 @@
         router.delete(destroy.url(fee.id), { preserveScroll: true });
     }
 
+    // Only blocks of flats have an "above 15" band.
+    const FLAT_TYPES = ['two_bedroom_flat', 'three_bedroom_flat', 'block_of_flats'];
     const matrix = 'lg:grid-cols-[minmax(0,1.2fr)_repeat(6,minmax(0,1fr))]';
     const cols = 'grid-cols-[minmax(0,1.6fr)_120px_120px_110px_minmax(0,1fr)_minmax(0,1.1fr)]';
 </script>
@@ -148,7 +150,7 @@
             <div class="hidden gap-2 border-b border-line bg-sf2 px-5 py-2.5 text-xs font-bold tracking-[0.04em] text-mut lg:grid {matrix}">
                 <span>BUILDING TYPE</span>
                 {#each columns as column (column.premises + column.connectionType)}
-                    <span class="flex flex-col"><span>{column.premises.toUpperCase()}</span><span class="font-semibold">{column.connectionType}</span></span>
+                    <span class="flex flex-col"><span>{column.premises.toUpperCase()}{column.premises === 'Stand-alone' ? ' / 1–4 FLATS' : column.premises === 'Multiple premises' ? ' / 5–15 FLATS' : ''}</span><span class="font-semibold">{column.connectionType}</span></span>
                 {/each}
             </div>
             {#each groups as group (group.purpose)}
@@ -158,7 +160,11 @@
                         <b class="text-[15px]">{row.label}</b>
                         <div class="grid grid-cols-2 gap-2 lg:contents">
                             {#each row.cells as cell, i (cell.key)}
-                                {@render cellButton(cell, columns[i])}
+                                {#if i < 4 || FLAT_TYPES.includes(row.key)}
+                                    {@render cellButton(cell, columns[i])}
+                                {:else}
+                                    <span class="hidden text-center text-mut lg:block" aria-label="Doesn't apply">—</span>
+                                {/if}
                             {/each}
                         </div>
                     </div>
@@ -238,7 +244,7 @@
                 />
             </Field>
             <p class="text-[13px] leading-[1.45] text-mut">
-                Contractors pay the fee in effect when they pay, per structure. Drafts show the new amount from the effective date.
+                Building Electrical Inspectors pay the fee in effect when they pay, per structure. Drafts show the new amount from the effective date.
             </p>
             <Button type="submit" size="md" block class="h-12 rounded-xl" disabled={form.processing || (!form.not_offered && !form.amount.trim())}>
                 {isToday ? 'Change fee from today' : 'Schedule fee change'}

@@ -23,7 +23,7 @@ class BankAccountController extends Controller
 
         $profile->update($register->handle($request->string('bank_code')->toString(), $request->string('account_number')->toString(), $user->email));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => "Saved: {$profile->account_name}."]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $profile->account_name ? "Saved: {$profile->account_name}." : 'Saved. We’ll confirm it with your bank shortly.']);
 
         return back();
     }

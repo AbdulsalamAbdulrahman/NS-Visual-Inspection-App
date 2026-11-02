@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Monnify;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
@@ -22,6 +23,25 @@ use Illuminate\Support\Facades\Http;
 class MonnifyClient
 {
     private const TOKEN_CACHE_KEY = 'monnify.access_token';
+
+    private const FALLBACK_BANKS = [
+        ['code' => '044', 'name' => 'Access Bank'],
+        ['code' => '050', 'name' => 'Ecobank'],
+        ['code' => '070', 'name' => 'Fidelity Bank'],
+        ['code' => '011', 'name' => 'First Bank'],
+        ['code' => '214', 'name' => 'FCMB'],
+        ['code' => '058', 'name' => 'GTBank'],
+        ['code' => '301', 'name' => 'Jaiz Bank'],
+        ['code' => '082', 'name' => 'Keystone Bank'],
+        ['code' => '076', 'name' => 'Polaris Bank'],
+        ['code' => '221', 'name' => 'Stanbic IBTC'],
+        ['code' => '232', 'name' => 'Sterling Bank'],
+        ['code' => '032', 'name' => 'Union Bank'],
+        ['code' => '033', 'name' => 'UBA'],
+        ['code' => '215', 'name' => 'Unity Bank'],
+        ['code' => '035', 'name' => 'Wema Bank'],
+        ['code' => '057', 'name' => 'Zenith Bank'],
+    ];
 
     public function isConfigured(): bool
     {
@@ -116,26 +136,32 @@ class MonnifyClient
     }
 
     /**
-     * For forms: an empty list when Monnify can't be reached.
+     * For forms: common banks when Monnify can't be reached, so nobody is stuck.
      *
      * @return list<array{code: string, name: string}>
      */
-    public function banksOrNone(): array
+    public function banksForForm(): array
     {
         try {
             return $this->banks();
-        } catch (MonnifyException) {
-            return [];
+        } catch (MonnifyException|ConnectionException) {
+            return self::FALLBACK_BANKS;
         }
     }
 
     /** The account holder's name, from the bank. */
     public function accountName(string $accountNumber, string $bankCode): string
     {
-        $data = $this->responseBody($this->authorised()->get('/api/v1/disbursements/account/validate', [
+        $response = $this->authorised()->get('/api/v1/disbursements/account/validate', [
             'accountNumber' => $accountNumber,
             'bankCode' => $bankCode,
-        ]), 'check the account');
+        ]);
+
+        if (in_array($response->status(), [400, 422], true)) {
+            throw new InvalidBankAccount('The bank did not recognise this account.');
+        }
+
+        $data = $this->responseBody($response, 'check the account');
 
         return (string) ($data['accountName'] ?? throw new MonnifyException('Monnify did not return an account name.'));
     }

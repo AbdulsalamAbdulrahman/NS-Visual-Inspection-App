@@ -106,3 +106,41 @@ test('an inspector sees only their own earnings', function () {
     $this->actingAs($mine)->get(route('earnings'))
         ->assertInertia(fn ($page) => $page->component('contractor/Earnings')->has('rows', 1)->where('rows.0.amount', '₦12,000.00'));
 });
+
+test('an outage keeps the account unconfirmed, then the hourly retry confirms it', function () {
+    MonnifyFake::configure();
+    $user = User::factory()->contractor()->create();
+    $user->contractorProfile->update(['account_number' => null, 'sub_account_code' => null]);
+
+    $up = false;
+    Http::fake(function (Request $request) use (&$up) {
+        return match (true) {
+            ! $up => Http::response([], 503),
+            str_contains($request->url(), 'auth/login') => Http::response(['requestSuccessful' => true, 'responseBody' => ['accessToken' => 't', 'expiresIn' => 3600]]),
+            str_contains($request->url(), 'validate') => Http::response(['requestSuccessful' => true, 'responseBody' => ['accountName' => 'AMINA BELLO']]),
+            default => Http::response(['requestSuccessful' => true, 'responseBody' => [['subAccountCode' => 'MFY_SUB_1']]]),
+        };
+    });
+    $this->actingAs($user)->post(route('profile.documents.bank'), ['bank_code' => '058', 'account_number' => '0123456789'])->assertSessionHasNoErrors();
+
+    $profile = $user->contractorProfile->fresh();
+    expect($profile->isOnboarded())->toBeTrue()->and($profile->sub_account_code)->toBeNull();
+
+    $up = true;
+    $this->artisan('settlements:confirm-accounts')->assertSuccessful();
+
+    expect($profile->fresh()->sub_account_code)->toBe('MFY_SUB_1');
+});
+
+test('an account the bank rejects is refused', function () {
+    MonnifyFake::configure();
+    Http::fake([
+        '*/auth/login' => Http::response(['requestSuccessful' => true, 'responseBody' => ['accessToken' => 't', 'expiresIn' => 3600]]),
+        '*/api/v1/banks' => Http::response(['requestSuccessful' => true, 'responseBody' => [['code' => '058', 'name' => 'GTBank']]]),
+        '*/account/validate*' => Http::response(['requestSuccessful' => false, 'responseMessage' => 'Invalid'], 400),
+    ]);
+
+    $this->actingAs(User::factory()->contractor()->create())
+        ->post(route('profile.documents.bank'), ['bank_code' => '058', 'account_number' => '0123456789'])
+        ->assertSessionHasErrors('account_number');
+});

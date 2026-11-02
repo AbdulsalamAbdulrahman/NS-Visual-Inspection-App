@@ -63,7 +63,7 @@
     <section class="print-sheet paper flex flex-col gap-6 px-12 pt-10 pb-8" aria-label="Receipt {r.ticketNo}">
         <div class="flex items-center gap-3.5 border-b-2 border-brand pb-3">
             <img src="/images/ke-logo.png" alt="Kaduna Electric" class="size-[58px] flex-none object-contain" />
-            <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Building Electrical Inspectors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
+            <img src="/images/lecan-logo.jpg" alt="Licensed Electrical Contractors Association of Nigeria (LECAN)" class="size-[54px] flex-none rounded-full object-cover" />
             <div class="flex flex-1 flex-col gap-0.5">
                 <span class="font-mono text-[10px] font-semibold tracking-[0.1em] text-brand">KADUNA ELECTRIC · NEW SERVICE DEPARTMENT · LECAN</span>
                 <span class="text-[20px] leading-tight font-extrabold tracking-[-0.01em]">{APP_TITLE}</span>

@@ -43,7 +43,7 @@ test('the contractor adds their documents from the onboarding page, then continu
     $this->post(route('profile.documents.store'), ['licence_issued_at' => today()->subYear()->toDateString(), 'licence_expires_at' => today()->addYear()->toDateString()])
         ->assertSessionHasNoErrors();
 
-    $this->contractor->contractorProfile->update(['sub_account_code' => 'MFY_SUB_1']);
+    $this->contractor->contractorProfile->update(['account_number' => '0123456789']);
     $this->get(route('inspections.index'))->assertOk();
     $this->get(route('onboarding'))->assertRedirect(route('home'));
 });

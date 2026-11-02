@@ -76,7 +76,7 @@
 <div class="flex flex-col gap-5 px-4 py-4 lg:px-10 lg:py-8">
     <div class="hidden flex-col gap-1 lg:flex">
         <h1 class="text-[28px] font-extrabold">Certificate signatory</h1>
-        <p class="text-[15px] text-mut">Printed on the right of every certificate, next to the inspecting contractor's signature.</p>
+        <p class="text-[15px] text-mut">Printed on the right of every certificate, next to the inspecting Building Electrical Inspector's signature.</p>
     </div>
 
     {#if !complete}

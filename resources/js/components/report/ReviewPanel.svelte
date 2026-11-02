@@ -109,11 +109,11 @@
                         <span id="reason-error" class="flex items-center gap-1.5 text-sm font-semibold text-bad"><ErrorIcon class="size-4" />{changesForm.errors.reason}</span>
                     {/if}
                     <span class="text-[13px] text-mut">
-                        The contractor gets this note by email, fixes the report and resubmits without paying again. It then starts again with the Inspection Review Committee.
+                        The Building Electrical Inspector gets this note by email, fixes the report and resubmits without paying again. It then starts again with the Inspection Review Committee.
                     </span>
                     <div class="flex flex-wrap gap-2">
                         <Button type="submit" size="sm" class="h-11" disabled={changesForm.processing || changesForm.reason.trim().length === 0}>
-                            {changesForm.processing ? 'Sending…' : 'Send back to contractor'}
+                            {changesForm.processing ? 'Sending…' : 'Send back to Building Electrical Inspector'}
                         </Button>
                         <Button size="sm" variant="ghost" class="h-11" onclick={() => (mode = 'idle')}>Cancel</Button>
                     </div>

@@ -39,10 +39,11 @@ class SettlementController extends Controller
                 'bankName' => $p->bank_name,
                 'accountNumber' => $p->account_number,
                 'accountName' => $p->account_name,
-                'ready' => filled($p->sub_account_code),
+                'ready' => filled($p->account_number),
+                'confirmed' => filled($p->sub_account_code),
                 'total' => Money::format((int) ($totals[$p->key->value] ?? 0)),
             ])->all(),
-            'banks' => $monnify->banksOrNone(),
+            'banks' => $monnify->banksForForm(),
             'filters' => ['from' => $from, 'to' => $to],
             'splitEnabled' => (bool) config('services.monnify.split_enabled'),
         ]);
@@ -78,7 +79,7 @@ class SettlementController extends Controller
             (string) config('kens.nsd.email'),
         ));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => "Saved: {$party->account_name}."]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => $party->account_name ? "Saved: {$party->account_name}." : 'Saved. It will be confirmed with the bank shortly.']);
 
         return back();
     }

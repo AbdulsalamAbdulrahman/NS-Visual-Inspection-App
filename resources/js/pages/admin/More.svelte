@@ -26,7 +26,7 @@
 
     const manage: Item[] = $derived([
         { label: 'Service reps', href: '/admin/reps', icon: BadgeIcon, meta: nav.reps },
-        { label: 'Inspection Review Committee', href: '/admin/lecan', icon: Groups, meta: nav.lecan },
+        { label: 'Review Committee', href: '/admin/lecan', icon: Groups, meta: nav.lecan },
         { label: 'Service areas', href: '/admin/areas', icon: MapIcon, meta: nav.areas },
         { label: 'Payments', href: '/admin/payments', icon: Payments },
         { label: 'Settlements', href: '/admin/settlements', icon: Payments },

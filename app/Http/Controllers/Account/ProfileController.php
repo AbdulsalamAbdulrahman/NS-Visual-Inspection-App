@@ -22,7 +22,7 @@ class ProfileController extends Controller
 
         return Inertia::render('account/Profile', [
             'profile' => ProfileResource::make($user),
-            'banks' => $user->isContractor() ? $monnify->banksOrNone() : [],
+            'banks' => $user->isContractor() ? $monnify->banksForForm() : [],
         ]);
     }
 }

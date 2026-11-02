@@ -68,14 +68,14 @@
         <h1 class="text-[28px] font-extrabold">Service areas</h1>
         <span class="text-sm text-mut">
             {editable
-                ? "Shown in the contractor's Service area dropdown. Deactivated areas keep their history."
-                : "Kaduna Electric's area offices, shown in the contractor's Service area dropdown."}
+                ? "Shown in the Building Electrical Inspector's Service area dropdown. Deactivated areas keep their history."
+                : "Kaduna Electric's area offices, shown in the Building Electrical Inspector's Service area dropdown."}
         </span>
     </div>
     <p class="text-sm text-mut lg:hidden">
         {editable
-            ? "Shown in the contractor's Service area dropdown. Deactivated areas keep their history."
-            : "Kaduna Electric's area offices, shown in the contractor's Service area dropdown."}
+            ? "Shown in the Building Electrical Inspector's Service area dropdown. Deactivated areas keep their history."
+            : "Kaduna Electric's area offices, shown in the Building Electrical Inspector's Service area dropdown."}
     </p>
 
     {#if editable}

@@ -17,7 +17,7 @@
         passportUrl: string | null;
         signatureUrl: string | null;
         storeUrl: string;
-        bank: { name: string; number: string; accountName: string } | null;
+        bank: { name: string | null; number: string | null; accountName: string | null } | null;
         bankUrl: string;
     };
 </script>
