@@ -21,7 +21,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * LECAN officials: one or more per state chapter; they review reports in
+ * Inspection Review Committee: one or more per state chapter; they review reports in
  * their state before NSD gives final approval.
  */
 class LecanController extends Controller

@@ -16,35 +16,50 @@ use App\Models\Inspection;
 final class InspectionFee
 {
     /**
-     * @return array{unitKobo: int, count: int, totalKobo: int, unit: string, amount: string, effectiveFrom: string, breakdown: string|null}|null
+     * @return array{unitKobo: int, count: int, totalKobo: int, chargeKobo: int, payableKobo: int, unit: string, amount: string, effectiveFrom: string, breakdown: string|null}|null
      */
     public static function quote(Inspection $inspection): ?array
     {
         $count = max(1, (int) $inspection->structure_count);
-        $fee = FeeSchedule::forCell($inspection->building_type, $inspection->connection_type, Premises::forStructures($count));
+        $fee = FeeSchedule::forCell($inspection->building_type, $inspection->connection_type, Premises::forBuilding($inspection->building_type, $count));
 
         if ($fee === null || $fee->amount_kobo === 0) {
             return null;
         }
 
         $total = $fee->amount_kobo * $count;
+        $charge = self::charge($total);
 
         return [
             'unitKobo' => $fee->amount_kobo,
             'count' => $count,
             'totalKobo' => $total,
             'unit' => Money::format($fee->amount_kobo),
-            'amount' => Money::format($total),
+            'chargeKobo' => $charge,
+            'payableKobo' => $total + $charge,
+            'amount' => Money::format($total + $charge),
             'effectiveFrom' => $fee->effective_from->format('d M Y'),
-            'breakdown' => $count > 1 ? "{$count} structures × ".Money::format($fee->amount_kobo) : null,
+            'breakdown' => collect([
+                $count > 1 ? "{$count} structures × ".Money::format($fee->amount_kobo) : null,
+                $charge > 0 ? 'Fee '.Money::format($total).' + payment charge '.Money::format($charge) : null,
+            ])->filter()->implode(' · ') ?: null,
         ];
+    }
+
+    /** Monnify's charge, added at checkout so it doesn't reduce anyone's share. */
+    public static function charge(int $feeKobo): int
+    {
+        $charge = (int) ceil($feeKobo * (float) config('services.monnify.charge_percent') / 100);
+        $cap = (int) config('services.monnify.charge_cap_kobo');
+
+        return $cap > 0 ? min($charge, $cap) : $charge;
     }
 
     /** Why there is no quote, for the contractor. */
     public static function unavailableMessage(Inspection $inspection): string
     {
         $count = max(1, (int) $inspection->structure_count);
-        $fee = FeeSchedule::forCell($inspection->building_type, $inspection->connection_type, Premises::forStructures($count));
+        $fee = FeeSchedule::forCell($inspection->building_type, $inspection->connection_type, Premises::forBuilding($inspection->building_type, $count));
 
         if ($fee !== null && $fee->amount_kobo === 0 && $inspection->building_type && $inspection->connection_type) {
             $premises = $count > 1 ? 'on multiple premises' : 'stand-alone';
@@ -59,7 +74,7 @@ final class InspectionFee
      * Fees the form needs to price any building offline. Cells are keyed
      * "type|supply|premises"; 0 = not offered.
      *
-     * @return array{default: int|null, types: array<string, int>, cells: array<string, int>, effectiveFrom: string|null}
+     * @return array{default: int|null, types: array<string, int>, cells: array<string, int>, effectiveFrom: string|null, chargePercent: float, chargeCapKobo: int}
      */
     public static function table(): array
     {
@@ -81,6 +96,8 @@ final class InspectionFee
             'types' => $amounts(false),
             'cells' => $amounts(true),
             'effectiveFrom' => $default?->effective_from->format('d M Y'),
+            'chargePercent' => (float) config('services.monnify.charge_percent'),
+            'chargeCapKobo' => (int) config('services.monnify.charge_cap_kobo'),
         ];
     }
 }

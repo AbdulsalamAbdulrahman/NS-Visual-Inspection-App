@@ -115,4 +115,23 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Notification emails use the KENS theme (resources/views/vendor/mail/
+    | html/themes/kens.css) and the branded header and footer published
+    | next to it.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'kens',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

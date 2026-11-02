@@ -19,7 +19,7 @@ enum ReviewAction: string
             self::Submitted => 'Submitted and paid',
             self::ChangesRequested => 'Changes requested',
             self::Resubmitted => 'Resubmitted',
-            self::LecanApproved => 'Approved by LECAN, sent to NSD',
+            self::LecanApproved => 'Approved by the Inspection Review Committee, sent to NSD',
             self::Approved => 'Approved, certificate issued',
         };
     }

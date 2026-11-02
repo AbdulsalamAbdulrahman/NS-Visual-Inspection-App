@@ -18,6 +18,12 @@ enum CircuitDescription: string
     case CeilingFan = 'ceiling_fan';
     case Other = 'other';
 
+    /** Lighting and fan circuits don't record an earth cable. */
+    public function hasNoEarthCable(): bool
+    {
+        return $this === self::Lighting || $this === self::CeilingFan;
+    }
+
     public function label(): string
     {
         return match ($this) {

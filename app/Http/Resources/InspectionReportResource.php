@@ -55,8 +55,9 @@ class InspectionReportResource extends JsonResource
             'rating' => $c->rating_a,
             'conductor' => $c->conductor_mm2,
             'earthConductor' => $c->earth_conductor_mm2,
+            'noEarthCable' => $c->description?->hasNoEarthCable() && $c->earth_conductor_mm2 === null,
             'colours' => $c->live_colour || $c->neutral_colour || $c->earth_colour
-                ? collect([$c->live_colour, $c->neutral_colour, $c->earth_colour])->map(fn (?CableColour $colour): string => $colour?->shortLabel() ?? '—')->implode(' / ')
+                ? collect($c->description?->hasNoEarthCable() && $c->earth_colour === null ? [$c->live_colour, $c->neutral_colour] : [$c->live_colour, $c->neutral_colour, $c->earth_colour])->map(fn (?CableColour $colour): string => $colour?->shortLabel() ?? '—')->implode(' / ')
                 : null,
             'condition' => $c->condition?->value,
             'observation' => $c->observation,
@@ -158,7 +159,7 @@ class InspectionReportResource extends JsonResource
                         'action' => $r->action->value,
                         'label' => $r->action->label(),
                         'note' => $r->note,
-                        'by' => $r->user ? $r->user->name.($r->user->isLecan() ? ' (LECAN)' : '') : null,
+                        'by' => $r->user ? $r->user->name.($r->user->isLecan() ? ' (Review Committee)' : '') : null,
                         'at' => $r->created_at->format('d M Y, H:i'),
                     ])->values(),
                 ),

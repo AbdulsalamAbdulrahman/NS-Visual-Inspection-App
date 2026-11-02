@@ -8,44 +8,47 @@ use App\Enums\BuildingType;
 use App\Enums\ConnectionType;
 use App\Enums\Premises;
 use App\Models\FeeSchedule;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
 
 /**
  * Launch fees from the day the app is first seeded: the ₦15,000 default and
- * the LECAN app fee sheet (Oct 2026). Admins change them later on the Fee
+ * the official fee sheet (Nov 2026). Admins change them later on the Fee
  * settings page.
  */
 class FeeScheduleSeeder extends Seeder
 {
     /**
-     * "APP ONLINE PAYMENT" sheet, in naira per structure: stand-alone single and
-     * three phase, then multiple premises single and three phase. 0 = not offered.
+     * "CONTRACTOR CHARGES" sheet (official fee), in naira per structure: columns
+     * are single and three phase, stand-alone then multiple, then above 15
+     * (blocks of flats only). 1–4 flats and 1–5 shops use the stand-alone
+     * columns, 5–15 flats and plazas the multiple ones. 0 = not offered.
      *
-     * @var array<string, array{0: int, 1: int, 2: int, 3: int}>
+     * @var array<string, array{0: int, 1: int, 2: int, 3: int, 4: int, 5: int}>
      */
     public const SHEET = [
-        'single_room' => [15_000, 20_000, 7_500, 15_000],
-        'two_bedroom_flat' => [15_000, 20_000, 7_500, 15_000],
-        'three_bedroom_flat' => [15_000, 20_000, 7_500, 15_000],
-        'duplex' => [15_000, 20_000, 7_500, 15_000],
-        'block_of_flats' => [15_000, 20_000, 7_500, 15_000],
-        'boys_quarters' => [15_000, 20_000, 7_500, 15_000],
-        'mixed_structure' => [15_000, 20_000, 7_500, 15_000],
-        'shop' => [15_000, 20_000, 7_500, 15_000],
-        'plaza' => [0, 0, 5_000, 0],
-        'large_plaza' => [0, 0, 4_000, 0],
-        'filling_station' => [0, 25_000, 0, 0],
-        'market' => [15_000, 20_000, 7_500, 15_000],
-        'small_factory' => [0, 30_000, 0, 30_000],
-        'medium_factory' => [0, 40_000, 0, 40_000],
-        'large_factory' => [0, 60_000, 0, 0],
-        'fabricators' => [15_000, 20_000, 7_500, 15_000],
-        'mda' => [0, 30_000, 0, 20_000],
-        'institution' => [0, 30_000, 0, 20_000],
-        'offices' => [15_000, 20_000, 7_500, 15_000],
-        'hospital' => [0, 35_000, 0, 20_000],
-        'school' => [20_000, 30_000, 15_000, 20_000],
-        'worship_centre' => [10_000, 20_000, 7_500, 15_000],
+        'single_room' => [15_000, 25_000, 0, 0, 0, 0],
+        'two_bedroom_flat' => [25_000, 35_000, 15_000, 25_000, 10_000, 25_000],
+        'three_bedroom_flat' => [25_000, 35_000, 15_000, 25_000, 10_000, 25_000],
+        'duplex' => [30_000, 45_000, 0, 0, 0, 0],
+        'block_of_flats' => [25_000, 35_000, 15_000, 25_000, 10_000, 25_000],
+        'boys_quarters' => [15_000, 25_000, 0, 0, 0, 0],
+        'mixed_structure' => [25_000, 35_000, 0, 0, 0, 0],
+        'shop' => [15_000, 25_000, 0, 0, 0, 0],
+        'plaza' => [0, 0, 10_000, 15_000, 0, 0],
+        'large_plaza' => [0, 0, 7_000, 10_000, 0, 0],
+        'filling_station' => [0, 50_000, 0, 0, 0, 0],
+        'market' => [30_000, 45_000, 0, 0, 0, 0],
+        'small_factory' => [0, 50_000, 0, 0, 0, 0],
+        'medium_factory' => [0, 75_000, 0, 0, 0, 0],
+        'large_factory' => [0, 100_000, 0, 0, 0, 0],
+        'fabricators' => [25_000, 35_000, 15_000, 25_000, 0, 0],
+        'mda' => [0, 50_000, 0, 35_000, 0, 0],
+        'institution' => [0, 50_000, 0, 35_000, 0, 0],
+        'offices' => [25_000, 35_000, 15_000, 25_000, 0, 0],
+        'hospital' => [0, 50_000, 0, 0, 0, 0],
+        'school' => [30_000, 45_000, 20_000, 30_000, 0, 0],
+        'worship_centre' => [25_000, 35_000, 15_000, 25_000, 0, 0],
     ];
 
     public function run(): void
@@ -64,13 +67,15 @@ class FeeScheduleSeeder extends Seeder
     }
 
     /** Every cell of the sheet, effective today ("not offered" cells as ₦0). */
-    public static function seedSheet(): void
+    public static function seedSheet(?CarbonInterface $from = null): void
     {
         $columns = [
             [ConnectionType::SinglePhase, Premises::StandAlone],
             [ConnectionType::ThreePhase, Premises::StandAlone],
             [ConnectionType::SinglePhase, Premises::Multiple],
             [ConnectionType::ThreePhase, Premises::Multiple],
+            [ConnectionType::SinglePhase, Premises::Large],
+            [ConnectionType::ThreePhase, Premises::Large],
         ];
 
         foreach (self::SHEET as $type => $amounts) {
@@ -80,8 +85,8 @@ class FeeScheduleSeeder extends Seeder
                     'connection_type' => $connection,
                     'premises' => $premises,
                     'amount_kobo' => $amounts[$i] * 100,
-                    'effective_from' => today(),
-                    'reason' => 'LECAN fee sheet, Oct 2026',
+                    'effective_from' => $from ?? today(),
+                    'reason' => 'Official fee sheet, Nov 2026',
                 ]);
             }
         }

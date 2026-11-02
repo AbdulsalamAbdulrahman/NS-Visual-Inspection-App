@@ -9,14 +9,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\InspectionReportResource;
 use App\Http\Resources\InspectionRowResource;
 use App\Models\Inspection;
-use App\Support\ReceiptLinks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * LECAN officials: reports in their state chapter, the ones waiting for them
+ * Inspection Review Committee: reports in their state chapter, the ones waiting for them
  * first, and the review of each (approve for NSD or send back).
  */
 class InspectionController extends Controller
@@ -64,7 +63,6 @@ class InspectionController extends Controller
         return Inertia::render('lecan/InspectionShow', [
             'report' => InspectionReportResource::make($inspection),
             'printUrl' => route('inspections.print', $inspection),
-            'receipt' => ReceiptLinks::for($inspection),
             'certificateUrl' => $inspection->isApproved() ? route('inspections.certificate', $inspection) : null,
             'canReview' => Gate::allows('review', $inspection),
         ]);

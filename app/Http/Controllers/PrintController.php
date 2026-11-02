@@ -57,7 +57,7 @@ class PrintController extends Controller
 
     public function receipt(Request $request, Inspection $inspection): Response
     {
-        Gate::authorize('print', $inspection);
+        Gate::authorize('receipt', $inspection);
 
         $inspection->load(['serviceArea', 'paidPayment', 'contractor.contractorProfile']);
         abort_unless($inspection->paidPayment !== null, 404);

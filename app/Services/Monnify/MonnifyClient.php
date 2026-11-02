@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Monnify;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
@@ -15,10 +16,32 @@ use Illuminate\Support\Facades\Http;
  *  - POST /api/v1/auth/login                         Basic base64(apiKey:secretKey) → accessToken, expiresIn
  *  - POST /api/v1/merchant/transactions/init-transaction  Bearer → checkoutUrl, transactionReference
  *  - GET  /api/v2/merchant/transactions/query?paymentReference=…  Bearer → paymentStatus, amountPaid
+ *
+ * Settlement endpoints (banks, account validate, sub-accounts, incomeSplitConfig)
+ * are unconfirmed against sandbox; check them before setting MONNIFY_SPLIT_ENABLED.
  */
 class MonnifyClient
 {
     private const TOKEN_CACHE_KEY = 'monnify.access_token';
+
+    private const FALLBACK_BANKS = [
+        ['code' => '044', 'name' => 'Access Bank'],
+        ['code' => '050', 'name' => 'Ecobank'],
+        ['code' => '070', 'name' => 'Fidelity Bank'],
+        ['code' => '011', 'name' => 'First Bank'],
+        ['code' => '214', 'name' => 'FCMB'],
+        ['code' => '058', 'name' => 'GTBank'],
+        ['code' => '301', 'name' => 'Jaiz Bank'],
+        ['code' => '082', 'name' => 'Keystone Bank'],
+        ['code' => '076', 'name' => 'Polaris Bank'],
+        ['code' => '221', 'name' => 'Stanbic IBTC'],
+        ['code' => '232', 'name' => 'Sterling Bank'],
+        ['code' => '032', 'name' => 'Union Bank'],
+        ['code' => '033', 'name' => 'UBA'],
+        ['code' => '215', 'name' => 'Unity Bank'],
+        ['code' => '035', 'name' => 'Wema Bank'],
+        ['code' => '057', 'name' => 'Zenith Bank'],
+    ];
 
     public function isConfigured(): bool
     {
@@ -30,6 +53,7 @@ class MonnifyClient
     /**
      * Start a checkout. Amount is sent in naira (Monnify's unit).
      *
+     * @param  list<array{subAccountCode: string, feePercentage: int, feeBearer: bool, splitAmount: float}>  $incomeSplit
      * @return array{transactionReference: string, paymentReference: string, checkoutUrl: string, raw: array<string, mixed>}
      */
     public function initTransaction(
@@ -39,6 +63,7 @@ class MonnifyClient
         string $customerEmail,
         string $description,
         string $redirectUrl,
+        array $incomeSplit = [],
     ): array {
         $body = $this->authorised()->post('/api/v1/merchant/transactions/init-transaction', [
             'amount' => round($amountKobo / 100, 2),
@@ -50,7 +75,7 @@ class MonnifyClient
             'contractCode' => config('services.monnify.contract_code'),
             'redirectUrl' => $redirectUrl,
             'paymentMethods' => ['CARD', 'ACCOUNT_TRANSFER', 'USSD'],
-        ]);
+        ] + ($incomeSplit === [] ? [] : ['incomeSplitConfig' => $incomeSplit]));
 
         $data = $this->responseBody($body, 'initialise the payment');
 
@@ -86,6 +111,79 @@ class MonnifyClient
         }
 
         return $this->responseBody($response, 'check the payment');
+    }
+
+    /**
+     * Nigerian banks, cached for a day.
+     *
+     * @return list<array{code: string, name: string}>
+     */
+    public function banks(): array
+    {
+        /** @var list<array{code: string, name: string}> */
+        return Cache::remember('monnify.banks', 86_400, function (): array {
+            $response = $this->authorised()->get('/api/v1/banks');
+            $json = $response->successful() ? $response->json('responseBody') : null;
+
+            if (! is_array($json)) {
+                throw new MonnifyException('Couldn\'t load the bank list.');
+            }
+
+            return collect($json)
+                ->map(fn (array $bank): array => ['code' => (string) $bank['code'], 'name' => (string) $bank['name']])
+                ->sortBy('name')->values()->all();
+        });
+    }
+
+    /**
+     * For forms: common banks when Monnify can't be reached, so nobody is stuck.
+     *
+     * @return list<array{code: string, name: string}>
+     */
+    public function banksForForm(): array
+    {
+        try {
+            return $this->banks();
+        } catch (MonnifyException|ConnectionException) {
+            return self::FALLBACK_BANKS;
+        }
+    }
+
+    /** The account holder's name, from the bank. */
+    public function accountName(string $accountNumber, string $bankCode): string
+    {
+        $response = $this->authorised()->get('/api/v1/disbursements/account/validate', [
+            'accountNumber' => $accountNumber,
+            'bankCode' => $bankCode,
+        ]);
+
+        if (in_array($response->status(), [400, 422], true)) {
+            throw new InvalidBankAccount('The bank did not recognise this account.');
+        }
+
+        $data = $this->responseBody($response, 'check the account');
+
+        return (string) ($data['accountName'] ?? throw new MonnifyException('Monnify did not return an account name.'));
+    }
+
+    /** A settlement sub-account; returns its code. */
+    public function createSubAccount(string $bankCode, string $accountNumber, string $email): string
+    {
+        $response = $this->authorised()->post('/api/v1/sub-accounts', [[
+            'currencyCode' => 'NGN',
+            'bankCode' => $bankCode,
+            'accountNumber' => $accountNumber,
+            'email' => $email,
+            'defaultSplitPercentage' => 0,
+        ]]);
+        $json = $response->json();
+        $code = is_array($json) ? ($json['responseBody'][0]['subAccountCode'] ?? null) : null;
+
+        if (! $response->successful() || ! is_string($code)) {
+            throw new MonnifyException('Couldn\'t create the sub-account.');
+        }
+
+        return $code;
     }
 
     private function http(): PendingRequest

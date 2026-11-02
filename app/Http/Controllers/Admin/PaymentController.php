@@ -64,7 +64,7 @@ class PaymentController extends Controller
             }
 
             fwrite($out, "\u{FEFF}");
-            fputcsv($out, ['Monnify reference', 'Our reference', 'Ticket', 'Contractor', 'Amount', 'Amount paid', 'Channel', 'Status', 'Started', 'Paid at']);
+            fputcsv($out, ['Monnify reference', 'Our reference', 'Ticket', 'Building Electrical Inspector', 'Amount', 'Amount paid', 'Channel', 'Status', 'Started', 'Paid at']);
 
             foreach ($query->lazyByIdDesc(500) as $p) {
                 fputcsv($out, [

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
+use App\Services\Monnify\MonnifyClient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,12 +16,13 @@ use Inertia\Response;
  */
 class ProfileController extends Controller
 {
-    public function show(Request $request): Response
+    public function show(Request $request, MonnifyClient $monnify): Response
     {
         $user = $request->user()->loadMissing(['contractorProfile', 'serviceAreas']);
 
         return Inertia::render('account/Profile', [
             'profile' => ProfileResource::make($user),
+            'banks' => $user->isContractor() ? $monnify->banksForForm() : [],
         ]);
     }
 }

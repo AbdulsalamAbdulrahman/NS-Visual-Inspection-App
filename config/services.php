@@ -44,6 +44,11 @@ return [
         'webhook_ips' => array_values(array_filter(array_map('trim', explode(',', (string) env('MONNIFY_WEBHOOK_IPS', ''))))),
         // Monnify only signs notifications in production, not sandbox.
         'verify_signature' => (bool) env('MONNIFY_VERIFY_SIGNATURE', env('APP_ENV') === 'production'),
+        // Added to the fee at checkout. Set to Monnify's agreed rate.
+        'charge_percent' => (float) env('MONNIFY_CHARGE_PERCENT', 1.5),
+        'charge_cap_kobo' => (int) env('MONNIFY_CHARGE_CAP_KOBO', 200_000),
+        // Turn on once every settlement account is registered.
+        'split_enabled' => (bool) env('MONNIFY_SPLIT_ENABLED', false),
     ],
 
 ];

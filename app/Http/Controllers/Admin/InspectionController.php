@@ -89,7 +89,7 @@ class InspectionController extends Controller
             fwrite($out, "\u{FEFF}"); // UTF-8 BOM so Excel shows ₦ correctly.
             fputcsv($out, [
                 'Ticket', 'Submitted', 'Owner', 'Address', 'Form 74 no.', 'Structures', 'Service area', 'Purpose', 'Building type', 'Connection',
-                'Voltage', 'Contractor', 'NEMSA reg. no.', 'Amount paid', 'Monnify reference', 'GPS latitude', 'GPS longitude',
+                'Voltage', 'Building Electrical Inspector', 'NEMSA reg. no.', 'Amount paid', 'Monnify reference', 'GPS latitude', 'GPS longitude',
                 'Review status', 'Approved',
             ]);
 

@@ -90,7 +90,7 @@ final class JobRules
         $area = filled($data['service_area_id'] ?? null) ? ServiceArea::query()->whereKey($data['service_area_id'])->first() : null;
 
         if ($area !== null && filled($data['contractor'] ?? null) && self::contractor((string) $data['contractor'], $area) === null) {
-            $errors['contractor'] = "Choose an active contractor with a valid licence and complete documents who works in {$area->state->label()} State.";
+            $errors['contractor'] = "Choose an active Building Electrical Inspector with a valid licence and complete documents who works in {$area->state->label()} State.";
         }
 
         return $errors;

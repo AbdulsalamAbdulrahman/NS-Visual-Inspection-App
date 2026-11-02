@@ -60,10 +60,10 @@ class JobAssigned extends Notification implements ShouldQueue
             ->subject('Your building electrical inspection')
             ->greeting("Hello {$job->owner_name},")
             ->line("Kaduna Electric has scheduled the electrical inspection of your building at {$job->property_address}.")
-            ->line('**Inspector:** '.$contractor->name.($firm ? " ({$firm})" : '').', a NEMSA-licensed electrical contractor.')
+            ->line('**Inspector:** '.$contractor->name.($firm ? " ({$firm})" : '').', a NEMSA-licensed electrical Building Electrical Inspector.')
             ->lineIf(filled($contractor->phone), "**Inspector's phone:** {$contractor->phone}")
             ->line("**Form 74:** {$form74}{$structures}")
-            ->line('The contractor will contact you to arrange a visit. After the inspection the report is reviewed before a certificate is issued.')
+            ->line('The Building Electrical Inspector will contact you to arrange a visit. After the inspection the report is reviewed before a certificate is issued.')
             ->salutation('— New Service Department, Kaduna Electric');
     }
 }

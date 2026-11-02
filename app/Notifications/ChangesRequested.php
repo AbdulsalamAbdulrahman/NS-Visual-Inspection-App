@@ -41,7 +41,7 @@ class ChangesRequested extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Changes requested · {$inspection->ticket_no}")
             ->greeting("Hello {$notifiable->firstName()},")
-            ->line(($this->by === 'LECAN' ? 'The LECAN state chapter' : 'The New Service Department')." reviewed the report for {$inspection->owner_name} and needs some changes before the certificate can be issued:")
+            ->line(($this->by === 'LECAN' ? 'The Inspection Review Committee' : 'The New Service Department')." reviewed the report for {$inspection->owner_name} and needs some changes before the certificate can be issued:")
             ->line('> '.$inspection->review_note)
             ->action('Fix and resubmit', route('inspections.edit', $inspection))
             ->line('There is nothing more to pay: the fee is already settled and the ticket number stays the same.')
