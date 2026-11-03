@@ -151,8 +151,9 @@ The scheduler (first cron line) runs:
 
 | When | What |
 |---|---|
-| Every minute | Sends queued email (login details, password resets, submission, approval and changes-requested emails) |
+| Every minute | Starts a queue worker in the background that checks every 3 s for 50 s, so queued email (login details, password resets, receipts, review emails) goes out within seconds. A failed send is retried twice, a minute apart. |
 | Hourly | `payments:abandon-stale`: payments pending for 24 h are checked with Monnify once more; paid ones are finalised (ticket issued), the rest marked Abandoned. Nothing changes while Monnify is unreachable. |
+| Hourly | `settlements:confirm-accounts`: bank accounts saved while Monnify was unavailable are checked again; a rejected account is cleared and the inspector is sent back to onboarding. |
 | Daily | Prunes failed queue jobs older than 30 days and expired password-reset tokens |
 
 The second cron line deploys new releases (see above).

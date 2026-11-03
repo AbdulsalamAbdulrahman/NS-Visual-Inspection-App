@@ -8,7 +8,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 
 ## Architecture notes
 - Shared hosting (DirectAdmin): no Node, Redis or Supervisor in production. No Inertia SSR. Assets built locally and rsynced.
-- Queue = database, drained by the scheduler (`queue:work --stop-when-empty`) from one cron. Only email and housekeeping are queued; payment finalisation and tickets are synchronous.
+- Queue = database, worked by the scheduler from one cron (a background `queue:work --max-time=50 --sleep=3` started every minute). Only email and housekeeping are queued; payment finalisation and tickets are synchronous.
 - Cache = file, sessions = database. Timezone Africa/Lagos.
 - Uploads on the private local disk, served through authorised controller routes. No storage:link.
 - Printing = HTML + print CSS, browser's Save as PDF. No headless Chrome.
