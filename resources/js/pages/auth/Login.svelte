@@ -5,6 +5,7 @@
     import PasswordInput from '@/components/form/PasswordInput.svelte';
     import TextInput from '@/components/form/TextInput.svelte';
     import AuthShell from '@/layouts/AuthShell.svelte';
+    import { home } from '@/routes';
     import { store } from '@/routes/login';
     import { request } from '@/routes/password';
     import Call from '~icons/ms/call';
@@ -110,6 +111,9 @@
                     <span class="hidden lg:inline">
                         Accounts are created by the New Service Department. Need access? Contact your admin.
                     </span>
+                </p>
+                <p class="text-center text-[13px] lg:text-left lg:text-sm">
+                    <Link href={home()} class="font-bold no-underline hover:underline">About KENS, fees and policies</Link>
                 </p>
             {/snippet}
         </AuthShell>

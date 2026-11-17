@@ -23,6 +23,13 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             nsd: { phone: string; email: string };
+            operator: {
+                name: string;
+                rc: string;
+                phones: string[];
+                email: string;
+                address: string;
+            };
             [key: string]: unknown;
         };
         flashDataType: Flash;

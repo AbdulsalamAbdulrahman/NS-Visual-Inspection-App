@@ -12,8 +12,10 @@ test('the sign-in screen renders', function () {
         ->assertInertia(fn (Assert $page) => $page->component('auth/Login'));
 });
 
-test('the home route sends guests to sign in', function () {
-    $this->get(route('home'))->assertRedirect(route('login'));
+test('the home route shows guests the public home page', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('public/Home'));
 });
 
 test('users can sign in with valid credentials', function () {

@@ -29,6 +29,7 @@ use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\Lecan\InspectionController as LecanInspectionController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\Rep\InspectionController as RepInspectionController;
@@ -39,6 +40,7 @@ use App\Models\ContractorProfile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('{page}', PolicyController::class)->whereIn('page', PolicyController::PAGES)->name('policy');
 
 // Public check behind the certificate QR code (no personal data beyond a masked name).
 Route::get('verify/{ticket}', VerifyController::class)
