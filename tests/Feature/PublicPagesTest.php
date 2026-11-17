@@ -35,4 +35,8 @@ test('the policy pages are public', function (string $page) {
     $this->get(route('policy', $page))
         ->assertOk()
         ->assertInertia(fn (Assert $inertia) => $inertia->component('public/Policy')->where('page', $page));
-})->with(['terms', 'privacy', 'refunds']);
+})->with(['terms', 'privacy']);
+
+test('the refund policy is hidden for now', function () {
+    $this->get('/refunds')->assertNotFound();
+});

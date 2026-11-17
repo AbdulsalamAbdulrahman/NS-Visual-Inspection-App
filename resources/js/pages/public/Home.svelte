@@ -320,7 +320,7 @@
             <span class="mono-caps text-xs text-brand">Contact</span>
             <h2 class="text-[28px] leading-tight font-extrabold tracking-[-0.01em]">Get in touch</h2>
             <p class="text-base leading-relaxed text-mut">
-                For questions about payments, receipts, refunds or using KENS, contact {operator.name}.
+                For questions about payments, receipts or using KENS, contact {operator.name}.
             </p>
         </div>
         <ul class="flex flex-col gap-3">

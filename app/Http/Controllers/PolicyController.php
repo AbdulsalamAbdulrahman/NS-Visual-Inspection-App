@@ -12,7 +12,8 @@ use Inertia\Response;
  */
 class PolicyController extends Controller
 {
-    public const PAGES = ['terms', 'privacy', 'refunds'];
+    /** 'refunds' is hidden until the refund terms are confirmed; its text stays in Policy.svelte. */
+    public const PAGES = ['terms', 'privacy'];
 
     public function __invoke(string $page): Response
     {

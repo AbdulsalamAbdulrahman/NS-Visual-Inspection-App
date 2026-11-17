@@ -46,7 +46,7 @@
                     paragraphs: [
                         'Inspection fees are set by Kaduna Electric per building type, size and supply, and are published on the home page. The amount due is shown before payment, including any payment processing charge. The fee in force on the day of payment applies.',
                         `Payments are processed by Monnify (Moniepoint). ${operator.name} collects the fee and settles it to the parties involved in the inspection and review. KENS does not see or store card details.`,
-                        'A corrected report sent back for review after changes are requested is not charged again. Refunds are covered by the refund policy.',
+                        `A corrected report sent back for review after changes are requested is not charged again. For questions about a payment, contact us at ${contact}.`,
                     ],
                 },
                 {

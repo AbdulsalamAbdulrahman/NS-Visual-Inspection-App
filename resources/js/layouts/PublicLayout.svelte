@@ -65,7 +65,6 @@
                 <b class="mono-caps text-xs text-mut">Policies</b>
                 <Link href={policy('terms')} class="hover:underline">Terms of service</Link>
                 <Link href={policy('privacy')} class="hover:underline">Privacy policy</Link>
-                <Link href={policy('refunds')} class="hover:underline">Refund policy</Link>
             </div>
             <div class="flex flex-col gap-2 text-sm">
                 <b class="mono-caps text-xs text-mut">Contact</b>
