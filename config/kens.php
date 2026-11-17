@@ -20,22 +20,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Platform operator
-    |--------------------------------------------------------------------------
-    |
-    | The company that developed KENS and runs it for Kaduna Electric's New
-    | Service Department, collecting the fees (named in the Monnify board
-    | resolution). Named only in the public terms of service.
-    |
-    */
-
-    'operator' => [
-        'name' => env('KENS_OPERATOR_NAME', 'Jannats Engineering Services Ltd'),
-        'rc' => env('KENS_OPERATOR_RC', '7180154'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Public verification
     |--------------------------------------------------------------------------
     |

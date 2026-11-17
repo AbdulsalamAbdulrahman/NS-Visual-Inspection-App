@@ -69,7 +69,7 @@
         {
             icon: ReceiptLong,
             title: 'Fee payment and receipts',
-            body: 'Official fees set by building type and size, paid securely through Monnify. Each payment gets a ticket number and an emailed receipt.',
+            body: 'Official fees set by building type and size, paid securely online. Each payment gets a ticket number and an emailed receipt.',
         },
         {
             icon: FactCheck,
@@ -157,8 +157,8 @@
             fee is paid online, and the report is reviewed and certified in one traceable flow.
         </p>
         <p class="text-base leading-relaxed text-mut">
-            KENS belongs to the New Service Department of Kaduna Electric. Inspection fees are paid online through
-            Monnify and settled to the parties involved in the inspection and review.
+            KENS belongs to the New Service Department of Kaduna Electric. Inspection fees are paid online and settled to
+            the parties involved in the inspection and review.
         </p>
     </div>
     <div class="flex flex-col gap-3">

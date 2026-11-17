@@ -3,7 +3,7 @@
     import type { Snippet } from 'svelte';
     import Logo from '@/components/Logo.svelte';
     import { APP_TITLE } from '@/lib/brand';
-    import { home, login, policy } from '@/routes';
+    import { home, login } from '@/routes';
     import Login from '~icons/ms/login';
 
     let { children }: { children: Snippet } = $props();
@@ -51,18 +51,9 @@
     </main>
 
     <footer class="border-t border-line bg-sf">
-        <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 md:grid-cols-[2fr_1fr]">
-            <div class="flex flex-col gap-2">
-                <b class="text-base">KENS · {APP_TITLE}</b>
-                <p class="text-sm leading-relaxed text-mut">
-                    KENS belongs to the New Service Department of Kaduna Electric. Payments are processed by Monnify.
-                </p>
-            </div>
-            <div class="flex flex-col gap-2 text-sm">
-                <b class="mono-caps text-xs text-mut">Policies</b>
-                <Link href={policy('terms')} class="hover:underline">Terms of service</Link>
-                <Link href={policy('privacy')} class="hover:underline">Privacy policy</Link>
-            </div>
+        <div class="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-10">
+            <b class="text-base">KENS · {APP_TITLE}</b>
+            <p class="text-sm leading-relaxed text-mut">KENS belongs to the New Service Department of Kaduna Electric.</p>
         </div>
         <div class="border-t border-line">
             <p class="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-mut">© {year} Kaduna Electric. All rights reserved.</p>
