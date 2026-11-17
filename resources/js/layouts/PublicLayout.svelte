@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Link, page } from '@inertiajs/svelte';
+    import { Link } from '@inertiajs/svelte';
     import type { Snippet } from 'svelte';
     import Logo from '@/components/Logo.svelte';
     import { APP_TITLE } from '@/lib/brand';
@@ -8,14 +8,12 @@
 
     let { children }: { children: Snippet } = $props();
 
-    const operator = $derived(page.props.operator);
     const year = new Date().getFullYear();
 
     const sections = [
         { href: '#about', label: 'About' },
         { href: '#how-it-works', label: 'How it works' },
         { href: '#fees', label: 'Fees' },
-        { href: '#contact', label: 'Contact' },
     ];
 </script>
 
@@ -53,12 +51,11 @@
     </main>
 
     <footer class="border-t border-line bg-sf">
-        <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 md:grid-cols-[2fr_1fr]">
             <div class="flex flex-col gap-2">
                 <b class="text-base">KENS · {APP_TITLE}</b>
                 <p class="text-sm leading-relaxed text-mut">
-                    Operated by {operator.name} (RC {operator.rc}) for the New Service Department of Kaduna Electric.
-                    Payments are processed by Monnify.
+                    KENS belongs to the New Service Department of Kaduna Electric. Payments are processed by Monnify.
                 </p>
             </div>
             <div class="flex flex-col gap-2 text-sm">
@@ -66,19 +63,9 @@
                 <Link href={policy('terms')} class="hover:underline">Terms of service</Link>
                 <Link href={policy('privacy')} class="hover:underline">Privacy policy</Link>
             </div>
-            <div class="flex flex-col gap-2 text-sm">
-                <b class="mono-caps text-xs text-mut">Contact</b>
-                {#each operator.phones as phone (phone)}
-                    <a href="tel:{phone.replace(/[^\d+]/g, '')}" class="font-mono hover:underline">{phone}</a>
-                {/each}
-                <a href="mailto:{operator.email}" class="break-all hover:underline">{operator.email}</a>
-                <span class="text-mut">{operator.address}</span>
-            </div>
         </div>
         <div class="border-t border-line">
-            <p class="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-mut">
-                © {year} {operator.name}. All rights reserved.
-            </p>
+            <p class="mx-auto w-full max-w-6xl px-4 py-4 text-xs text-mut">© {year} Kaduna Electric. All rights reserved.</p>
         </div>
     </footer>
 </div>

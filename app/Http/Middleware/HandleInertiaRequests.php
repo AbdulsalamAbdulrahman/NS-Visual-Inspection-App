@@ -56,7 +56,6 @@ class HandleInertiaRequests extends Middleware
                 'phone' => config('kens.nsd.phone'),
                 'email' => config('kens.nsd.email'),
             ],
-            'operator' => config('kens.operator'),
         ];
     }
 

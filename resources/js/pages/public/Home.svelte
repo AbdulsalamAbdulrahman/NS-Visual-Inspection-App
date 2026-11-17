@@ -3,16 +3,12 @@
 </script>
 
 <script lang="ts">
-    import { Link, page, router } from '@inertiajs/svelte';
+    import { Link, router } from '@inertiajs/svelte';
     import { APP_TITLE } from '@/lib/brand';
     import { login, verify } from '@/routes';
     import Assignment from '~icons/ms/assignment';
-    import Call from '~icons/ms/call';
     import Engineering from '~icons/ms/engineering';
     import FactCheck from '~icons/ms/fact-check';
-    import Home from '~icons/ms/home';
-    import LocationOn from '~icons/ms/location-on';
-    import Mail from '~icons/ms/mail';
     import Payments from '~icons/ms/payments';
     import QrCode2 from '~icons/ms/qr-code-2';
     import ReceiptLong from '~icons/ms/receipt-long';
@@ -29,7 +25,6 @@
 
     let { fees, charge }: Props = $props();
 
-    const operator = $derived(page.props.operator);
 
     let ticket = $state('');
 
@@ -162,9 +157,8 @@
             fee is paid online, and the report is reviewed and certified in one traceable flow.
         </p>
         <p class="text-base leading-relaxed text-mut">
-            KENS is operated by <b class="text-ink">{operator.name}</b> (RC {operator.rc}), Kaduna, on behalf of the
-            New Service Department of Kaduna Electric. {operator.name} runs the platform, collects the inspection fees
-            through Monnify and settles each fee to the parties involved in the inspection and review.
+            KENS belongs to the New Service Department of Kaduna Electric. Inspection fees are paid online through
+            Monnify and settled to the parties involved in the inspection and review.
         </p>
     </div>
     <div class="flex flex-col gap-3">
@@ -237,7 +231,7 @@
 
         {#if fees.length === 0}
             <p class="rounded-2xl border border-line bg-bg p-5 text-mut">
-                Fees are being updated. Contact us for the current fee.
+                Fees are being updated. The current fee is shown before payment.
             </p>
         {:else}
             <div class="flex flex-col gap-3">
@@ -311,47 +305,4 @@
             <Search class="size-5" aria-hidden="true" />Check
         </button>
     </form>
-</section>
-
-<!-- Contact -->
-<section id="contact" class="scroll-mt-20 border-t border-line bg-sf">
-    <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-14 md:grid-cols-[1fr_1fr] md:py-20">
-        <div class="flex flex-col gap-2">
-            <span class="mono-caps text-xs text-brand">Contact</span>
-            <h2 class="text-[28px] leading-tight font-extrabold tracking-[-0.01em]">Get in touch</h2>
-            <p class="text-base leading-relaxed text-mut">
-                For questions about payments, receipts or using KENS, contact {operator.name}.
-            </p>
-        </div>
-        <ul class="flex flex-col gap-3">
-            {#each operator.phones as phone (phone)}
-                <li>
-                    <a
-                        href="tel:{phone.replace(/[^\d+]/g, '')}"
-                        class="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-bg px-5"
-                    >
-                        <Call class="size-6 flex-none text-brand" aria-hidden="true" />
-                        <span class="font-mono">{phone}</span>
-                    </a>
-                </li>
-            {/each}
-            <li>
-                <a
-                    href="mailto:{operator.email}"
-                    class="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-bg px-5"
-                >
-                    <Mail class="size-6 flex-none text-brand" aria-hidden="true" />
-                    <span class="break-all">{operator.email}</span>
-                </a>
-            </li>
-            <li class="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-bg px-5 py-3">
-                <LocationOn class="size-6 flex-none text-brand" aria-hidden="true" />
-                <span>{operator.address}</span>
-            </li>
-            <li class="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-bg px-5 py-3">
-                <Home class="size-6 flex-none text-brand" aria-hidden="true" />
-                <span>Questions about a new electricity connection: your nearest Kaduna Electric area office.</span>
-            </li>
-        </ul>
-    </div>
 </section>

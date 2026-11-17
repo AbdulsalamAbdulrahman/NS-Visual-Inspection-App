@@ -28,7 +28,7 @@ test('the home page lists the fees in force, without unoffered or future ones', 
                 'single' => '₦30,000.00',
                 'three' => null,
             ]])
-            ->where('operator.name', config('kens.operator.name')));
+            ->missing('operator'));
 });
 
 test('the policy pages are public', function (string $page) {
@@ -36,6 +36,15 @@ test('the policy pages are public', function (string $page) {
         ->assertOk()
         ->assertInertia(fn (Assert $inertia) => $inertia->component('public/Policy')->where('page', $page));
 })->with(['terms', 'privacy']);
+
+test('the home page does not name the platform operator', function () {
+    $this->get(route('home'))->assertOk()->assertDontSee(config('kens.operator.name'));
+});
+
+test('the terms name the platform operator', function () {
+    $this->get(route('policy', 'terms'))
+        ->assertInertia(fn (Assert $inertia) => $inertia->where('operator.name', config('kens.operator.name')));
+});
 
 test('the refund policy is hidden for now', function () {
     $this->get('/refunds')->assertNotFound();

@@ -3,14 +3,15 @@
 </script>
 
 <script lang="ts">
-    import { page as inertiaPage } from '@inertiajs/svelte';
+    type Props = {
+        page: 'terms' | 'privacy' | 'refunds';
+        /** The company that developed and runs KENS for NSD; named in the terms only. */
+        operator: { name: string; rc: string };
+    };
 
-    type Props = { page: 'terms' | 'privacy' | 'refunds' };
+    let { page, operator }: Props = $props();
 
-    let { page }: Props = $props();
-
-    const operator = $derived(inertiaPage.props.operator);
-    const contact = $derived(`${operator.email} or ${operator.phones.join(', ')}`);
+    const contact = 'the New Service Department of Kaduna Electric or your nearest Kaduna Electric area office';
 
     const UPDATED = '17 November 2026';
 
@@ -19,7 +20,7 @@
     const policies = $derived<Record<Props['page'], { title: string; intro: string; sections: Section[] }>>({
         terms: {
             title: 'Terms of service',
-            intro: `These terms apply to everyone who uses KENS (kens.buildingelectcert.com.ng), the building electrical inspection platform operated by ${operator.name} (RC ${operator.rc}) on behalf of the New Service Department of Kaduna Electric.`,
+            intro: `These terms apply to everyone who uses KENS (kens.buildingelectcert.com.ng), the building electrical inspection platform of the New Service Department of Kaduna Electric. KENS was developed by ${operator.name} (RC ${operator.rc}), which operates it for the department and collects the inspection fees.`,
             sections: [
                 {
                     heading: 'The service',
@@ -45,8 +46,8 @@
                     heading: 'Fees and payment',
                     paragraphs: [
                         'Inspection fees are set by Kaduna Electric per building type, size and supply, and are published on the home page. The amount due is shown before payment, including any payment processing charge. The fee in force on the day of payment applies.',
-                        `Payments are processed by Monnify (Moniepoint). ${operator.name} collects the fee and settles it to the parties involved in the inspection and review. KENS does not see or store card details.`,
-                        `A corrected report sent back for review after changes are requested is not charged again. For questions about a payment, contact us at ${contact}.`,
+                        `Payments are processed by Monnify (Moniepoint). The fee is collected by the platform operator and settled to the parties involved in the inspection and review. KENS does not see or store card details.`,
+                        `A corrected report sent back for review after changes are requested is not charged again. For questions about a payment, contact ${contact}.`,
                     ],
                 },
                 {
@@ -58,7 +59,7 @@
                 {
                     heading: 'Liability',
                     paragraphs: [
-                        `${operator.name} provides KENS with reasonable care but does not guarantee it will always be available. We are not liable for losses caused by inaccurate information submitted by users, or by events outside our reasonable control. Nothing in these terms limits liability that cannot be limited under Nigerian law.`,
+                        'KENS is provided with reasonable care but is not guaranteed to be available at all times. Neither Kaduna Electric nor the platform operator is liable for losses caused by inaccurate information submitted by users, or by events outside their reasonable control. Nothing in these terms limits liability that cannot be limited under Nigerian law.',
                     ],
                 },
                 {
@@ -71,7 +72,7 @@
         },
         privacy: {
             title: 'Privacy policy',
-            intro: `This policy explains how ${operator.name} (RC ${operator.rc}), which operates KENS for the New Service Department of Kaduna Electric, handles personal data, in line with the Nigeria Data Protection Act 2023.`,
+            intro: 'This policy explains how KENS, the building electrical inspection platform of the New Service Department of Kaduna Electric, handles personal data, in line with the Nigeria Data Protection Act 2023.',
             sections: [
                 {
                     heading: 'What we collect',
@@ -90,7 +91,7 @@
                 {
                     heading: 'Who we share it with',
                     paragraphs: [
-                        'Kaduna Electric\'s New Service Department and service representatives, the Inspection Review Committee, NEMSA where the law requires it, and Monnify for payments and settlements. We do not sell personal data.',
+                        'Kaduna Electric\'s New Service Department and service representatives, the Inspection Review Committee, the company that operates KENS for the department, NEMSA where the law requires it, and Monnify for payments and settlements. Personal data is not sold.',
                         'The public verify page shows only the certificate status, dates, service area and masked names.',
                     ],
                 },
@@ -109,14 +110,14 @@
                 {
                     heading: 'Your rights',
                     paragraphs: [
-                        `You can ask to see, correct or delete your personal data, or object to its use, subject to the records we must keep by law. Contact us at ${contact}.`,
+                        `You can ask to see, correct or delete your personal data, or object to its use, subject to the records that must be kept by law. Contact ${contact}.`,
                     ],
                 },
             ],
         },
         refunds: {
             title: 'Refund policy',
-            intro: `This policy covers inspection fees paid through KENS, which is operated by ${operator.name} (RC ${operator.rc}).`,
+            intro: 'This policy covers inspection fees paid through KENS.',
             sections: [
                 {
                     heading: 'When we refund',
@@ -133,7 +134,7 @@
                 {
                     heading: 'How to ask',
                     paragraphs: [
-                        `Contact us at ${contact} within 30 days of the payment, with the ticket number or payment reference and the reason. We reply within 5 working days.`,
+                        `Contact ${contact} within 30 days of the payment, with the ticket number or payment reference and the reason. We reply within 5 working days.`,
                         'Approved refunds are paid back to the original payment method within 14 working days. The payment processing charge is refunded with the fee when the error was ours.',
                     ],
                 },
@@ -164,10 +165,4 @@
         </section>
     {/each}
 
-    <section class="flex flex-col gap-2 rounded-2xl border border-line bg-sf p-5">
-        <h2 class="text-lg font-bold">Contact</h2>
-        <p class="text-base leading-relaxed text-mut">
-            {operator.name}, {operator.address}. {contact}.
-        </p>
-    </section>
 </article>

@@ -17,6 +17,12 @@ class PolicyController extends Controller
 
     public function __invoke(string $page): Response
     {
-        return Inertia::render('public/Policy', ['page' => $page]);
+        return Inertia::render('public/Policy', [
+            'page' => $page,
+            'operator' => [
+                'name' => config('kens.operator.name'),
+                'rc' => config('kens.operator.rc'),
+            ],
+        ]);
     }
 }
