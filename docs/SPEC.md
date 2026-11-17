@@ -43,7 +43,7 @@ The production server is shared hosting. It has been checked and has:
 - PHP 8.5 with OPcache, `pdo_mysql`, `gd`, `imagick`, `exif`, `intl`, `bcmath`, `zip`, `sodium` and `fileinfo`. `proc_open` is allowed.
 - `memory_limit` 128M, upload/post max 64M, no execution time limit.
 - MariaDB 11.4, git 2.43, and Composer at `~/bin/composer`.
-- App path: `/home/buildin1/domains/kens.buildingelectcert.com.ng/app`.
+- App path: `/home/buildin4/domains/kens.buildingelectcert.com.ng/app`.
 - Document root already set to `.../app/public`.
 
 These shape the build:
@@ -473,7 +473,7 @@ Keep the SSH host in an env variable. **Commit `public/build` to git: no.** Keep
 
 `docs/DEPLOY.md` must cover:
 - the first-time server setup: `.env`, `key:generate`, `app:create-admin`
-- the cron line, using the PHP CLI path from `which php`: `* * * * * php /home/buildin1/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1`
+- the cron line, using the PHP CLI path from `which php`: `* * * * * php /home/buildin4/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1`
 - SMTP settings for a transactional mail provider
 - the Monnify webhook URL to register
 
@@ -533,7 +533,7 @@ Laravel 13 (PHP 8.5), Inertia v3 + Svelte 5 (runes) + TypeScript, Tailwind v4, F
 User (hasOne ContractorProfile; belongsToMany ServiceArea for reps; hasMany Inspection as contractor) · Inspection (belongsTo User contractor, ServiceArea; hasMany InspectionCircuit, InspectionAttachment, Payment) · Payment · FeeSchedule · TicketCounter · ServiceArea.
 
 ## Environment notes
-MONNIFY_BASE_URL, MONNIFY_API_KEY, MONNIFY_SECRET_KEY, MONNIFY_CONTRACT_CODE, NSD_PHONE, NSD_EMAIL, MAIL_* (transactional SMTP), DEPLOY_SSH_HOST. Production path: /home/buildin1/domains/kens.buildingelectcert.com.ng/app (docroot app/public). Server Composer: php -d memory_limit=-1 ~/bin/composer.
+MONNIFY_BASE_URL, MONNIFY_API_KEY, MONNIFY_SECRET_KEY, MONNIFY_CONTRACT_CODE, NSD_PHONE, NSD_EMAIL, MAIL_* (transactional SMTP), DEPLOY_SSH_HOST. Production path: /home/buildin4/domains/kens.buildingelectcert.com.ng/app (docroot app/public). Server Composer: php -d memory_limit=-1 ~/bin/composer.
 
 ## Workflow
 - Plan in tasks/todo.md for anything with 3+ steps; decisions in tasks/decisions.md; lessons from corrections in tasks/lessons.md.

@@ -41,8 +41,8 @@ Do these once, in this order.
 - **PHP**: DirectAdmin → PHP version selector, PHP **8.4 or newer** for the domain
   (the command line already defaults to 8.5). Needed extensions: pdo_mysql, mbstring,
   intl, bcmath, gd, fileinfo, openssl.
-- **Database**: DirectAdmin → MySQL Management → create database `buildin1_kens`
-  and user `buildin1_kens` with a strong password.
+- **Database**: DirectAdmin → MySQL Management → create database `buildin4_kens`
+  and user `buildin4_kens` with a strong password.
 - **Mail**: DirectAdmin → E-mail Accounts → create `no-reply@kens.buildingelectcert.com.ng`.
 
 ### 2. Read-only deploy key (server → GitHub)
@@ -105,8 +105,8 @@ Open https://kens.buildingelectcert.com.ng. You should see the sign-in page.
 DirectAdmin → Advanced Features → **Cron Jobs**, both "every minute" (`* * * * *`):
 
 ```
-/usr/local/php85/bin/php /home/buildin1/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1
-PHP_BIN=/usr/local/php85/bin/php /bin/bash /home/buildin1/domains/kens.buildingelectcert.com.ng/app/deploy/server-pull.sh >> /home/buildin1/domains/kens.buildingelectcert.com.ng/deploy.log 2>&1
+/usr/local/php85/bin/php /home/buildin4/domains/kens.buildingelectcert.com.ng/app/artisan schedule:run >> /dev/null 2>&1
+PHP_BIN=/usr/local/php85/bin/php /bin/bash /home/buildin4/domains/kens.buildingelectcert.com.ng/app/deploy/server-pull.sh >> /home/buildin4/domains/kens.buildingelectcert.com.ng/deploy.log 2>&1
 ```
 
 The first runs the scheduler, which sends queued email. The second picks up new
@@ -170,7 +170,7 @@ The second cron line deploys new releases (see above).
 ## Backups
 
 Not automatic in the app. In DirectAdmin → **Create/Restore Backups**, schedule
-a daily backup that includes the **database** `buildin1_kens` and the folder
+a daily backup that includes the **database** `buildin4_kens` and the folder
 `domains/kens.buildingelectcert.com.ng/shared` (`.env` plus uploads,
 signatures and certificate signatures under `storage/app/private`). Keep at
 least one copy off the server. The releases themselves don't need backing up:
